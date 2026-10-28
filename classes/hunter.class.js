@@ -5,12 +5,17 @@ class Hunter extends MovableObject {
   width = 192;
   height = 192;
   otherDirection = true;
-  idleFrames = 6;
-  idleFps = 10;
+  animations = {
+    idle: { path: "./imgs/Cowboy_1/Idle.png", frames: 6, fps: 10, row: 0 },
+  };
 
+  /**
+   * Creates a hunter at a random x position and starts its idle animation.
+   */
   constructor() {
-    super().loadImage("./imgs/Cowboy_1/Idle.png");
+    super();
     this.x = 250 + Math.random() * 278; // max. 528, damit er nicht rechts aus dem Canvas (720) ragt
-    this.idleAnimation();
+    this.loadImages(Object.values(this.animations));
+    this.animate();
   }
 }

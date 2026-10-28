@@ -5,6 +5,33 @@ let keyBoard = {
   right: false,
 };
 
+let intervalIds = [];
+
+/**
+ * Starts an interval and remembers its id so it can be stopped later.
+ * @param {Function} fn - Function that runs on every interval tick.
+ * @param {number} ms - Time between two ticks in milliseconds.
+ * @returns {number} The id of the new interval.
+ */
+function setStoppableInterval(fn, ms) {
+  let id = setInterval(fn, ms);
+  intervalIds.push(id);
+  return id;
+}
+
+
+/**
+ * Stops all intervals started with setStoppableInterval (e.g. for a restart).
+ */
+function stopAllIntervals() {
+  intervalIds.forEach((id) => clearInterval(id));
+  intervalIds = [];
+}
+
+
+/**
+ * Creates the game world on the canvas.
+ */
 function init() {
   let canvas = document.getElementById("canvas");
   world = new World(canvas);

@@ -11,8 +11,11 @@ class Cloud extends MovableObject {
     this.animate();
   }
 
+  /**
+   * Lets the cloud drift to the left and starts again on the right side.
+   */
   animate() {
-    setInterval(() => {
+    setStoppableInterval(() => {
       if (this.x > this.targetX) {
         this.x -= this.speed;
       } else {

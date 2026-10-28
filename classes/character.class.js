@@ -2,19 +2,27 @@ class Character extends MovableObject {
   y = 389;
   frameWidth = 32;
   frameHeight = 32;
-  sourceY = 96;
-  idleFrames = 4;
-  idleFps = 6;
   speed = 4;
+  animations = {
+    idle: { path: "./imgs/fox/Fox_Idle_with_shadow.png", frames: 4, fps: 6, row: 3 },
+  };
 
+  /**
+   * Creates the fox, preloads its animations and starts animation and movement.
+   */
   constructor() {
-    super().loadImage("./imgs/fox/Fox_Idle_with_shadow.png");
-    this.idleAnimation();
+    super();
+    this.loadImages(Object.values(this.animations));
+    this.animate();
     this.move();
   }
 
+
+  /**
+   * Moves the fox left or right while the arrow keys are pressed.
+   */
   move() {
-    setInterval(() => {
+    setStoppableInterval(() => {
       if (keyBoard.left == true) {
         this.x -= this.speed;
         this.otherDirection = true;
