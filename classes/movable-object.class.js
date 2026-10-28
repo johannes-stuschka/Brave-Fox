@@ -20,11 +20,4 @@ class MovableObject {
       this.currentImage += 1;
     }, 1000 / this.idleFps);
   }
-
-  moveLeft(params) {
-    pass;
-  }
-  moveRight(params) {
-    pass;
-  }
 }

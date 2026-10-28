@@ -8,7 +8,6 @@ let keyBoard = {
 function init() {
   let canvas = document.getElementById("canvas");
   world = new World(canvas);
-  console.log("MyCharecter is", world.character);
 }
 
 window.addEventListener("keydown", (event) => {
