@@ -11,6 +11,10 @@ class MovableObject {
   currentAnimation = null;
   animationTime = 0; // vergangene ms seit dem letzten Frame-Wechsel
   animationTick = 1000 / 60; // so oft prüft animate(), ob ein neuer Frame dran ist
+  groundY = 389; // y-Wert, auf dem das Objekt auf dem Boden steht
+  speedY = 0; // Geschwindigkeit nach oben (positiv = steigt, negativ = fällt)
+  acceleration = 0.5; // so stark zieht die Schwerkraft pro Tick nach unten
+  jumpSpeed = 12; // Start-Geschwindigkeit beim Absprung
 
   /**
    * Loads a single image and uses it as the current image.
@@ -88,10 +92,63 @@ class MovableObject {
 
   /**
    * Sets sourceX/sourceY so that World.addToMap cuts out the current frame.
-   * @param {{row: number}} animation - The animation that is playing.
+   * firstFrame (optional) lets an animation start later in the row.
+   * @param {{row: number, firstFrame?: number}} animation - The animation that is playing.
    */
   showFrame(animation) {
-    this.sourceX = this.currentImage * this.frameWidth;
+    let frame = (animation.firstFrame || 0) + this.currentImage;
+    this.sourceX = frame * this.frameWidth;
     this.sourceY = (animation.row || 0) * this.frameHeight;
+  }
+
+
+  /**
+   * Starts the gravity interval (60 times per second).
+   */
+  applyGravity() {
+    setStoppableInterval(() => this.updateGravity(), 1000 / 60);
+  }
+
+
+  /**
+   * One gravity step: moves the object by speedY and slows it down.
+   * Does nothing while the object stands on the ground.
+   */
+  updateGravity() {
+    if (this.isAboveGround() || this.speedY > 0) {
+      this.y -= this.speedY;
+      this.speedY -= this.acceleration;
+      this.landOnGround();
+    }
+  }
+
+
+  /**
+   * Puts the object exactly on the ground if it fell below it.
+   */
+  landOnGround() {
+    if (this.y >= this.groundY) {
+      this.y = this.groundY;
+      this.speedY = 0;
+    }
+  }
+
+
+  /**
+   * Checks if the object is in the air.
+   * @returns {boolean} True if the object is higher than the ground.
+   */
+  isAboveGround() {
+    return this.y < this.groundY;
+  }
+
+
+  /**
+   * Lets the object jump, but only when it stands on the ground.
+   */
+  jump() {
+    if (!this.isAboveGround()) {
+      this.speedY = this.jumpSpeed;
+    }
   }
 }

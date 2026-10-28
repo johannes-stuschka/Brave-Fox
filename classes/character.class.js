@@ -8,16 +8,19 @@ class Character extends MovableObject {
     idle: { path: "./imgs/fox/Fox_Idle_with_shadow.png", frames: 4, fps: 6, row: 3 },
     walk: { path: "./imgs/fox/Fox_walk_with_shadow.png", frames: 6, fps: 10, row: 3 },
     run: { path: "./imgs/fox/Fox_Run_with_shadow.png", frames: 6, fps: 13, row: 3 },
+    jumpUp: { path: "./imgs/fox/Fox_Run_with_shadow.png", frames: 1, fps: 1, row: 3, firstFrame: 3 },
+    jumpDown: { path: "./imgs/fox/Fox_Run_with_shadow.png", frames: 1, fps: 1, row: 3, firstFrame: 0 },
   };
 
   /**
-   * Creates the fox, preloads its animations and starts animation and movement.
+   * Creates the fox, preloads its animations and starts animation, movement and gravity.
    */
   constructor() {
     super();
     this.loadImages(Object.values(this.animations));
     this.animate();
     this.move();
+    this.applyGravity();
   }
 
 
@@ -25,7 +28,20 @@ class Character extends MovableObject {
    * Starts the movement interval of the fox (60 times per second).
    */
   move() {
-    setStoppableInterval(() => this.moveByKeys(), 1000 / 60);
+    setStoppableInterval(() => {
+      this.moveByKeys();
+      this.jumpByKey();
+    }, 1000 / 60);
+  }
+
+
+  /**
+   * Lets the fox jump while Space is pressed (jump() checks the ground).
+   */
+  jumpByKey() {
+    if (keyBoard.space == true) {
+      this.jump();
+    }
   }
 
 
@@ -66,10 +82,25 @@ class Character extends MovableObject {
 
 
   /**
-   * Chooses the animation: run (moving + Shift), walk (moving) or idle.
+   * Returns the jump frame: stretched while rising, gathered while falling.
+   * @returns {{path: string, frames: number, fps: number, row: number, firstFrame: number}} The jump animation.
+   */
+  getJumpAnimation() {
+    if (this.speedY > 0) {
+      return this.animations.jumpUp;
+    }
+    return this.animations.jumpDown;
+  }
+
+
+  /**
+   * Chooses the animation: jump (in the air), run (moving + Shift), walk (moving) or idle.
    * @returns {{path: string, frames: number, fps: number, row: number}} The current animation.
    */
   getCurrentAnimation() {
+    if (this.isAboveGround()) {
+      return this.getJumpAnimation();
+    }
     if (this.isMoving() && keyBoard.shift == true) {
       return this.animations.run;
     }
