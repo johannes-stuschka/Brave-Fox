@@ -3,6 +3,7 @@ let world;
 let keyBoard = {
   left: false,
   right: false,
+  shift: false,
 };
 
 let intervalIds = [];
@@ -44,6 +45,9 @@ window.addEventListener("keydown", (event) => {
   if (event.key == "ArrowRight") {
     keyBoard.right = true;
   }
+  if (event.key == "Shift") {
+    keyBoard.shift = true;
+  }
 });
 
 window.addEventListener("keyup", (event) => {
@@ -52,5 +56,8 @@ window.addEventListener("keyup", (event) => {
   }
   if (event.key == "ArrowRight") {
     keyBoard.right = false;
+  }
+  if (event.key == "Shift") {
+    keyBoard.shift = false;
   }
 });
