@@ -6,6 +6,7 @@ class MovableObject {
   otherDirection = false;
   sourceX = 0;
   sourceY = 0;
+  currentImage = 0;
 
   loadImage(path) {
     this.img = new Image();
@@ -17,7 +18,7 @@ class MovableObject {
       this.currentImage = this.currentImage % this.idleFrames;
       this.sourceX = this.currentImage * this.frameWidth;
       this.currentImage += 1;
-    }, 1000 / 10);
+    }, 1000 / this.idleFps);
   }
 
   moveLeft(params) {

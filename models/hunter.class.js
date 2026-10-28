@@ -5,9 +5,8 @@ class Hunter extends MovableObject {
   width = 192;
   height = 192;
   otherDirection = true;
-
-  currentImage = 0;
   idleFrames = 6;
+  idleFps = 10;
 
   constructor() {
     super().loadImage("./imgs/Cowboy_1/Idle.png");

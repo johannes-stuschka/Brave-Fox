@@ -22,8 +22,8 @@ class World {
     this.addToMap(this.sky);
     this.addObjectsToMap(this.clouds);
     this.addObjectsToMap(this.backgrounds);
-    this.addToMap(this.character);
     this.addObjectsToMap(this.enemies);
+    this.addToMap(this.character);
 
     let self = this;
     requestAnimationFrame(function () {
