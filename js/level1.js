@@ -20,6 +20,8 @@ function createLevel1() {
 /**
  * Places both background layers side by side, each tile exactly
  * TILE_WIDTH pixels after the one before, so there are no gaps.
+ * Every second tile is mirrored, so neighbouring tiles share the same
+ * edge pixels and no hard cut is visible at the tile borders.
  * @param {number} count - How many tiles per layer.
  * @returns {Background[]} All background tiles (back layer first).
  */
@@ -28,7 +30,8 @@ function createBackgroundTiles(count) {
   let layers = ["./imgs/background/nature_4/3.png", "./imgs/background/nature_4/4.png"];
   layers.forEach((path) => {
     for (let i = 0; i < count; i++) {
-      tiles.push(new Background(path, i * TILE_WIDTH));
+      let mirrored = i % 2 === 1;
+      tiles.push(new Background(path, i * TILE_WIDTH, mirrored));
     }
   });
   return tiles;

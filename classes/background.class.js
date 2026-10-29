@@ -7,9 +7,12 @@ class Background extends MovableObject {
    * Creates one background image at the given x position.
    * @param {string} imagePath - Path to the image file.
    * @param {number} x - Left edge of the image in the level.
+   * @param {boolean} [mirrored=false] - true draws the image flipped horizontally,
+   *   so it fits seamlessly to its unflipped neighbour.
    */
-  constructor(imagePath, x) {
+  constructor(imagePath, x, mirrored = false) {
     super().loadImage(imagePath);
     this.x = x;
+    this.otherDirection = mirrored;
   }
 }
