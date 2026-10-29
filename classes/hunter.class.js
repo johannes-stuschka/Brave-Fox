@@ -10,11 +10,12 @@ class Hunter extends MovableObject {
   };
 
   /**
-   * Creates a hunter at a random x position and starts its idle animation.
+   * Creates a hunter at the given x position and starts its idle animation.
+   * @param {number} x - Position of the hunter in the level.
    */
-  constructor() {
+  constructor(x) {
     super();
-    this.x = 250 + Math.random() * 278; // max. 528, damit er nicht rechts aus dem Canvas (720) ragt
+    this.x = x;
     this.loadImages(Object.values(this.animations));
     this.animate();
   }

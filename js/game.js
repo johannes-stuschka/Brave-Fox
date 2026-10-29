@@ -32,11 +32,11 @@ function stopAllIntervals() {
 
 
 /**
- * Creates the game world on the canvas.
+ * Creates the game world with level 1 on the canvas.
  */
 function init() {
   let canvas = document.getElementById("canvas");
-  world = new World(canvas);
+  world = new World(canvas, createLevel1());
 }
 
 window.addEventListener("keydown", (event) => {

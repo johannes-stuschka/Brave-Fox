@@ -3,23 +3,30 @@ class Cloud extends MovableObject {
   width = 750;
   height = (this.width * 324) / 576;
   speed = 0.2;
-  targetX = -735;
+  levelEndX;
 
-  constructor() {
+  /**
+   * Creates a cloud at the given x position and lets it drift.
+   * @param {number} x - Start position of the cloud.
+   * @param {number} levelEndX - Right end of the level (cloud restarts there).
+   */
+  constructor(x, levelEndX) {
     super().loadImage("./imgs/background/nature_4/2.png");
-    this.x = 0;
+    this.x = x;
+    this.levelEndX = levelEndX;
     this.animate();
   }
 
+
   /**
-   * Lets the cloud drift to the left and starts again on the right side.
+   * Lets the cloud drift to the left and starts again at the end of the level.
    */
   animate() {
     setStoppableInterval(() => {
-      if (this.x > this.targetX) {
+      if (this.x > -this.width) {
         this.x -= this.speed;
       } else {
-        this.x = 720;
+        this.x = this.levelEndX;
       }
     }, 1000 / 60);
   }

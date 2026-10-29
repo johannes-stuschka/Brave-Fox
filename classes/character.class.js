@@ -3,6 +3,7 @@ class Character extends MovableObject {
   frameWidth = 32;
   frameHeight = 32;
   walkSpeed = 4;
+  world; // wird von der World gesetzt (für levelEndX)
   runSpeed = 7;
   animations = {
     idle: { path: "./imgs/fox/Fox_Idle_with_shadow.png", frames: 4, fps: 6, row: 3 },
@@ -50,13 +51,30 @@ class Character extends MovableObject {
    */
   moveByKeys() {
     if (keyBoard.left == true) {
-      this.x -= this.getSpeed();
-      this.otherDirection = true;
+      this.moveLeft();
     }
     if (keyBoard.right == true) {
-      this.x += this.getSpeed();
-      this.otherDirection = false;
+      this.moveRight();
     }
+  }
+
+
+  /**
+   * Moves the fox to the left, but not past the start of the level (x = 0).
+   */
+  moveLeft() {
+    this.x = Math.max(0, this.x - this.getSpeed());
+    this.otherDirection = true;
+  }
+
+
+  /**
+   * Moves the fox to the right, but not past the end of the level.
+   */
+  moveRight() {
+    let maxX = this.world.level.levelEndX - this.width;
+    this.x = Math.min(maxX, this.x + this.getSpeed());
+    this.otherDirection = false;
   }
 
 
