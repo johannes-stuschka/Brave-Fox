@@ -3,11 +3,12 @@ class World {
   level;
   canvas;
   ctx;
+  bullets = []; // alle Kugeln, die gerade fliegen
   camera_x = 0;
   cameraOffset = 120; // so viele Pixel bleibt der Fuchs vom linken Rand entfernt
 
   /**
-   * Creates the world, connects the fox with it and starts drawing.
+   * Creates the world, connects fox and enemies with it, starts the bullets and drawing.
    * @param {HTMLCanvasElement} canvas - The canvas to draw on.
    * @param {Level} level - The level that should be played.
    */
@@ -16,8 +17,50 @@ class World {
     this.ctx.imageSmoothingEnabled = false;
     this.canvas = canvas;
     this.level = level;
-    this.character.world = this;
+    this.setWorld();
+    this.moveBullets();
     this.draw();
+  }
+
+
+  /**
+   * Gives the fox and every enemy access to the world (e.g. to find the fox).
+   */
+  setWorld() {
+    this.character.world = this;
+    this.level.enemies.forEach((enemy) => {
+      enemy.world = this;
+    });
+  }
+
+
+  /**
+   * Starts the interval that moves all bullets (60 times per second).
+   */
+  moveBullets() {
+    setStoppableInterval(() => this.updateBullets(), 1000 / 60);
+  }
+
+
+  /**
+   * Moves every bullet one step and keeps only the bullets that are still needed,
+   * so the array does not grow forever.
+   */
+  updateBullets() {
+    this.bullets.forEach((bullet) => bullet.move());
+    this.bullets = this.bullets.filter((bullet) => this.isBulletNeeded(bullet));
+  }
+
+
+  /**
+   * A bullet is needed while it is inside the level and not far away from the fox.
+   * @param {Bullet} bullet - The bullet to check.
+   * @returns {boolean} True if the bullet should keep flying.
+   */
+  isBulletNeeded(bullet) {
+    let insideLevel = bullet.x + bullet.width > 0 && bullet.x < this.level.levelEndX;
+    let nearFox = Math.abs(bullet.x - this.character.x) < this.canvas.width;
+    return insideLevel && nearFox;
   }
 
 
@@ -42,6 +85,7 @@ class World {
     this.addObjectsToMap(this.level.clouds);
     this.addObjectsToMap(this.level.backgrounds);
     this.addObjectsToMap(this.level.enemies);
+    this.addObjectsToMap(this.bullets);
     this.addToMap(this.character);
   }
 
@@ -89,6 +133,7 @@ class World {
 
   /**
    * Draws the image of an object: one frame of a sprite sheet or the whole image.
+   * The whole image can also be a canvas (e.g. the painted bullet).
    * @param {MovableObject} item - The object to draw.
    */
   drawImage(item) {

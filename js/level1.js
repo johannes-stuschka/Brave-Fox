@@ -54,9 +54,17 @@ function createClouds(levelEndX) {
 
 /**
  * Spreads the walking hunters over the level, far enough from the start of the fox.
- * The gaps between them leave room for more enemy types later.
+ * The shooting hunters stand in the gaps between the walking hunters.
  * @returns {Hunter[]} The enemies.
  */
 function createEnemies() {
-  return [new WalkingHunter(1000), new WalkingHunter(1800), new WalkingHunter(2700), new WalkingHunter(3400)];
+  return [
+    new WalkingHunter(1000),
+    new ShootingHunter(1400),
+    new WalkingHunter(1800),
+    new ShootingHunter(2300),
+    new WalkingHunter(2700),
+    new ShootingHunter(3100),
+    new WalkingHunter(3400),
+  ];
 }

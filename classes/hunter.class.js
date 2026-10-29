@@ -5,6 +5,7 @@ class Hunter extends MovableObject {
   height = 160;
   y = 287; // Füße (unterste Sprite-Zeile) stehen auf der Bodenlinie des Fuchses (y = 447)
   otherDirection = true; // Sprite schaut nach rechts, Jäger schauen zum Fuchs nach links
+  world; // wird von der World gesetzt (z.B. um den Fuchs zu finden)
 
   /**
    * Shared base for all hunters: sets the position in the level.
