@@ -1,21 +1,26 @@
 class Hunter extends MovableObject {
-  y = 250;
-  frameWidth = 128; // ein Frame im Original-Spritesheet (768 / 6)
+  frameWidth = 128; // ein Frame im Cowboy-Spritesheet (z.B. Walk.png: 1536 / 12)
   frameHeight = 128;
-  width = 192;
-  height = 192;
-  otherDirection = true;
-  animations = {
-    idle: { path: "./imgs/Cowboy_1/Idle.png", frames: 6, fps: 10, row: 0 },
-  };
+  width = 160; // 1.25x gezeichnet: sichtbare Figur ca. 91px, knapp 2x so groß wie der Fuchs
+  height = 160;
+  y = 287; // Füße (unterste Sprite-Zeile) stehen auf der Bodenlinie des Fuchses (y = 447)
+  otherDirection = true; // Sprite schaut nach rechts, Jäger schauen zum Fuchs nach links
 
   /**
-   * Creates a hunter at the given x position and starts its idle animation.
+   * Shared base for all hunters: sets the position in the level.
+   * Subclasses define their animations and call startAnimations().
    * @param {number} x - Position of the hunter in the level.
    */
   constructor(x) {
     super();
     this.x = x;
+  }
+
+
+  /**
+   * Preloads the sprite sheets of this hunter and starts its animation interval.
+   */
+  startAnimations() {
     this.loadImages(Object.values(this.animations));
     this.animate();
   }
