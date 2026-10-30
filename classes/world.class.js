@@ -6,7 +6,7 @@ class World {
   bullets = []; // alle Kugeln, die gerade fliegen
   camera_x = 0;
   cameraOffset = 120; // so viele Pixel bleibt der Fuchs vom linken Rand entfernt
-  stompTolerance = 20; // Fuß des Fuchses darf so viele Pixel unter der Kopf-Oberkante des Gegners sein
+  collisionHandler; // prüft alle Zusammenstöße (Gegner, Kugeln, Enten)
   healthBar = new StatusBar(20, 20, "#c0392b", HEART_IMAGE, 100);
   duckBar = new StatusBar(20, 56, "#f5c542", DUCK_IMAGE, MAX_DUCKS, 2);
 
@@ -21,6 +21,7 @@ class World {
     this.canvas = canvas;
     this.level = level;
     this.setWorld();
+    this.collisionHandler = new CollisionHandler(this);
     this.moveBullets();
     this.startCollisionCheck();
     this.draw();
@@ -77,100 +78,11 @@ class World {
 
 
   /**
-   * One collision tick: enemies, bullets and ducks against the fox, then update the bars.
+   * One collision tick: the collision handler checks everything, then the bars are updated.
    */
   checkCollisions() {
-    this.checkEnemyCollisions();
-    this.checkBulletCollisions();
-    this.checkDuckCollisions();
+    this.collisionHandler.checkAll();
     this.updateStatusBars();
-  }
-
-
-  /**
-   * Checks every enemy against the fox, then removes enemies that lay dead long enough.
-   */
-  checkEnemyCollisions() {
-    this.level.enemies.forEach((enemy) => this.checkEnemyCollision(enemy));
-    this.removeDefeatedEnemies();
-  }
-
-
-  /**
-   * One enemy against the fox: a stomp defeats the enemy and lets the fox bounce,
-   * any other touch costs the fox energy. Dead enemies do no harm.
-   * @param {Hunter} enemy - The enemy to check.
-   */
-  checkEnemyCollision(enemy) {
-    if (enemy.isDead() || !this.character.isColliding(enemy)) {
-      return;
-    }
-    if (this.isStomp(enemy)) {
-      enemy.die();
-      this.character.bounce();
-    } else {
-      this.character.hit(enemy.contactDamage);
-    }
-  }
-
-
-  /**
-   * A stomp: the enemy can be stomped, the fox is falling (speedY < 0)
-   * and the feet of the fox are only a little below the top of the enemy.
-   * Touching the enemy from the side is not a stomp.
-   * @param {Hunter} enemy - The enemy the fox touches.
-   * @returns {boolean} True if the fox lands on top of the enemy.
-   */
-  isStomp(enemy) {
-    let fox = this.character.getHitbox();
-    let foxBottom = fox.y + fox.height;
-    let enemyTop = enemy.getHitbox().y;
-    let isFalling = this.character.speedY < 0;
-    return enemy.canBeStomped && isFalling && foxBottom - enemyTop <= this.stompTolerance;
-  }
-
-
-  /**
-   * Removes all enemies that were dead for longer than their removeDelay.
-   */
-  removeDefeatedEnemies() {
-    this.level.enemies = this.level.enemies.filter((enemy) => !enemy.isReadyToRemove());
-  }
-
-
-  /**
-   * The fox loses energy when a bullet hits it. The bullet disappears on impact.
-   */
-  checkBulletCollisions() {
-    this.bullets.forEach((bullet) => {
-      if (this.character.isColliding(bullet)) {
-        this.character.hit(bullet.damage);
-      }
-    });
-    this.bullets = this.bullets.filter((bullet) => !this.character.isColliding(bullet));
-  }
-
-
-  /**
-   * Removes every duck the fox collects in this tick from the level.
-   */
-  checkDuckCollisions() {
-    this.level.ducks = this.level.ducks.filter((duck) => !this.tryCollectDuck(duck));
-  }
-
-
-  /**
-   * The fox picks up a duck it touches, but only if it can carry one more.
-   * A duck that is not collected stays lying in the level.
-   * @param {CollectibleDuck} duck - The duck to check.
-   * @returns {boolean} True if the duck was collected.
-   */
-  tryCollectDuck(duck) {
-    if (!this.character.canCollectDuck() || !this.character.isColliding(duck)) {
-      return false;
-    }
-    this.character.collectDuck();
-    return true;
   }
 
 
