@@ -15,6 +15,10 @@ class MovableObject {
   speedY = 0; // Geschwindigkeit nach oben (positiv = steigt, negativ = fällt)
   acceleration = 0.5; // so stark zieht die Schwerkraft pro Tick nach unten
   jumpSpeed = 12; // Start-Geschwindigkeit beim Absprung
+  offset = { top: 0, right: 0, bottom: 0, left: 0 }; // durchsichtiger Rand im Bild, gilt für Blick nach rechts
+  energy = 100; // Lebenspunkte
+  lastHit = 0; // Zeitpunkt (ms) des letzten Treffers
+  invulnerableTime = 1000; // so lange (ms) nach einem Treffer gibt es keinen neuen Schaden
 
   /**
    * Loads a single image and uses it as the current image.
@@ -150,5 +154,66 @@ class MovableObject {
     if (!this.isAboveGround()) {
       this.speedY = this.jumpSpeed;
     }
+  }
+
+
+  /**
+   * Returns the hitbox: the drawn rectangle minus the transparent border (offset).
+   * When the object is mirrored, left and right offset swap places.
+   * @returns {{x: number, y: number, width: number, height: number}} The hitbox in level coordinates.
+   */
+  getHitbox() {
+    let left = this.otherDirection ? this.offset.right : this.offset.left;
+    let right = this.otherDirection ? this.offset.left : this.offset.right;
+    return {
+      x: this.x + left,
+      y: this.y + this.offset.top,
+      width: this.width - left - right,
+      height: this.height - this.offset.top - this.offset.bottom,
+    };
+  }
+
+
+  /**
+   * Checks if the hitboxes of this object and another object overlap.
+   * @param {MovableObject} other - The other object.
+   * @returns {boolean} True if both hitboxes touch each other.
+   */
+  isColliding(other) {
+    let a = this.getHitbox();
+    let b = other.getHitbox();
+    return a.x + a.width > b.x && a.x < b.x + b.width && a.y + a.height > b.y && a.y < b.y + b.height;
+  }
+
+
+  /**
+   * Takes damage, but only if the object is not invulnerable after the last hit.
+   * Energy never drops below 0.
+   * @param {number} damage - How many energy points are lost.
+   */
+  hit(damage) {
+    if (this.isHurt()) {
+      return;
+    }
+    this.energy = Math.max(0, this.energy - damage);
+    this.lastHit = Date.now();
+  }
+
+
+  /**
+   * Checks if the last hit was less than invulnerableTime ago.
+   * @returns {boolean} True while the object is still invulnerable.
+   */
+  isHurt() {
+    return Date.now() - this.lastHit < this.invulnerableTime;
+  }
+
+
+  /**
+   * Checks if the object has no energy left.
+   * @returns {boolean} True if energy is 0.
+   */
+  isDead() {
+    return this.energy == 0;
   }
 }

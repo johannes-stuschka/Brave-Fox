@@ -4,6 +4,7 @@ class Bullet extends MovableObject {
   speed = 7; // Pixel pro Tick, viel schneller als der Fuchs (walkSpeed 4)
   flightY = 428; // Brusthöhe des Fuchses: mit einem Sprung kann er drüber
   sinkSpeed = 3; // so schnell sinkt die Kugel von der Mündung auf flightY
+  damage = 15; // so viel Energie verliert der Fuchs bei einem Treffer
   direction; // -1 = fliegt nach links, 1 = fliegt nach rechts
 
   /**

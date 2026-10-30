@@ -1,5 +1,7 @@
 let world;
 
+const SHOW_HITBOXES = false; // true zeigt die Hitboxen als Rahmen (zum Einstellen der offsets)
+
 let keyBoard = {
   left: false,
   right: false,

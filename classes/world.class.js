@@ -6,9 +6,10 @@ class World {
   bullets = []; // alle Kugeln, die gerade fliegen
   camera_x = 0;
   cameraOffset = 120; // so viele Pixel bleibt der Fuchs vom linken Rand entfernt
+  healthBar = new StatusBar(20, 20, "#c0392b", HEART_PIXELS, 100);
 
   /**
-   * Creates the world, connects fox and enemies with it, starts the bullets and drawing.
+   * Creates the world, connects fox and enemies with it, starts bullets, collisions and drawing.
    * @param {HTMLCanvasElement} canvas - The canvas to draw on.
    * @param {Level} level - The level that should be played.
    */
@@ -19,6 +20,7 @@ class World {
     this.level = level;
     this.setWorld();
     this.moveBullets();
+    this.startCollisionCheck();
     this.draw();
   }
 
@@ -65,7 +67,58 @@ class World {
 
 
   /**
-   * Draws one frame: fixed sky first, then everything that moves with the camera.
+   * Starts the interval that checks all collisions (60 times per second).
+   */
+  startCollisionCheck() {
+    setStoppableInterval(() => this.checkCollisions(), 1000 / 60);
+  }
+
+
+  /**
+   * One collision tick: enemies and bullets against the fox, then update the bars.
+   */
+  checkCollisions() {
+    this.checkEnemyCollisions();
+    this.checkBulletCollisions();
+    this.updateStatusBars();
+  }
+
+
+  /**
+   * The fox loses energy when it touches a hunter.
+   */
+  checkEnemyCollisions() {
+    this.level.enemies.forEach((enemy) => {
+      if (this.character.isColliding(enemy)) {
+        this.character.hit(enemy.contactDamage);
+      }
+    });
+  }
+
+
+  /**
+   * The fox loses energy when a bullet hits it. The bullet disappears on impact.
+   */
+  checkBulletCollisions() {
+    this.bullets.forEach((bullet) => {
+      if (this.character.isColliding(bullet)) {
+        this.character.hit(bullet.damage);
+      }
+    });
+    this.bullets = this.bullets.filter((bullet) => !this.character.isColliding(bullet));
+  }
+
+
+  /**
+   * Shows the current energy of the fox in the health bar.
+   */
+  updateStatusBars() {
+    this.healthBar.setValue(this.character.energy);
+  }
+
+
+  /**
+   * Draws one frame: fixed sky, everything that moves with the camera, then the fixed bars.
    */
   draw() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -74,6 +127,7 @@ class World {
     this.ctx.translate(this.camera_x, 0);
     this.drawWorldObjects();
     this.ctx.translate(-this.camera_x, 0);
+    this.healthBar.draw(this.ctx);
     requestAnimationFrame(() => this.draw());
   }
 
@@ -87,6 +141,31 @@ class World {
     this.addObjectsToMap(this.level.enemies);
     this.addObjectsToMap(this.bullets);
     this.addToMap(this.character);
+    this.drawHitboxes();
+  }
+
+
+  /**
+   * Debug help: draws the hitboxes of fox, hunters and bullets when SHOW_HITBOXES is true.
+   */
+  drawHitboxes() {
+    if (!SHOW_HITBOXES) {
+      return;
+    }
+    let objects = [this.character, ...this.level.enemies, ...this.bullets];
+    objects.forEach((item) => this.drawHitbox(item));
+  }
+
+
+  /**
+   * Draws the hitbox of one object as a thin red frame.
+   * @param {MovableObject} item - The object whose hitbox is shown.
+   */
+  drawHitbox(item) {
+    let box = item.getHitbox();
+    this.ctx.strokeStyle = "red";
+    this.ctx.lineWidth = 1;
+    this.ctx.strokeRect(box.x, box.y, box.width, box.height);
   }
 
 
