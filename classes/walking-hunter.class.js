@@ -5,6 +5,7 @@ class WalkingHunter extends Hunter {
   speed;
   animations = {
     walk: { path: "./imgs/Cowboy_1/Walk.png", frames: 12, fps: 10, row: 0 },
+    dead: { path: "./imgs/Cowboy_1/Dead.png", frames: 5, fps: 8, row: 0, loop: false },
   };
 
   /**
@@ -39,17 +40,24 @@ class WalkingHunter extends Hunter {
 
   /**
    * Moves the hunter one step to the left, toward the fox.
+   * A dead hunter does not move any more.
    */
   moveLeft() {
+    if (this.isDead()) {
+      return;
+    }
     this.x -= this.speed;
   }
 
 
   /**
-   * The walking hunter always plays its walk animation.
-   * @returns {{path: string, frames: number, fps: number, row: number}} The walk animation.
+   * Plays the dead animation when defeated, otherwise the walk animation.
+   * @returns {{path: string, frames: number, fps: number, row: number}} The current animation.
    */
   getCurrentAnimation() {
+    if (this.isDead()) {
+      return this.animations.dead;
+    }
     return this.animations.walk;
   }
 }

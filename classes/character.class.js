@@ -5,6 +5,7 @@ class Character extends MovableObject {
   walkSpeed = 4;
   world; // wird von der World gesetzt (für levelEndX)
   runSpeed = 7;
+  bounceSpeed = 7; // kleiner Hüpfer nach oben, wenn der Fuchs auf einen Gegner springt
   offset = { top: 12, right: 4, bottom: 10, left: 12 }; // Kopf bis Pfoten, ohne Schwanzspitze und Schatten
   animations = {
     idle: { path: "./imgs/fox/Fox_Idle_with_shadow.png", frames: 4, fps: 6, row: 3 },
@@ -34,6 +35,14 @@ class Character extends MovableObject {
       this.moveByKeys();
       this.jumpByKey();
     }, 1000 / 60);
+  }
+
+
+  /**
+   * Small jump after landing on an enemy (works in the air, unlike jump()).
+   */
+  bounce() {
+    this.speedY = this.bounceSpeed;
   }
 
 

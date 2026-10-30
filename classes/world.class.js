@@ -6,6 +6,7 @@ class World {
   bullets = []; // alle Kugeln, die gerade fliegen
   camera_x = 0;
   cameraOffset = 120; // so viele Pixel bleibt der Fuchs vom linken Rand entfernt
+  stompTolerance = 20; // Fuß des Fuchses darf so viele Pixel unter der Kopf-Oberkante des Gegners sein
   healthBar = new StatusBar(20, 20, "#c0392b", HEART_PIXELS, 100);
 
   /**
@@ -85,14 +86,53 @@ class World {
 
 
   /**
-   * The fox loses energy when it touches a hunter.
+   * Checks every enemy against the fox, then removes enemies that lay dead long enough.
    */
   checkEnemyCollisions() {
-    this.level.enemies.forEach((enemy) => {
-      if (this.character.isColliding(enemy)) {
-        this.character.hit(enemy.contactDamage);
-      }
-    });
+    this.level.enemies.forEach((enemy) => this.checkEnemyCollision(enemy));
+    this.removeDefeatedEnemies();
+  }
+
+
+  /**
+   * One enemy against the fox: a stomp defeats the enemy and lets the fox bounce,
+   * any other touch costs the fox energy. Dead enemies do no harm.
+   * @param {Hunter} enemy - The enemy to check.
+   */
+  checkEnemyCollision(enemy) {
+    if (enemy.isDead() || !this.character.isColliding(enemy)) {
+      return;
+    }
+    if (this.isStomp(enemy)) {
+      enemy.die();
+      this.character.bounce();
+    } else {
+      this.character.hit(enemy.contactDamage);
+    }
+  }
+
+
+  /**
+   * A stomp: the enemy can be stomped, the fox is falling (speedY < 0)
+   * and the feet of the fox are only a little below the top of the enemy.
+   * Touching the enemy from the side is not a stomp.
+   * @param {Hunter} enemy - The enemy the fox touches.
+   * @returns {boolean} True if the fox lands on top of the enemy.
+   */
+  isStomp(enemy) {
+    let fox = this.character.getHitbox();
+    let foxBottom = fox.y + fox.height;
+    let enemyTop = enemy.getHitbox().y;
+    let isFalling = this.character.speedY < 0;
+    return enemy.canBeStomped && isFalling && foxBottom - enemyTop <= this.stompTolerance;
+  }
+
+
+  /**
+   * Removes all enemies that were dead for longer than their removeDelay.
+   */
+  removeDefeatedEnemies() {
+    this.level.enemies = this.level.enemies.filter((enemy) => !enemy.isReadyToRemove());
   }
 
 

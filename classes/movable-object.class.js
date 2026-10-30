@@ -80,7 +80,7 @@ class MovableObject {
 
   /**
    * Switches to a new animation (starting at frame 0) or advances one frame.
-   * @param {{path: string, frames: number, fps: number, row: number}} animation - The animation to play.
+   * @param {{path: string, frames: number, fps: number, row: number, loop?: boolean}} animation - The animation to play.
    */
   playAnimation(animation) {
     if (animation !== this.currentAnimation) {
@@ -88,9 +88,23 @@ class MovableObject {
       this.img = this.imageCache[animation.path];
       this.currentImage = 0;
     } else {
-      this.currentImage = (this.currentImage + 1) % animation.frames;
+      this.currentImage = this.getNextFrame(animation);
     }
     this.showFrame(animation);
+  }
+
+
+  /**
+   * Returns the number of the next frame. Normal animations start again at 0,
+   * animations with loop: false stay on their last frame (e.g. dying).
+   * @param {{frames: number, loop?: boolean}} animation - The animation that is playing.
+   * @returns {number} The next frame number.
+   */
+  getNextFrame(animation) {
+    if (animation.loop === false) {
+      return Math.min(this.currentImage + 1, animation.frames - 1);
+    }
+    return (this.currentImage + 1) % animation.frames;
   }
 
 

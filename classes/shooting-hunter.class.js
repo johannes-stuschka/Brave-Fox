@@ -12,6 +12,7 @@ class ShootingHunter extends Hunter {
   animations = {
     idle: { path: "./imgs/Cowboy_1/Idle.png", frames: 6, fps: 6, row: 0 },
     shot: { path: "./imgs/Cowboy_1/Shot.png", frames: 4, fps: 8, row: 0 },
+    dead: { path: "./imgs/Cowboy_1/Dead.png", frames: 5, fps: 8, row: 0, loop: false },
   };
 
   /**
@@ -35,10 +36,10 @@ class ShootingHunter extends Hunter {
 
   /**
    * One tick: look at the fox, start a shot, fire the bullet, end the shot.
-   * Waits until the World has connected itself (this.world).
+   * Waits until the World has connected itself (this.world). A dead hunter does nothing.
    */
   update() {
-    if (!this.world) {
+    if (!this.world || this.isDead()) {
       return;
     }
     this.faceFox();
@@ -128,10 +129,13 @@ class ShootingHunter extends Hunter {
 
 
   /**
-   * Plays the shot animation while shooting, otherwise idle.
+   * Plays the dead animation when defeated, the shot animation while shooting, otherwise idle.
    * @returns {{path: string, frames: number, fps: number, row: number}} The current animation.
    */
   getCurrentAnimation() {
+    if (this.isDead()) {
+      return this.animations.dead;
+    }
     if (this.isShooting) {
       return this.animations.shot;
     }

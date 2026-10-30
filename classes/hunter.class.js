@@ -8,6 +8,9 @@ class Hunter extends MovableObject {
   world; // wird von der World gesetzt (z.B. um den Fuchs zu finden)
   offset = { top: 70, right: 62, bottom: 0, left: 58 }; // sichtbarer Körper: Frame-Pixel 47-78 / 56-127, mal 1.25
   contactDamage = 20; // so viel Energie verliert der Fuchs bei Berührung
+  canBeStomped = true; // der Fuchs kann ihn durch Draufspringen besiegen (Endboss: false)
+  deathTime = 0; // Zeitpunkt (ms), an dem der Jäger besiegt wurde
+  removeDelay = 1200; // so lange (ms) bleibt der besiegte Jäger noch liegen
 
   /**
    * Shared base for all hunters: sets the position in the level.
@@ -26,5 +29,24 @@ class Hunter extends MovableObject {
   startAnimations() {
     this.loadImages(Object.values(this.animations));
     this.animate();
+  }
+
+
+  /**
+   * Defeats the hunter: no energy left, remembers when it happened.
+   * The dead animation and the removal are based on this.
+   */
+  die() {
+    this.energy = 0;
+    this.deathTime = Date.now();
+  }
+
+
+  /**
+   * Checks if the hunter is dead long enough to be removed from the level.
+   * @returns {boolean} True when the dead hunter can disappear.
+   */
+  isReadyToRemove() {
+    return this.isDead() && Date.now() - this.deathTime >= this.removeDelay;
   }
 }
