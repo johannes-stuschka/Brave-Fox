@@ -7,7 +7,8 @@ class World {
   camera_x = 0;
   cameraOffset = 120; // so viele Pixel bleibt der Fuchs vom linken Rand entfernt
   stompTolerance = 20; // Fuß des Fuchses darf so viele Pixel unter der Kopf-Oberkante des Gegners sein
-  healthBar = new StatusBar(20, 20, "#c0392b", HEART_PIXELS, 100);
+  healthBar = new StatusBar(20, 20, "#c0392b", HEART_IMAGE, 100);
+  duckBar = new StatusBar(20, 56, "#f5c542", DUCK_IMAGE, MAX_DUCKS, 2);
 
   /**
    * Creates the world, connects fox and enemies with it, starts bullets, collisions and drawing.
@@ -76,11 +77,12 @@ class World {
 
 
   /**
-   * One collision tick: enemies and bullets against the fox, then update the bars.
+   * One collision tick: enemies, bullets and ducks against the fox, then update the bars.
    */
   checkCollisions() {
     this.checkEnemyCollisions();
     this.checkBulletCollisions();
+    this.checkDuckCollisions();
     this.updateStatusBars();
   }
 
@@ -150,10 +152,34 @@ class World {
 
 
   /**
-   * Shows the current energy of the fox in the health bar.
+   * Removes every duck the fox collects in this tick from the level.
+   */
+  checkDuckCollisions() {
+    this.level.ducks = this.level.ducks.filter((duck) => !this.tryCollectDuck(duck));
+  }
+
+
+  /**
+   * The fox picks up a duck it touches, but only if it can carry one more.
+   * A duck that is not collected stays lying in the level.
+   * @param {CollectibleDuck} duck - The duck to check.
+   * @returns {boolean} True if the duck was collected.
+   */
+  tryCollectDuck(duck) {
+    if (!this.character.canCollectDuck() || !this.character.isColliding(duck)) {
+      return false;
+    }
+    this.character.collectDuck();
+    return true;
+  }
+
+
+  /**
+   * Shows the current energy and the collected ducks of the fox in the bars.
    */
   updateStatusBars() {
     this.healthBar.setValue(this.character.energy);
+    this.duckBar.setValue(this.character.ducks);
   }
 
 
@@ -168,6 +194,7 @@ class World {
     this.drawWorldObjects();
     this.ctx.translate(-this.camera_x, 0);
     this.healthBar.draw(this.ctx);
+    this.duckBar.draw(this.ctx);
     requestAnimationFrame(() => this.draw());
   }
 
@@ -178,6 +205,7 @@ class World {
   drawWorldObjects() {
     this.addObjectsToMap(this.level.clouds);
     this.addObjectsToMap(this.level.backgrounds);
+    this.addObjectsToMap(this.level.ducks);
     this.addObjectsToMap(this.level.enemies);
     this.addObjectsToMap(this.bullets);
     this.addToMap(this.character);
@@ -186,13 +214,13 @@ class World {
 
 
   /**
-   * Debug help: draws the hitboxes of fox, hunters and bullets when SHOW_HITBOXES is true.
+   * Debug help: draws the hitboxes of fox, hunters, bullets and ducks when SHOW_HITBOXES is true.
    */
   drawHitboxes() {
     if (!SHOW_HITBOXES) {
       return;
     }
-    let objects = [this.character, ...this.level.enemies, ...this.bullets];
+    let objects = [this.character, ...this.level.enemies, ...this.bullets, ...this.level.ducks];
     objects.forEach((item) => this.drawHitbox(item));
   }
 

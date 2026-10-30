@@ -1,4 +1,4 @@
-// Pixel-Herz für die Lebensanzeige: "#" = Farbe, "o" = dunkler Rand, "w" = Glanzpunkt, "." = durchsichtig
+// Pixel-Herz für die Lebensanzeige: "#" = Rot, "o" = dunkler Rand, "w" = Glanzpunkt, "." = durchsichtig
 const HEART_PIXELS = [
   ".oo...oo.",
   "o##o.o##o",
@@ -10,35 +10,40 @@ const HEART_PIXELS = [
   "....o....",
 ];
 
+const HEART_IMAGE = createPixelImage(HEART_PIXELS, { "#": "#c0392b", o: "#2b1d10", w: "#ffffff" });
+
 class StatusBar {
   x;
   y;
-  color; // Füllfarbe des Balkens und des Icons
-  iconPixels; // Pixel-Muster des Icons (siehe HEART_PIXELS)
+  color; // Füllfarbe des Balkens
+  icon; // Bild des Icons (z.B. HEART_IMAGE oder DUCK_IMAGE)
+  pixelSize; // so groß wird ein Icon-Pixel gezeichnet
   maxValue; // dieser Wert entspricht einem vollen Balken
   percentage = 100;
-  pixelSize = 3; // so groß wird ein Icon-Pixel gezeichnet
+  iconBoxWidth = 34; // fester Platz für das Icon, damit alle Balken bündig untereinander stehen
+  iconBoxHeight = 28;
   barWidth = 150;
   barHeight = 14;
   frameColor = "#5b3a1e"; // Holz-Rahmen
   emptyColor = "#2b1d10"; // dunkles Holz, wenn der Balken leer ist
-  outlineColor = "#2b1d10";
 
   /**
    * Creates a status bar that stays fixed on the screen.
    * The same class can show health, ducks, berries or the boss energy.
    * @param {number} x - Left edge on the canvas.
    * @param {number} y - Top edge on the canvas.
-   * @param {string} color - Fill color of bar and icon.
-   * @param {string[]} iconPixels - Pixel pattern of the icon.
+   * @param {string} color - Fill color of the bar.
+   * @param {HTMLCanvasElement} icon - Icon image (made with createPixelImage).
    * @param {number} maxValue - The value that fills the whole bar.
+   * @param {number} [pixelSize=3] - How big one icon pixel is drawn.
    */
-  constructor(x, y, color, iconPixels, maxValue) {
+  constructor(x, y, color, icon, maxValue, pixelSize = 3) {
     this.x = x;
     this.y = y;
     this.color = color;
-    this.iconPixels = iconPixels;
+    this.icon = icon;
     this.maxValue = maxValue;
+    this.pixelSize = pixelSize;
   }
 
 
@@ -71,32 +76,15 @@ class StatusBar {
 
 
   /**
-   * Draws the pixel icon row by row, one small square per character.
+   * Draws the icon scaled up and centered in its icon box.
    * @param {CanvasRenderingContext2D} ctx - The canvas context.
    */
   drawIcon(ctx) {
-    this.iconPixels.forEach((row, rowIndex) => {
-      for (let col = 0; col < row.length; col++) {
-        this.drawIconPixel(ctx, row[col], col, rowIndex);
-      }
-    });
-  }
-
-
-  /**
-   * Draws one icon pixel in the color that belongs to its character.
-   * @param {CanvasRenderingContext2D} ctx - The canvas context.
-   * @param {string} char - "#", "o", "w" or "." (nothing is drawn).
-   * @param {number} col - Column in the pattern.
-   * @param {number} row - Row in the pattern.
-   */
-  drawIconPixel(ctx, char, col, row) {
-    let colors = { "#": this.color, o: this.outlineColor, w: "#ffffff" };
-    if (!colors[char]) {
-      return;
-    }
-    ctx.fillStyle = colors[char];
-    ctx.fillRect(this.x + col * this.pixelSize, this.y + row * this.pixelSize, this.pixelSize, this.pixelSize);
+    let width = this.getIconWidth();
+    let height = this.getIconHeight();
+    let iconX = this.x + Math.round((this.iconBoxWidth - width) / 2);
+    let iconY = this.y + Math.round((this.iconBoxHeight - height) / 2);
+    ctx.drawImage(this.icon, iconX, iconY, width, height);
   }
 
 
@@ -105,8 +93,8 @@ class StatusBar {
    * @param {CanvasRenderingContext2D} ctx - The canvas context.
    */
   drawBar(ctx) {
-    let barX = this.x + this.getIconWidth() + 6;
-    let barY = this.y + (this.getIconHeight() - this.barHeight) / 2;
+    let barX = this.x + this.iconBoxWidth + 6;
+    let barY = this.y + (this.iconBoxHeight - this.barHeight) / 2;
     ctx.fillStyle = this.frameColor;
     ctx.fillRect(barX - 3, barY - 3, this.barWidth + 6, this.barHeight + 6);
     ctx.fillStyle = this.emptyColor;
@@ -124,7 +112,7 @@ class StatusBar {
    * @returns {number} Width in pixels.
    */
   getIconWidth() {
-    return this.iconPixels[0].length * this.pixelSize;
+    return this.icon.width * this.pixelSize;
   }
 
 
@@ -133,6 +121,6 @@ class StatusBar {
    * @returns {number} Height in pixels.
    */
   getIconHeight() {
-    return this.iconPixels.length * this.pixelSize;
+    return this.icon.height * this.pixelSize;
   }
 }

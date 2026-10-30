@@ -1,3 +1,5 @@
+const MAX_DUCKS = 10; // so viele Enten kann der Fuchs höchstens tragen
+
 class Character extends MovableObject {
   y = 389;
   frameWidth = 32;
@@ -5,6 +7,7 @@ class Character extends MovableObject {
   walkSpeed = 4;
   world; // wird von der World gesetzt (für levelEndX)
   runSpeed = 7;
+  ducks = 0; // gesammelte Enten (Munition)
   bounceSpeed = 7; // kleiner Hüpfer nach oben, wenn der Fuchs auf einen Gegner springt
   offset = { top: 12, right: 4, bottom: 10, left: 12 }; // Kopf bis Pfoten, ohne Schwanzspitze und Schatten
   animations = {
@@ -43,6 +46,23 @@ class Character extends MovableObject {
    */
   bounce() {
     this.speedY = this.bounceSpeed;
+  }
+
+
+  /**
+   * Checks if the fox can carry one more duck.
+   * @returns {boolean} True while the fox has fewer than MAX_DUCKS.
+   */
+  canCollectDuck() {
+    return this.ducks < MAX_DUCKS;
+  }
+
+
+  /**
+   * Adds one duck to the ammo, but never more than MAX_DUCKS.
+   */
+  collectDuck() {
+    this.ducks = Math.min(MAX_DUCKS, this.ducks + 1);
   }
 
 
