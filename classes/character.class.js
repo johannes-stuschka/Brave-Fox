@@ -8,6 +8,11 @@ class Character extends MovableObject {
   world; // wird von der World gesetzt (für levelEndX)
   runSpeed = 7;
   ducks = 0; // gesammelte Enten (Munition)
+  throwCooldown = 400; // so lange (ms) muss der Fuchs zwischen zwei Würfen warten
+  lastThrow = 0; // Zeitpunkt (ms) des letzten Wurfs
+  throwKeyWasPressed = false; // war D im letzten Tick schon gedrückt? (kein Dauerfeuer)
+  throwDistance = 24; // so weit vor der Fuchs-Mitte erscheint die geworfene Ente
+  throwHeight = 10; // so weit unter der Oberkante des Fuchses startet die Ente
   bounceSpeed = 7; // kleiner Hüpfer nach oben, wenn der Fuchs auf einen Gegner springt
   offset = { top: 12, right: 4, bottom: 10, left: 12 }; // Kopf bis Pfoten, ohne Schwanzspitze und Schatten
   animations = {
@@ -31,13 +36,59 @@ class Character extends MovableObject {
 
 
   /**
-   * Starts the movement interval of the fox (60 times per second).
+   * Starts the movement interval of the fox (60 times per second):
+   * walking, jumping and throwing ducks.
    */
   move() {
     setStoppableInterval(() => {
       this.moveByKeys();
       this.jumpByKey();
+      this.throwByKey();
     }, 1000 / 60);
+  }
+
+
+  /**
+   * Throws one duck when D was just pressed down. Holding D does not throw again,
+   * the key has to be released and pressed once more.
+   */
+  throwByKey() {
+    let isNewPress = keyBoard.d == true && !this.throwKeyWasPressed;
+    this.throwKeyWasPressed = keyBoard.d;
+    if (isNewPress && this.canThrowDuck()) {
+      this.throwDuck();
+    }
+  }
+
+
+  /**
+   * Checks if the fox has a duck and the cooldown since the last throw is over.
+   * @returns {boolean} True if the fox may throw a duck now.
+   */
+  canThrowDuck() {
+    let cooldownOver = Date.now() - this.lastThrow >= this.throwCooldown;
+    return this.ducks > 0 && cooldownOver;
+  }
+
+
+  /**
+   * Uses one duck and lets it fly. The duck bar shows the new count in the next tick.
+   */
+  throwDuck() {
+    this.ducks--;
+    this.lastThrow = Date.now();
+    this.world.thrownDucks.push(this.createThrownDuck());
+  }
+
+
+  /**
+   * Creates a duck in front of the fox that flies in the direction the fox looks.
+   * @returns {ThrowableDuck} The new thrown duck.
+   */
+  createThrownDuck() {
+    let direction = this.otherDirection ? -1 : 1;
+    let centerX = this.x + this.width / 2 + direction * this.throwDistance;
+    return new ThrowableDuck(centerX, this.y + this.throwHeight, direction);
   }
 
 

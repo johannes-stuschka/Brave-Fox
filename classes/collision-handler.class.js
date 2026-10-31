@@ -12,12 +12,14 @@ class CollisionHandler {
 
 
   /**
-   * One collision tick: enemies, bullets and ducks against the fox.
+   * One collision tick: enemies, bullets and ducks against the fox,
+   * then the thrown ducks against the enemies.
    */
   checkAll() {
     this.checkEnemyCollisions();
     this.checkBulletCollisions();
     this.checkDuckCollisions();
+    this.checkThrownDuckCollisions();
   }
 
 
@@ -109,6 +111,31 @@ class CollisionHandler {
       return false;
     }
     fox.collectDuck();
+    return true;
+  }
+
+
+  /**
+   * Removes every thrown duck that hit an enemy in this tick.
+   */
+  checkThrownDuckCollisions() {
+    let world = this.world;
+    world.thrownDucks = world.thrownDucks.filter((duck) => !this.tryHitEnemy(duck));
+  }
+
+
+  /**
+   * Looks for a living enemy the thrown duck touches and hits it.
+   * Dead enemies are skipped, so they can not be hit again.
+   * @param {ThrowableDuck} duck - The thrown duck to check.
+   * @returns {boolean} True if the duck hit an enemy.
+   */
+  tryHitEnemy(duck) {
+    let enemy = this.world.level.enemies.find((item) => !item.isDead() && duck.isColliding(item));
+    if (!enemy) {
+      return false;
+    }
+    enemy.takeDuckHit();
     return true;
   }
 }

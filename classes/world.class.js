@@ -4,6 +4,7 @@ class World {
   canvas;
   ctx;
   bullets = []; // alle Kugeln, die gerade fliegen
+  thrownDucks = []; // alle Enten, die der Fuchs gerade geworfen hat
   camera_x = 0;
   cameraOffset = 120; // so viele Pixel bleibt der Fuchs vom linken Rand entfernt
   collisionHandler; // prüft alle Zusammenstöße (Gegner, Kugeln, Enten)
@@ -11,7 +12,8 @@ class World {
   duckBar = new StatusBar(20, 56, "#f5c542", DUCK_IMAGE, MAX_DUCKS, 2);
 
   /**
-   * Creates the world, connects fox and enemies with it, starts bullets, collisions and drawing.
+   * Creates the world, connects fox and enemies with it,
+   * starts bullets, thrown ducks, collisions and drawing.
    * @param {HTMLCanvasElement} canvas - The canvas to draw on.
    * @param {Level} level - The level that should be played.
    */
@@ -23,6 +25,7 @@ class World {
     this.setWorld();
     this.collisionHandler = new CollisionHandler(this);
     this.moveBullets();
+    this.moveThrownDucks();
     this.startCollisionCheck();
     this.draw();
   }
@@ -66,6 +69,34 @@ class World {
     let insideLevel = bullet.x + bullet.width > 0 && bullet.x < this.level.levelEndX;
     let nearFox = Math.abs(bullet.x - this.character.x) < this.canvas.width;
     return insideLevel && nearFox;
+  }
+
+
+  /**
+   * Starts the interval that moves all thrown ducks (60 times per second).
+   */
+  moveThrownDucks() {
+    setStoppableInterval(() => this.updateThrownDucks(), 1000 / 60);
+  }
+
+
+  /**
+   * Moves every thrown duck one step and keeps only the ducks that are still flying.
+   */
+  updateThrownDucks() {
+    this.thrownDucks.forEach((duck) => duck.move());
+    this.thrownDucks = this.thrownDucks.filter((duck) => this.isThrownDuckNeeded(duck));
+  }
+
+
+  /**
+   * A thrown duck is needed while it has not landed and is still inside the level.
+   * @param {ThrowableDuck} duck - The thrown duck to check.
+   * @returns {boolean} True if the duck should keep flying.
+   */
+  isThrownDuckNeeded(duck) {
+    let insideLevel = duck.x + duck.width > 0 && duck.x < this.level.levelEndX;
+    return insideLevel && !duck.hasLanded();
   }
 
 
@@ -120,19 +151,20 @@ class World {
     this.addObjectsToMap(this.level.ducks);
     this.addObjectsToMap(this.level.enemies);
     this.addObjectsToMap(this.bullets);
+    this.addObjectsToMap(this.thrownDucks);
     this.addToMap(this.character);
     this.drawHitboxes();
   }
 
 
   /**
-   * Debug help: draws the hitboxes of fox, hunters, bullets and ducks when SHOW_HITBOXES is true.
+   * Debug help: draws the hitboxes of fox, hunters, bullets and all ducks when SHOW_HITBOXES is true.
    */
   drawHitboxes() {
     if (!SHOW_HITBOXES) {
       return;
     }
-    let objects = [this.character, ...this.level.enemies, ...this.bullets, ...this.level.ducks];
+    let objects = [this.character, ...this.level.enemies, ...this.bullets, ...this.level.ducks, ...this.thrownDucks];
     objects.forEach((item) => this.drawHitbox(item));
   }
 
@@ -174,7 +206,7 @@ class World {
 
 
   /**
-   * Draws one object, mirrored if it looks to the left.
+   * Draws one object, mirrored if it looks to the left and turned if it has a rotation.
    * @param {MovableObject} item - The object to draw.
    */
   addToMap(item) {
@@ -185,8 +217,24 @@ class World {
     } else {
       this.ctx.translate(item.x, item.y); // Nullpunkt an linke Kante
     }
+    this.rotateAroundCenter(item);
     this.drawImage(item);
     this.ctx.restore();
+  }
+
+
+  /**
+   * Turns the canvas around the middle of the object (e.g. a spinning thrown duck).
+   * Objects without a rotation are not changed.
+   * @param {MovableObject} item - The object that is drawn next.
+   */
+  rotateAroundCenter(item) {
+    if (!item.rotation) {
+      return;
+    }
+    this.ctx.translate(item.width / 2, item.height / 2);
+    this.ctx.rotate(item.rotation);
+    this.ctx.translate(-item.width / 2, -item.height / 2);
   }
 
 

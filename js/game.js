@@ -7,6 +7,7 @@ let keyBoard = {
   right: false,
   shift: false,
   space: false,
+  d: false,
 };
 
 let intervalIds = [];
@@ -55,6 +56,9 @@ window.addEventListener("keydown", (event) => {
     event.preventDefault(); // Seite soll beim Springen nicht scrollen
     keyBoard.space = true;
   }
+  if (event.key == "d" || event.key == "D") {
+    keyBoard.d = true;
+  }
 });
 
 window.addEventListener("keyup", (event) => {
@@ -69,5 +73,8 @@ window.addEventListener("keyup", (event) => {
   }
   if (event.code == "Space") {
     keyBoard.space = false;
+  }
+  if (event.key == "d" || event.key == "D") {
+    keyBoard.d = false;
   }
 });

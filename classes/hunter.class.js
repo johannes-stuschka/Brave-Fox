@@ -43,6 +43,15 @@ class Hunter extends MovableObject {
 
 
   /**
+   * A thrown duck hit the hunter: a normal hunter is defeated right away.
+   * The end boss can override this and only lose some energy instead.
+   */
+  takeDuckHit() {
+    this.die();
+  }
+
+
+  /**
    * Checks if the hunter is dead long enough to be removed from the level.
    * @returns {boolean} True when the dead hunter can disappear.
    */
