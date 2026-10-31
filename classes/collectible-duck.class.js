@@ -33,40 +33,37 @@ class CollectibleDuck extends MovableObject {
   scale = 2; // jedes Muster-Pixel wird 2x2 gezeichnet, wie beim Fuchs
   width = DUCK_PIXELS[0].length * this.scale;
   height = DUCK_PIXELS.length * this.scale;
-  baseY; // Ruhe-Höhe, um die die Ente auf und ab wippt
-  bobHeight = 2; // so viele Pixel wippt die Ente nach oben und unten
-  bobSpeed = 0.004; // wie schnell sie wippt
+  waddleTime = 600; // nach so vielen ms dreht sich die Ente in die andere Richtung
   offset = { top: 0, right: 2, bottom: 2, left: 2 };
 
   /**
-   * Creates a duck that lies in the level and can be collected as ammo.
+   * Creates a duck that stands on the ground and can be collected as ammo.
    * @param {number} x - Position in the level.
-   * @param {number} y - Top edge of the duck (ground or jump height).
+   * @param {number} y - Top edge of the duck (its feet then touch the ground).
    */
   constructor(x, y) {
     super();
     this.x = x;
     this.y = y;
-    this.baseY = y;
     this.img = DUCK_IMAGE;
-    this.bob();
+    this.waddle();
   }
 
 
   /**
-   * Starts the interval that lets the duck gently bob up and down.
+   * Starts the interval that lets the duck waddle on the spot (it never leaves the ground).
    */
-  bob() {
-    setStoppableInterval(() => this.updateBob(), 1000 / 60);
+  waddle() {
+    setStoppableInterval(() => this.updateWaddle(), 1000 / 60);
   }
 
 
   /**
-   * Moves the duck along a sine wave around baseY (whole pixels stay crisp).
-   * Each duck starts at a different point of the wave because of its x position.
+   * Turns the duck left or right every waddleTime milliseconds.
+   * Each duck turns at a different moment because of its x position.
    */
-  updateBob() {
-    let wave = Math.sin(Date.now() * this.bobSpeed + this.x);
-    this.y = this.baseY + Math.round(wave * this.bobHeight);
+  updateWaddle() {
+    let step = Math.floor((Date.now() + this.x) / this.waddleTime);
+    this.otherDirection = step % 2 == 1;
   }
 }

@@ -1,7 +1,6 @@
 const TILE_WIDTH = 720; // Breite eines Hintergrund-Bildes = Canvas-Breite
 const LEVEL1_TILES = 5; // Level ist 5 Bilder lang (5 * 720 = 3600px)
 const DUCK_GROUND_Y = 419; // Füße der Ente stehen auf der Bodenlinie (y = 447)
-const DUCK_JUMP_Y = 320; // nur mit einem Sprung erreichbar
 
 /**
  * Builds a fresh level 1 (can be called again for a restart).
@@ -74,22 +73,11 @@ function createEnemies() {
 
 
 /**
- * Places the collectible ducks: some on the ground, some at jump height.
- * They lie between the start points of the hunters.
+ * Places the collectible ducks on the ground, spread over the whole level.
+ * They stand between the start points of the hunters, not on top of them.
  * @returns {CollectibleDuck[]} The ducks.
  */
 function createDucks() {
-  return [
-    new CollectibleDuck(400, DUCK_GROUND_Y),
-    new CollectibleDuck(650, DUCK_GROUND_Y),
-    new CollectibleDuck(850, DUCK_JUMP_Y),
-    new CollectibleDuck(1200, DUCK_GROUND_Y),
-    new CollectibleDuck(1550, DUCK_JUMP_Y),
-    new CollectibleDuck(1620, DUCK_GROUND_Y),
-    new CollectibleDuck(2050, DUCK_GROUND_Y),
-    new CollectibleDuck(2150, DUCK_JUMP_Y),
-    new CollectibleDuck(2500, DUCK_JUMP_Y),
-    new CollectibleDuck(2900, DUCK_GROUND_Y),
-    new CollectibleDuck(3250, DUCK_JUMP_Y),
-  ];
+  let duckXs = [300, 450, 600, 800, 1200, 1620, 2050, 2200, 2550, 2950, 3300];
+  return duckXs.map((x) => new CollectibleDuck(x, DUCK_GROUND_Y));
 }
