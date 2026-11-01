@@ -1,10 +1,11 @@
 const TILE_WIDTH = 720; // Breite eines Hintergrund-Bildes = Canvas-Breite
 const LEVEL1_TILES = 5; // Level ist 5 Bilder lang (5 * 720 = 3600px)
 const DUCK_GROUND_Y = 419; // Füße der Ente stehen auf der Bodenlinie (y = 447)
+const BERRY_GROUND_Y = 421; // Schatten unter den Beeren liegt auf der Bodenlinie (y = 447)
 
 /**
  * Builds a fresh level 1 (can be called again for a restart).
- * @returns {Level} The new level with sky, clouds, backgrounds, enemies and ducks.
+ * @returns {Level} The new level with sky, clouds, backgrounds, enemies, ducks and berries.
  */
 function createLevel1() {
   let levelEndX = TILE_WIDTH * LEVEL1_TILES;
@@ -14,6 +15,7 @@ function createLevel1() {
     createBackgroundTiles(LEVEL1_TILES),
     createEnemies(),
     createDucks(),
+    createBerries(),
     levelEndX,
   );
 }
@@ -80,4 +82,16 @@ function createEnemies() {
 function createDucks() {
   let duckXs = [300, 450, 600, 800, 1200, 1620, 2050, 2200, 2550, 2950, 3300];
   return duckXs.map((x) => new CollectibleDuck(x, DUCK_GROUND_Y));
+}
+
+
+/**
+ * Places the collectible berries on the ground, spread over the whole level.
+ * Some lie in small groups, so exploring is rewarded.
+ * They lie between the ducks and the start points of the hunters.
+ * @returns {CollectibleBerry[]} The berries.
+ */
+function createBerries() {
+  let berryXs = [380, 680, 710, 740, 900, 1110, 1290, 1510, 1540, 1900, 2130, 2420, 2450, 2850, 3220];
+  return berryXs.map((x) => new CollectibleBerry(x, BERRY_GROUND_Y));
 }

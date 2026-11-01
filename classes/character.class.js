@@ -8,6 +8,7 @@ class Character extends MovableObject {
   world; // wird von der World gesetzt (für levelEndX)
   runSpeed = 7;
   ducks = 0; // gesammelte Enten (Munition)
+  berries = 0; // gesammelte Beeren
   throwCooldown = 400; // so lange (ms) muss der Fuchs zwischen zwei Würfen warten
   lastThrow = 0; // Zeitpunkt (ms) des letzten Wurfs
   throwKeyWasPressed = false; // war D im letzten Tick schon gedrückt? (kein Dauerfeuer)
@@ -114,6 +115,14 @@ class Character extends MovableObject {
    */
   collectDuck() {
     this.ducks = Math.min(MAX_DUCKS, this.ducks + 1);
+  }
+
+
+  /**
+   * Adds one collected berry.
+   */
+  collectBerry() {
+    this.berries++;
   }
 
 

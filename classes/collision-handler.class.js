@@ -4,7 +4,7 @@ class CollisionHandler {
 
   /**
    * Creates the collision handler for one world.
-   * @param {World} world - The world whose fox, enemies, bullets and ducks are checked.
+   * @param {World} world - The world whose fox, enemies, bullets, ducks and berries are checked.
    */
   constructor(world) {
     this.world = world;
@@ -12,13 +12,14 @@ class CollisionHandler {
 
 
   /**
-   * One collision tick: enemies, bullets and ducks against the fox,
+   * One collision tick: enemies, bullets, ducks and berries against the fox,
    * then the thrown ducks against the enemies.
    */
   checkAll() {
     this.checkEnemyCollisions();
     this.checkBulletCollisions();
     this.checkDuckCollisions();
+    this.checkBerryCollisions();
     this.checkThrownDuckCollisions();
   }
 
@@ -92,26 +93,43 @@ class CollisionHandler {
 
   /**
    * Removes every duck the fox collects in this tick from the level.
+   * The fox only picks up a duck if it can carry one more.
    */
   checkDuckCollisions() {
+    let fox = this.world.character;
     let level = this.world.level;
-    level.ducks = level.ducks.filter((duck) => !this.tryCollectDuck(duck));
+    level.ducks = this.collectItems(level.ducks, () => fox.canCollectDuck(), () => fox.collectDuck());
   }
 
 
   /**
-   * The fox picks up a duck it touches, but only if it can carry one more.
-   * A duck that is not collected stays lying in the level.
-   * @param {CollectibleDuck} duck - The duck to check.
-   * @returns {boolean} True if the duck was collected.
+   * Removes every berry the fox collects in this tick from the level.
+   * Berries can always be collected.
    */
-  tryCollectDuck(duck) {
+  checkBerryCollisions() {
     let fox = this.world.character;
-    if (!fox.canCollectDuck() || !fox.isColliding(duck)) {
+    let level = this.world.level;
+    level.berries = this.collectItems(level.berries, () => true, () => fox.collectBerry());
+  }
+
+
+  /**
+   * Shared pickup logic for ducks and berries: the fox picks up every item it touches
+   * while canPickUp() allows it. Items that are not picked up stay lying in the level.
+   * @param {MovableObject[]} items - The items lying in the level.
+   * @param {Function} canPickUp - Returns true if the fox may pick up one more item.
+   * @param {Function} pickUp - Gives the picked up item to the fox.
+   * @returns {MovableObject[]} The items that are still lying in the level.
+   */
+  collectItems(items, canPickUp, pickUp) {
+    let fox = this.world.character;
+    return items.filter((item) => {
+      if (!canPickUp() || !fox.isColliding(item)) {
+        return true;
+      }
+      pickUp();
       return false;
-    }
-    fox.collectDuck();
-    return true;
+    });
   }
 
 

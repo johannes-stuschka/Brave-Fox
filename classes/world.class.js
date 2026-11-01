@@ -10,6 +10,7 @@ class World {
   collisionHandler; // prüft alle Zusammenstöße (Gegner, Kugeln, Enten)
   healthBar = new StatusBar(20, 20, "#c0392b", HEART_IMAGE, 100);
   duckBar = new StatusBar(20, 56, "#f5c542", DUCK_IMAGE, MAX_DUCKS, 2);
+  berryBar; // wird im constructor erstellt, weil das Maximum von der Beeren-Anzahl im Level abhängt
 
   /**
    * Creates the world, connects fox and enemies with it,
@@ -22,12 +23,22 @@ class World {
     this.ctx.imageSmoothingEnabled = false;
     this.canvas = canvas;
     this.level = level;
+    this.berryBar = this.createBerryBar();
     this.setWorld();
     this.collisionHandler = new CollisionHandler(this);
     this.moveBullets();
     this.moveThrownDucks();
     this.startCollisionCheck();
     this.draw();
+  }
+
+
+  /**
+   * Creates the berry bar under the duck bar. It is full when all berries of the level are collected.
+   * @returns {StatusBar} The berry bar.
+   */
+  createBerryBar() {
+    return new StatusBar(20, 92, "#e0243c", BERRY_IMAGE, this.level.berries.length, 2);
   }
 
 
@@ -118,11 +129,12 @@ class World {
 
 
   /**
-   * Shows the current energy and the collected ducks of the fox in the bars.
+   * Shows the current energy, the collected ducks and the collected berries of the fox in the bars.
    */
   updateStatusBars() {
     this.healthBar.setValue(this.character.energy);
     this.duckBar.setValue(this.character.ducks);
+    this.berryBar.setValue(this.character.berries);
   }
 
 
@@ -138,6 +150,7 @@ class World {
     this.ctx.translate(-this.camera_x, 0);
     this.healthBar.draw(this.ctx);
     this.duckBar.draw(this.ctx);
+    this.berryBar.draw(this.ctx);
     requestAnimationFrame(() => this.draw());
   }
 
@@ -148,6 +161,7 @@ class World {
   drawWorldObjects() {
     this.addObjectsToMap(this.level.clouds);
     this.addObjectsToMap(this.level.backgrounds);
+    this.addObjectsToMap(this.level.berries);
     this.addObjectsToMap(this.level.ducks);
     this.addObjectsToMap(this.level.enemies);
     this.addObjectsToMap(this.bullets);
@@ -158,13 +172,14 @@ class World {
 
 
   /**
-   * Debug help: draws the hitboxes of fox, hunters, bullets and all ducks when SHOW_HITBOXES is true.
+   * Debug help: draws the hitboxes of fox, hunters, bullets, berries and all ducks when SHOW_HITBOXES is true.
    */
   drawHitboxes() {
     if (!SHOW_HITBOXES) {
       return;
     }
     let objects = [this.character, ...this.level.enemies, ...this.bullets, ...this.level.ducks, ...this.thrownDucks];
+    objects.push(...this.level.berries);
     objects.forEach((item) => this.drawHitbox(item));
   }
 
