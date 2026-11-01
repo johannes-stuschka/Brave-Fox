@@ -151,6 +151,7 @@ canvas {
 .info-dialog {
   width: min(560px, 92vw);
   max-height: 90dvh;
+  overflow-y: auto; /* auf kleinen Handys im Querformat kann man im Dialog scrollen */
   padding: 0;
   color: var(--cream);
   background-color: var(--wood);
@@ -213,6 +214,10 @@ canvas {
   padding: 4px 12px 4px 0;
 }
 
+.dialog-content .touch-hint {
+  margin-top: 12px;
+}
+
 kbd {
   display: inline-block;
   padding: 4px 6px;
@@ -249,4 +254,128 @@ kbd {
 .mute-button img {
   width: 75%;
   image-rendering: pixelated;
+}
+
+/* Touch-Buttons: unten links laufen, unten rechts springen und werfen */
+.touch-controls {
+  position: absolute;
+  left: 3%;
+  right: 3%;
+  bottom: 4%;
+  z-index: 2;
+  display: none;
+  justify-content: space-between;
+  pointer-events: none; /* nur die Buttons selbst fangen Finger ab, nicht die Fläche dazwischen */
+}
+
+.touch-group {
+  display: flex;
+  gap: 12px;
+}
+
+.touch-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: clamp(48px, 15vmin, 76px);
+  aspect-ratio: 1;
+  padding: 0;
+  background-color: rgba(107, 66, 38, 0.35); /* halb durchsichtig, damit man den Fuchs dahinter noch sieht */
+  border: 3px solid rgba(59, 36, 20, 0.6);
+  border-radius: 8px;
+  box-shadow: 0 3px 0 rgba(59, 36, 20, 0.6);
+  pointer-events: auto;
+  touch-action: none; /* kein Scrollen und kein Zoomen auf den Buttons */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none; /* kein Menü bei langem Drücken (iOS) */
+  -webkit-tap-highlight-color: transparent;
+}
+
+.touch-button:active {
+  background-color: rgba(79, 122, 58, 0.75);
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 rgba(59, 36, 20, 0.8);
+}
+
+.touch-button img {
+  width: 55%;
+  opacity: 0.85;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
+/* Tablet- und Handy-Größe (oder Touch-Bildschirm): Touch-Buttons zeigen */
+@media (max-width: 1024px), (pointer: coarse) {
+  .touch-controls {
+    display: flex;
+  }
+}
+
+/* Auf dem Start- und Endbildschirm keine Touch-Buttons, nur während das Spiel läuft */
+.game-container:has(#startScreen:not(.d-none)) .touch-controls,
+.game-container:has(#endScreen:not(.d-none)) .touch-controls {
+  display: none;
+}
+
+/* Handy im Querformat (wenig Höhe): Spiel so groß wie möglich, ohne Holzrahmen */
+@media (orientation: landscape) and (max-height: 500px) {
+  .game-container {
+    width: min(100vw, 100dvh * 1.5);
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+
+/* Hinweis "Gerät drehen": im Normalfall versteckt */
+.rotate-hint {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 32px;
+  padding: 24px;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.8;
+  background-color: var(--wood-dark);
+}
+
+/* Pixel-Handy aus dicken Rändern, das sich immer wieder ins Querformat dreht */
+.rotate-phone {
+  width: 48px;
+  height: 80px;
+  border: 6px solid var(--cream);
+  border-bottom-width: 14px;
+  border-radius: 4px;
+  background-color: var(--leaf);
+  animation: rotate-phone 2s steps(4) infinite;
+}
+
+@keyframes rotate-phone {
+  0%,
+  30% {
+    transform: rotate(0deg);
+  }
+  70%,
+  100% {
+    transform: rotate(-90deg);
+  }
+}
+
+/* Handy oder Tablet im Hochformat: Spiel verstecken, Dreh-Hinweis zeigen */
+@media (orientation: portrait) and (max-width: 900px) and (pointer: coarse),
+  (orientation: portrait) and (max-width: 600px) {
+  .rotate-hint {
+    display: flex;
+  }
+
+  .game-container,
+  .info-dialog[open] {
+    display: none;
+  }
 }

@@ -30,6 +30,7 @@
     <script src="./js/game.js"></script>
     <script src="./js/game-flow.js"></script>
     <script src="./js/start-screen.js"></script>
+    <script src="./js/touch-controls.js"></script>
   </head>
   <body>
     <main class="game-container">
@@ -56,7 +57,25 @@
       <button id="muteButton" class="mute-button" onclick="toggleMute()" aria-label="Sound off">
         <img id="muteIcon" alt="" />
       </button>
+
+      <!-- Touch-Buttons: nur auf Tablet/Handy sichtbar und nur, während das Spiel läuft (siehe style.css) -->
+      <div class="touch-controls">
+        <div class="touch-group">
+          <button id="touchLeft" class="touch-button" aria-label="Walk left"><img id="touchLeftIcon" alt="" /></button>
+          <button id="touchRight" class="touch-button" aria-label="Walk right"><img id="touchRightIcon" alt="" /></button>
+        </div>
+        <div class="touch-group">
+          <button id="touchJump" class="touch-button" aria-label="Jump"><img id="touchJumpIcon" alt="" /></button>
+          <button id="touchThrow" class="touch-button" aria-label="Throw a duck"><img id="touchThrowIcon" alt="" /></button>
+        </div>
+      </div>
     </main>
+
+    <!-- Hinweis im Hochformat auf Handys: Gerät drehen -->
+    <section class="rotate-hint">
+      <div class="rotate-phone"></div>
+      <p>Turn your device to play</p>
+    </section>
 
     <dialog id="infoDialog" class="info-dialog" onclick="closeInfoDialogOnBackdrop(event)">
       <div class="dialog-content">
@@ -96,6 +115,7 @@
             <td>Sound on / off</td>
           </tr>
         </table>
+        <p class="touch-hint">On phones and tablets use the buttons on the screen.</p>
       </div>
     </dialog>
   </body>
