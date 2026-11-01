@@ -14,6 +14,7 @@ class World {
   bossBar = new StatusBar(507, 20, "#8b1a1a", BOSS_HAT_IMAGE, 100); // oben rechts: 720 - 20 - 193 (Breite des Balkens)
   boss; // der Endboss des Levels, seine Energie zeigt die bossBar
   sleepZzz = new SleepZzz(); // "Z z z" über dem schlafenden Fuchs
+  animationFrameId; // id des nächsten requestAnimationFrame, damit wir das Zeichnen stoppen können
 
   /**
    * Creates the world, connects fox and enemies with it,
@@ -166,7 +167,15 @@ class World {
     this.drawWorldObjects();
     this.ctx.translate(-this.camera_x, 0);
     this.drawStatusBars();
-    requestAnimationFrame(() => this.draw());
+    this.animationFrameId = requestAnimationFrame(() => this.draw());
+  }
+
+
+  /**
+   * Stops the drawing loop, so this world does not keep running after the game ended.
+   */
+  stop() {
+    cancelAnimationFrame(this.animationFrameId);
   }
 
 

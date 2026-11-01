@@ -2,7 +2,8 @@ let gameStarted = false;
 
 
 /**
- * Hides the start screen and starts the game (only once).
+ * Hides the start screen and starts the game.
+ * gameStarted blocks a second start until goToHome() shows the start screen again.
  */
 function startGame() {
   if (gameStarted) {
@@ -11,7 +12,7 @@ function startGame() {
   gameStarted = true;
   document.activeElement.blur(); // sonst würde die Leertaste den Start-Button nochmal drücken
   document.getElementById("startScreen").classList.add("d-none");
-  init();
+  startNewGame();
 }
 
 
