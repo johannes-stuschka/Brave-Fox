@@ -1,5 +1,6 @@
 const TILE_WIDTH = 720; // Breite eines Hintergrund-Bildes = Canvas-Breite
-const LEVEL1_TILES = 5; // Level ist 5 Bilder lang (5 * 720 = 3600px)
+const LEVEL1_TILES = 6; // Level ist 6 Bilder lang (6 * 720 = 4320px), das letzte Bild ist die Boss-Arena
+const BOSS_X = 3950; // der Endboss wartet am Ende der Arena (rechte Kante 3950 + 288 = 4238)
 const DUCK_GROUND_Y = 419; // Füße der Ente stehen auf der Bodenlinie (y = 447)
 const BERRY_GROUND_Y = 421; // Schatten unter den Beeren liegt auf der Bodenlinie (y = 447)
 
@@ -59,6 +60,7 @@ function createClouds(levelEndX) {
 /**
  * Spreads the walking hunters over the level, far enough from the start of the fox.
  * The shooting hunters stand in the gaps between the walking hunters.
+ * The big boss waits alone in the arena at the end (no normal hunter starts there).
  * @returns {Hunter[]} The enemies.
  */
 function createEnemies() {
@@ -70,6 +72,7 @@ function createEnemies() {
     new WalkingHunter(2700),
     new ShootingHunter(3100),
     new WalkingHunter(3400),
+    new BossHunter(BOSS_X),
   ];
 }
 
@@ -77,10 +80,11 @@ function createEnemies() {
 /**
  * Places the collectible ducks on the ground, spread over the whole level.
  * They stand between the start points of the hunters, not on top of them.
+ * The last ducks lie just before the boss arena, so the fox has ammo for the boss.
  * @returns {CollectibleDuck[]} The ducks.
  */
 function createDucks() {
-  let duckXs = [300, 450, 600, 800, 1200, 1620, 2050, 2200, 2550, 2950, 3300];
+  let duckXs = [300, 450, 600, 800, 1200, 1620, 2050, 2200, 2550, 2950, 3300, 3460, 3510, 3560, 3610];
   return duckXs.map((x) => new CollectibleDuck(x, DUCK_GROUND_Y));
 }
 

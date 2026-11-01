@@ -11,6 +11,8 @@ class World {
   healthBar = new StatusBar(20, 20, "#c0392b", HEART_IMAGE, 100);
   duckBar = new StatusBar(20, 56, "#f5c542", DUCK_IMAGE, MAX_DUCKS, 2);
   berryBar; // wird im constructor erstellt, weil das Maximum von der Beeren-Anzahl im Level abhängt
+  bossBar = new StatusBar(507, 20, "#8b1a1a", BOSS_HAT_IMAGE, 100); // oben rechts: 720 - 20 - 193 (Breite des Balkens)
+  boss; // der Endboss des Levels, seine Energie zeigt die bossBar
 
   /**
    * Creates the world, connects fox and enemies with it,
@@ -24,6 +26,7 @@ class World {
     this.canvas = canvas;
     this.level = level;
     this.berryBar = this.createBerryBar();
+    this.boss = this.findBoss();
     this.setWorld();
     this.collisionHandler = new CollisionHandler(this);
     this.moveBullets();
@@ -39,6 +42,15 @@ class World {
    */
   createBerryBar() {
     return new StatusBar(20, 92, "#e0243c", BERRY_IMAGE, this.level.berries.length, 2);
+  }
+
+
+  /**
+   * Finds the end boss among the enemies of the level.
+   * @returns {BossHunter|undefined} The boss, or undefined if the level has none.
+   */
+  findBoss() {
+    return this.level.enemies.find((enemy) => enemy instanceof BossHunter);
   }
 
 
@@ -129,12 +141,16 @@ class World {
 
 
   /**
-   * Shows the current energy, the collected ducks and the collected berries of the fox in the bars.
+   * Shows the current energy, the collected ducks and the collected berries of the fox
+   * and the energy of the boss in the bars.
    */
   updateStatusBars() {
     this.healthBar.setValue(this.character.energy);
     this.duckBar.setValue(this.character.ducks);
     this.berryBar.setValue(this.character.berries);
+    if (this.boss) {
+      this.bossBar.setValue(this.boss.energy);
+    }
   }
 
 
@@ -148,10 +164,21 @@ class World {
     this.ctx.translate(this.camera_x, 0);
     this.drawWorldObjects();
     this.ctx.translate(-this.camera_x, 0);
+    this.drawStatusBars();
+    requestAnimationFrame(() => this.draw());
+  }
+
+
+  /**
+   * Draws the fixed bars of the fox. The boss bar only appears once the boss noticed the fox.
+   */
+  drawStatusBars() {
     this.healthBar.draw(this.ctx);
     this.duckBar.draw(this.ctx);
     this.berryBar.draw(this.ctx);
-    requestAnimationFrame(() => this.draw());
+    if (this.boss && this.boss.isAlerted()) {
+      this.bossBar.draw(this.ctx);
+    }
   }
 
 
