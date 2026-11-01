@@ -6,7 +6,8 @@ let gameEnded = false; // true, sobald der Endbildschirm gezeigt wurde
 
 
 /**
- * Starts a fresh game: new world with level 1 and the check for win or loss.
+ * Starts a fresh game: new world with level 1, the check for win or loss and the music.
+ * stopAll() first, so a jingle from the last round does not keep playing.
  */
 function startNewGame() {
   gameResult = null;
@@ -14,6 +15,8 @@ function startNewGame() {
   gameEnded = false;
   init();
   setStoppableInterval(checkGameState, 100);
+  soundManager.stopAll();
+  soundManager.startMusic();
 }
 
 
@@ -51,22 +54,24 @@ function rememberGameResult() {
 
 
 /**
- * Ends the game (only once): stops everything and shows the end screen.
+ * Ends the game (only once): stops everything, plays the jingle and shows the end screen.
  */
 function endGame() {
   gameEnded = true;
   stopGame();
+  soundManager.play(gameResult == "won" ? "win" : "game-over");
   showEndScreen();
 }
 
 
 /**
- * Stops the whole game: all intervals, the drawing loop of the world and all pressed keys.
+ * Stops the whole game: all intervals, the drawing loop of the world, all pressed keys and all sounds.
  */
 function stopGame() {
   stopAllIntervals();
   world.stop();
   resetKeyBoard();
+  soundManager.stopAll();
 }
 
 
@@ -114,9 +119,10 @@ function restartGame() {
 
 
 /**
- * Home button: hides the end screen and shows the start screen again.
+ * Home button: stops all sounds, hides the end screen and shows the start screen again.
  */
 function goToHome() {
+  soundManager.stopAll();
   document.activeElement.blur();
   document.getElementById("endScreen").classList.add("d-none");
   document.getElementById("startScreen").classList.remove("d-none");

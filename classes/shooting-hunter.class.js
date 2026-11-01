@@ -83,13 +83,14 @@ class ShootingHunter extends Hunter {
 
 
   /**
-   * Fires one bullet as soon as the muzzle-flash frame of the shot is shown.
+   * Fires one bullet (with a bang) as soon as the muzzle-flash frame of the shot is shown.
    */
   fireAtShotFrame() {
     let isFlashFrame = this.currentAnimation === this.animations.shot && this.currentImage === this.shotFrame;
     if (this.isShooting && !this.bulletFired && isFlashFrame) {
       this.world.bullets.push(this.createBullet());
       this.bulletFired = true;
+      this.playShotSound();
     }
   }
 

@@ -153,7 +153,7 @@ class CollisionHandler {
 
 
   /**
-   * Looks for a living enemy the thrown duck touches and hits it.
+   * Looks for a living enemy the thrown duck touches and hits it (the duck quacks).
    * Dead enemies are skipped, so they can not be hit again.
    * @param {ThrowableDuck} duck - The thrown duck to check.
    * @returns {boolean} True if the duck hit an enemy.
@@ -163,6 +163,7 @@ class CollisionHandler {
     if (!enemy) {
       return false;
     }
+    soundManager.play("quack");
     enemy.takeDuckHit();
     return true;
   }

@@ -83,13 +83,14 @@ class BossHunter extends Hunter {
 
 
   /**
-   * Idle state: switches to the alert state as soon as the fox is within alertRange.
+   * Idle state: switches to the alert state (with a warning sound) as soon as the fox is within alertRange.
    */
   waitForFox() {
     if (Math.abs(this.getDistanceToFox()) <= this.alertRange) {
       this.faceFox();
       this.state = "alert";
       this.alertStartTime = Date.now();
+      soundManager.play("boss-alert");
     }
   }
 
@@ -172,13 +173,14 @@ class BossHunter extends Hunter {
 
 
   /**
-   * Fires one bullet as soon as the muzzle-flash frame of the shot is shown.
+   * Fires one bullet (with a bang) as soon as the muzzle-flash frame of the shot is shown.
    */
   fireAtShotFrame() {
     let isFlashFrame = this.currentAnimation === this.animations.shot && this.currentImage === this.shotFrame;
     if (this.isShooting && !this.bulletFired && isFlashFrame) {
       this.world.bullets.push(this.createBullet());
       this.bulletFired = true;
+      this.playShotSound();
     }
   }
 
@@ -221,7 +223,6 @@ class BossHunter extends Hunter {
   /**
    * A thrown duck hit the boss: it loses duckDamage energy (not while still hurt).
    * A hit wakes the boss up, and a shot that was running is cancelled.
-   * When the energy is gone, the boss dies.
    */
   takeDuckHit() {
     if (this.isHurt()) {
@@ -230,8 +231,18 @@ class BossHunter extends Hunter {
     this.hit(this.duckDamage);
     this.isShooting = false;
     this.wakeUp();
+    this.reactToHit();
+  }
+
+
+  /**
+   * After a hit: the boss dies when the energy is gone, otherwise it grunts in pain.
+   */
+  reactToHit() {
     if (this.isDead()) {
       this.die();
+    } else {
+      soundManager.play("boss-hurt");
     }
   }
 

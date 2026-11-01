@@ -222,3 +222,31 @@ kbd {
   border-radius: 3px;
   box-shadow: 0 2px 0 var(--wood-light);
 }
+
+/* Mute-Button oben rechts, unter der Lebensanzeige des Bosses */
+.mute-button {
+  position: absolute;
+  top: 13%;
+  right: 2.8%;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 6.7%;
+  aspect-ratio: 6 / 5;
+  padding: 0;
+  background-color: var(--wood);
+  border: 3px solid var(--wood-dark);
+  border-radius: 6px;
+  box-shadow: 0 3px 0 var(--wood-dark);
+  cursor: pointer;
+}
+
+.mute-button:hover {
+  background-color: var(--leaf);
+}
+
+.mute-button img {
+  width: 75%;
+  image-rendering: pixelated;
+}

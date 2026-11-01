@@ -50,10 +50,11 @@ class Character extends MovableObject {
 
 
   /**
-   * One input tick: remembers activity, then walks, jumps and throws.
+   * One input tick: snore sound, remembers activity, then walks, jumps and throws.
    * A dead fox ignores every key.
    */
   handleKeys() {
+    this.updateSnore();
     if (this.isDead()) {
       return;
     }
@@ -61,6 +62,18 @@ class Character extends MovableObject {
     this.moveByKeys();
     this.jumpByKey();
     this.throwByKey();
+  }
+
+
+  /**
+   * Plays the snore loop while the fox sleeps and stops it when it wakes up or dies.
+   */
+  updateSnore() {
+    if (this.isSleeping()) {
+      soundManager.startLoop("snore");
+    } else {
+      soundManager.stopLoop("snore");
+    }
   }
 
 
@@ -85,15 +98,19 @@ class Character extends MovableObject {
 
   /**
    * Takes damage like every MovableObject and wakes the fox up.
-   * A dead fox can not be hit any more.
+   * A dead fox can not be hit any more. The yelp only sounds if the hit really hurt.
    * @param {number} damage - How many energy points are lost.
    */
   hit(damage) {
     if (this.isDead()) {
       return;
     }
+    let energyBefore = this.energy;
     super.hit(damage);
     this.lastActivity = Date.now();
+    if (this.energy < energyBefore) {
+      soundManager.play("hurt");
+    }
   }
 
 
@@ -142,6 +159,7 @@ class Character extends MovableObject {
    * Uses one duck and lets it fly. The duck bar shows the new count in the next tick.
    */
   throwDuck() {
+    soundManager.play("throw");
     this.ducks--;
     this.lastThrow = Date.now();
     this.world.thrownDucks.push(this.createThrownDuck());
@@ -177,27 +195,30 @@ class Character extends MovableObject {
 
 
   /**
-   * Adds one duck to the ammo, but never more than MAX_DUCKS.
+   * Adds one duck to the ammo, but never more than MAX_DUCKS. The duck quacks happily.
    */
   collectDuck() {
     this.ducks = Math.min(MAX_DUCKS, this.ducks + 1);
+    soundManager.play("quack");
   }
 
 
   /**
-   * Adds one collected berry.
+   * Adds one collected berry and plays a sparkle.
    */
   collectBerry() {
     this.berries++;
+    soundManager.play("berry");
   }
 
 
   /**
-   * Lets the fox jump while Space is pressed (jump() checks the ground).
+   * Lets the fox jump while Space is pressed, but only from the ground (then the jump sound plays).
    */
   jumpByKey() {
-    if (keyBoard.space == true) {
+    if (keyBoard.space == true && !this.isAboveGround()) {
       this.jump();
+      soundManager.play("jump");
     }
   }
 

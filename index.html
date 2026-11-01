@@ -7,6 +7,8 @@
     <link rel="icon" type="image/png" href="./imgs/favicon.png" />
     <link rel="stylesheet" href="./style.css" />
     <script src="./js/pixel-art.js"></script>
+    <script src="./classes/sound-manager.class.js"></script>
+    <script src="./js/mute-button.js"></script>
     <script src="./classes/movable-object.class.js"></script>
     <script src="./classes/character.class.js"></script>
     <script src="./classes/hunter.class.js"></script>
@@ -50,6 +52,10 @@
           <button class="wood-button" onclick="goToHome()">Home</button>
         </div>
       </section>
+
+      <button id="muteButton" class="mute-button" onclick="toggleMute()" aria-label="Sound off">
+        <img id="muteIcon" alt="" />
+      </button>
     </main>
 
     <dialog id="infoDialog" class="info-dialog" onclick="closeInfoDialogOnBackdrop(event)">
@@ -84,6 +90,10 @@
           <tr>
             <td><kbd>D</kbd></td>
             <td>Throw a duck</td>
+          </tr>
+          <tr>
+            <td><kbd>M</kbd></td>
+            <td>Sound on / off</td>
           </tr>
         </table>
       </div>

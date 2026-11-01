@@ -39,6 +39,29 @@ class Hunter extends MovableObject {
   die() {
     this.energy = 0;
     this.deathTime = Date.now();
+    soundManager.play("hunter-dead");
+  }
+
+
+  /**
+   * Plays the gun shot, but only if the hunter is visible on the canvas
+   * (hunters far away should not be heard).
+   */
+  playShotSound() {
+    if (this.isOnScreen()) {
+      soundManager.play("shot");
+    }
+  }
+
+
+  /**
+   * Checks if a part of the hunter is inside the visible part of the level.
+   * @returns {boolean} True if the hunter can be seen on the canvas.
+   */
+  isOnScreen() {
+    let screenLeft = -this.world.camera_x;
+    let screenRight = screenLeft + this.world.canvas.width;
+    return this.x + this.width > screenLeft && this.x < screenRight;
   }
 
 
