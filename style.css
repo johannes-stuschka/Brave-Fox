@@ -1,9 +1,192 @@
+@font-face {
+  font-family: "Press Start 2P";
+  src: url("./fonts/PressStart2P-Regular.ttf") format("truetype");
+  font-display: block;
+}
+
+/* Farben: Holz und Wald */
+:root {
+  --wood-dark: #3b2414;
+  --wood: #6b4226;
+  --wood-light: #a8703f;
+  --leaf: #4f7a3a;
+  --leaf-light: #8fbf4f;
+  --cream: #fff4dc;
+}
+
+* {
+  box-sizing: border-box;
+}
+
 body {
+  margin: 0;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
+  font-family: "Press Start 2P", monospace;
+  color: var(--cream);
+  background: linear-gradient(rgba(20, 35, 20, 0.6), rgba(20, 35, 20, 0.6)),
+    url("./imgs/background/nature_4/origbig.png") center / cover;
+}
+
+/* Der Spielrahmen: 720x480, wird auf kleinen Bildschirmen kleiner (Seitenverhältnis 3:2 bleibt) */
+.game-container {
+  position: relative;
+  width: min(720px, 96vw, 96dvh * 1.5);
+  aspect-ratio: 3 / 2;
+  border: 6px solid var(--wood);
+  border-radius: 8px;
+  box-shadow: 0 0 0 4px var(--wood-dark), 0 12px 32px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
 }
 
 canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
   background-color: black;
+  image-rendering: pixelated;
+}
+
+/* Startbildschirm liegt genau über dem Canvas */
+.start-screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  text-align: center;
+  background: url("./imgs/background/nature_4/origbig.png") center / cover;
+  image-rendering: pixelated;
+}
+
+.game-title {
+  margin: 0;
+  font-size: clamp(28px, 7vw, 52px);
+  color: #f08a24;
+  text-shadow: 4px 4px 0 var(--wood-dark), -2px -2px 0 var(--wood-dark), 2px -2px 0 var(--wood-dark),
+    -2px 2px 0 var(--wood-dark);
+}
+
+.tagline {
+  margin: 0;
+  padding: 8px 12px;
+  font-size: clamp(8px, 1.8vw, 12px);
+  line-height: 1.6;
+  background-color: rgba(59, 36, 20, 0.75);
+  border-radius: 4px;
+}
+
+.menu-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.wood-button {
+  min-width: 220px;
+  padding: 14px 20px;
+  font-family: inherit;
+  font-size: clamp(10px, 2vw, 14px);
+  color: var(--cream);
+  background-color: var(--wood);
+  border: 4px solid var(--wood-dark);
+  border-radius: 6px;
+  box-shadow: 0 4px 0 var(--wood-dark);
+  cursor: pointer;
+}
+
+.wood-button:hover {
+  background-color: var(--leaf);
+  transform: translateY(-2px);
+}
+
+.wood-button:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 var(--wood-dark);
+}
+
+.d-none {
+  display: none;
+}
+
+/* Info-Dialog */
+.info-dialog {
+  width: min(560px, 92vw);
+  max-height: 90dvh;
+  padding: 0;
+  color: var(--cream);
+  background-color: var(--wood);
+  border: 6px solid var(--wood-dark);
+  border-radius: 8px;
+}
+
+.info-dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.dialog-content {
+  position: relative;
+  padding: 24px;
+  font-family: "Press Start 2P", monospace;
+  font-size: 10px;
+  line-height: 1.8;
+}
+
+.dialog-content h2 {
+  margin: 0 0 16px;
+  font-size: 16px;
+  color: var(--leaf-light);
+}
+
+.dialog-content h3 {
+  margin: 16px 0 6px;
+  font-size: 11px;
+  color: #f5c542;
+}
+
+.dialog-content p {
+  margin: 0;
+}
+
+.close-button {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--cream);
+  background-color: var(--wood-dark);
+  border: 2px solid var(--wood-light);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.close-button:hover {
+  background-color: #c0392b;
+}
+
+.controls-table {
+  border-collapse: collapse;
+}
+
+.controls-table td {
+  padding: 4px 12px 4px 0;
+}
+
+kbd {
+  display: inline-block;
+  padding: 4px 6px;
+  font-family: inherit;
+  color: var(--wood-dark);
+  background-color: var(--cream);
+  border-radius: 3px;
+  box-shadow: 0 2px 0 var(--wood-light);
 }
