@@ -12,24 +12,34 @@ class CollisionHandler {
 
 
   /**
-   * One collision tick: enemies, bullets, ducks and berries against the fox,
+   * One collision tick: everything against the fox (only while it is alive),
    * then the thrown ducks against the enemies.
    */
   checkAll() {
-    this.checkEnemyCollisions();
-    this.checkBulletCollisions();
-    this.checkDuckCollisions();
-    this.checkBerryCollisions();
+    if (!this.world.character.isDead()) {
+      this.checkFoxCollisions();
+    }
+    this.removeDefeatedEnemies();
     this.checkThrownDuckCollisions();
   }
 
 
   /**
-   * Checks every enemy against the fox, then removes enemies that lay dead long enough.
+   * Checks enemies, bullets, ducks and berries against the fox.
+   */
+  checkFoxCollisions() {
+    this.checkEnemyCollisions();
+    this.checkBulletCollisions();
+    this.checkDuckCollisions();
+    this.checkBerryCollisions();
+  }
+
+
+  /**
+   * Checks every enemy against the fox.
    */
   checkEnemyCollisions() {
     this.world.level.enemies.forEach((enemy) => this.checkEnemyCollision(enemy));
-    this.removeDefeatedEnemies();
   }
 
 

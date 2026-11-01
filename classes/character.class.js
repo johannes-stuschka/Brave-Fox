@@ -1,4 +1,5 @@
 const MAX_DUCKS = 10; // so viele Enten kann der Fuchs höchstens tragen
+const SLEEP_DELAY = 10000; // nach so vielen ms ohne Taste und ohne Treffer schläft der Fuchs ein (max. 15 s)
 
 class Character extends MovableObject {
   y = 389;
@@ -15,6 +16,7 @@ class Character extends MovableObject {
   throwDistance = 24; // so weit vor der Fuchs-Mitte erscheint die geworfene Ente
   throwHeight = 10; // so weit unter der Oberkante des Fuchses startet die Ente
   bounceSpeed = 7; // kleiner Hüpfer nach oben, wenn der Fuchs auf einen Gegner springt
+  lastActivity = Date.now(); // Zeitpunkt (ms) der letzten Taste oder des letzten Treffers
   offset = { top: 12, right: 4, bottom: 10, left: 12 }; // Kopf bis Pfoten, ohne Schwanzspitze und Schatten
   animations = {
     idle: { path: "./imgs/fox/Fox_Idle_with_shadow.png", frames: 4, fps: 6, row: 3 },
@@ -22,6 +24,9 @@ class Character extends MovableObject {
     run: { path: "./imgs/fox/Fox_Run_with_shadow.png", frames: 6, fps: 13, row: 3 },
     jumpUp: { path: "./imgs/fox/Fox_Run_with_shadow.png", frames: 1, fps: 1, row: 3, firstFrame: 3 },
     jumpDown: { path: "./imgs/fox/Fox_Run_with_shadow.png", frames: 1, fps: 1, row: 3, firstFrame: 0 },
+    hurt: { path: "./imgs/fox/Fox_Hurt_with_shadow.png", frames: 4, fps: 8, row: 3 },
+    death: { path: "./imgs/fox/Fox_Death_with_shadow.png", frames: 6, fps: 6, row: 3, loop: false },
+    sleep: { path: "./imgs/fox/Fox_Death_with_shadow.png", frames: 1, fps: 1, row: 3, firstFrame: 5 }, // liegender Fuchs
   };
 
   /**
@@ -37,15 +42,76 @@ class Character extends MovableObject {
 
 
   /**
-   * Starts the movement interval of the fox (60 times per second):
-   * walking, jumping and throwing ducks.
+   * Starts the movement interval of the fox (60 times per second).
    */
   move() {
-    setStoppableInterval(() => {
-      this.moveByKeys();
-      this.jumpByKey();
-      this.throwByKey();
-    }, 1000 / 60);
+    setStoppableInterval(() => this.handleKeys(), 1000 / 60);
+  }
+
+
+  /**
+   * One input tick: remembers activity, then walks, jumps and throws.
+   * A dead fox ignores every key.
+   */
+  handleKeys() {
+    if (this.isDead()) {
+      return;
+    }
+    this.trackActivity();
+    this.moveByKeys();
+    this.jumpByKey();
+    this.throwByKey();
+  }
+
+
+  /**
+   * Any pressed key counts as activity: the fox stays awake or wakes up.
+   */
+  trackActivity() {
+    if (this.isAnyKeyPressed()) {
+      this.lastActivity = Date.now();
+    }
+  }
+
+
+  /**
+   * Checks if at least one game key is pressed right now.
+   * @returns {boolean} True if any key in keyBoard is true.
+   */
+  isAnyKeyPressed() {
+    return Object.values(keyBoard).some((isPressed) => isPressed == true);
+  }
+
+
+  /**
+   * Takes damage like every MovableObject and wakes the fox up.
+   * A dead fox can not be hit any more.
+   * @param {number} damage - How many energy points are lost.
+   */
+  hit(damage) {
+    if (this.isDead()) {
+      return;
+    }
+    super.hit(damage);
+    this.lastActivity = Date.now();
+  }
+
+
+  /**
+   * Returns how long the fox has been sleeping already.
+   * @returns {number} Milliseconds since falling asleep (negative while still awake).
+   */
+  getSleepTime() {
+    return Date.now() - this.lastActivity - SLEEP_DELAY;
+  }
+
+
+  /**
+   * Checks if the fox did nothing for longer than SLEEP_DELAY and is still alive.
+   * @returns {boolean} True while the fox sleeps.
+   */
+  isSleeping() {
+    return !this.isDead() && this.getSleepTime() > 0;
   }
 
 
@@ -202,12 +268,30 @@ class Character extends MovableObject {
 
 
   /**
-   * Chooses the animation: jump (in the air), run (moving + Shift), walk (moving) or idle.
+   * Chooses the animation: death, hurt, jump (in the air) or one of the ground animations.
    * @returns {{path: string, frames: number, fps: number, row: number}} The current animation.
    */
   getCurrentAnimation() {
+    if (this.isDead()) {
+      return this.animations.death;
+    }
+    if (this.isHurt()) {
+      return this.animations.hurt;
+    }
     if (this.isAboveGround()) {
       return this.getJumpAnimation();
+    }
+    return this.getGroundAnimation();
+  }
+
+
+  /**
+   * Chooses the animation on the ground: sleep, run (moving + Shift), walk (moving) or idle.
+   * @returns {{path: string, frames: number, fps: number, row: number}} The ground animation.
+   */
+  getGroundAnimation() {
+    if (this.isSleeping()) {
+      return this.animations.sleep;
     }
     if (this.isMoving() && keyBoard.shift == true) {
       return this.animations.run;

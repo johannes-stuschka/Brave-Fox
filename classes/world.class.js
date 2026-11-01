@@ -13,6 +13,7 @@ class World {
   berryBar; // wird im constructor erstellt, weil das Maximum von der Beeren-Anzahl im Level abhängt
   bossBar = new StatusBar(507, 20, "#8b1a1a", BOSS_HAT_IMAGE, 100); // oben rechts: 720 - 20 - 193 (Breite des Balkens)
   boss; // der Endboss des Levels, seine Energie zeigt die bossBar
+  sleepZzz = new SleepZzz(); // "Z z z" über dem schlafenden Fuchs
 
   /**
    * Creates the world, connects fox and enemies with it,
@@ -194,7 +195,18 @@ class World {
     this.addObjectsToMap(this.bullets);
     this.addObjectsToMap(this.thrownDucks);
     this.addToMap(this.character);
+    this.drawSleepZzz();
     this.drawHitboxes();
+  }
+
+
+  /**
+   * Draws the rising "Z z z" above the fox while it sleeps.
+   */
+  drawSleepZzz() {
+    if (this.character.isSleeping()) {
+      this.sleepZzz.draw(this.ctx, this.character);
+    }
   }
 
 
