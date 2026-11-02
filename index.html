@@ -6,9 +6,11 @@
     <title>Brave Fox</title>
     <link rel="icon" type="image/png" href="./imgs/favicon.png" />
     <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./mobile.css" />
     <script src="./js/pixel-art.js"></script>
     <script src="./classes/sound-manager.class.js"></script>
     <script src="./js/mute-button.js"></script>
+    <script src="./js/fullscreen-button.js"></script>
     <script src="./classes/movable-object.class.js"></script>
     <script src="./classes/character.class.js"></script>
     <script src="./classes/hunter.class.js"></script>
@@ -34,40 +36,47 @@
   </head>
   <body>
     <main class="game-container">
-      <canvas id="canvas" width="720" height="480"></canvas>
+      <!-- game-frame behält das Seitenverhältnis 3:2, auch im Vollbild -->
+      <div class="game-frame">
+        <canvas id="canvas" width="720" height="480"></canvas>
 
-      <section id="startScreen" class="start-screen">
-        <h1 class="game-title">Brave Fox</h1>
-        <p class="tagline">Save the ducks. Outfox the hunters!</p>
-        <div class="menu-buttons">
-          <button class="wood-button" onclick="startGame()">Start</button>
-          <button class="wood-button" onclick="openInfoDialog()">How to play</button>
-        </div>
-        <a class="imprint-link" href="./imprint.html">Imprint</a>
-      </section>
+        <section id="startScreen" class="start-screen">
+          <h1 class="game-title">Brave Fox</h1>
+          <p class="tagline">Save the ducks. Outfox the hunters!</p>
+          <div class="menu-buttons">
+            <button class="wood-button" onclick="startGame()">Start</button>
+            <button class="wood-button" onclick="openInfoDialog()">How to play</button>
+          </div>
+          <a class="imprint-link" href="./imprint.html">Imprint</a>
+        </section>
 
-      <section id="endScreen" class="end-screen d-none">
-        <h2 id="endTitle" class="end-title">Game over</h2>
-        <p id="endStats" class="tagline">Berries: 0 / 0</p>
-        <div class="menu-buttons">
-          <button class="wood-button" onclick="restartGame()">Restart</button>
-          <button class="wood-button" onclick="goToHome()">Home</button>
-        </div>
-      </section>
+        <section id="endScreen" class="end-screen d-none">
+          <h2 id="endTitle" class="end-title">Game over</h2>
+          <p id="endStats" class="tagline">Berries: 0 / 0</p>
+          <div class="menu-buttons">
+            <button class="wood-button" onclick="restartGame()">Restart</button>
+            <button class="wood-button" onclick="goToHome()">Home</button>
+          </div>
+        </section>
 
-      <button id="muteButton" class="mute-button" onclick="toggleMute()" aria-label="Sound off">
-        <img id="muteIcon" alt="" />
-      </button>
+        <button id="fullscreenButton" class="fullscreen-button" onclick="toggleFullscreen()" aria-label="Fullscreen">
+          <img id="fullscreenIcon" alt="" />
+        </button>
 
-      <!-- Touch-Buttons: nur auf Tablet/Handy sichtbar und nur, während das Spiel läuft (siehe style.css) -->
-      <div class="touch-controls">
-        <div class="touch-group">
-          <button id="touchLeft" class="touch-button" aria-label="Walk left"><img id="touchLeftIcon" alt="" /></button>
-          <button id="touchRight" class="touch-button" aria-label="Walk right"><img id="touchRightIcon" alt="" /></button>
-        </div>
-        <div class="touch-group">
-          <button id="touchJump" class="touch-button" aria-label="Jump"><img id="touchJumpIcon" alt="" /></button>
-          <button id="touchThrow" class="touch-button" aria-label="Throw a duck"><img id="touchThrowIcon" alt="" /></button>
+        <button id="muteButton" class="mute-button" onclick="toggleMute()" aria-label="Sound off">
+          <img id="muteIcon" alt="" />
+        </button>
+
+        <!-- Touch-Buttons: nur auf Tablet/Handy sichtbar und nur, während das Spiel läuft (siehe mobile.css) -->
+        <div class="touch-controls">
+          <div class="touch-group">
+            <button id="touchLeft" class="touch-button" aria-label="Walk left"><img id="touchLeftIcon" alt="" /></button>
+            <button id="touchRight" class="touch-button" aria-label="Walk right"><img id="touchRightIcon" alt="" /></button>
+          </div>
+          <div class="touch-group">
+            <button id="touchJump" class="touch-button" aria-label="Jump"><img id="touchJumpIcon" alt="" /></button>
+            <button id="touchThrow" class="touch-button" aria-label="Throw a duck"><img id="touchThrowIcon" alt="" /></button>
+          </div>
         </div>
       </div>
     </main>
