@@ -10,6 +10,8 @@ let keyBoard = {
   d: false,
 };
 
+const KEY_NAMES = { ArrowLeft: "left", ArrowRight: "right", Shift: "shift", d: "d", D: "d" }; // welche Taste welchen Eintrag in keyBoard setzt
+
 let intervalIds = [];
 
 /**
@@ -42,39 +44,43 @@ function init() {
   world = new World(canvas, createLevel1());
 }
 
-window.addEventListener("keydown", (event) => {
-  if (event.key == "ArrowLeft") {
-    keyBoard.left = true;
-  }
-  if (event.key == "ArrowRight") {
-    keyBoard.right = true;
-  }
-  if (event.key == "Shift") {
-    keyBoard.shift = true;
-  }
-  if (event.code == "Space") {
-    event.preventDefault(); // Seite soll beim Springen nicht scrollen
-    keyBoard.space = true;
-  }
-  if (event.key == "d" || event.key == "D") {
-    keyBoard.d = true;
-  }
-});
 
-window.addEventListener("keyup", (event) => {
-  if (event.key == "ArrowLeft") {
-    keyBoard.left = false;
-  }
-  if (event.key == "ArrowRight") {
-    keyBoard.right = false;
-  }
-  if (event.key == "Shift") {
-    keyBoard.shift = false;
-  }
+/**
+ * Saves in keyBoard whether one of the game keys was pressed or released.
+ * KEY_NAMES tells which keyBoard entry belongs to which key (Space is checked by its code).
+ * @param {KeyboardEvent} event - The keydown or keyup event.
+ * @param {boolean} isPressed - true on keydown, false on keyup.
+ */
+function setKey(event, isPressed) {
   if (event.code == "Space") {
-    keyBoard.space = false;
+    keyBoard.space = isPressed;
   }
-  if (event.key == "d" || event.key == "D") {
-    keyBoard.d = false;
+  let name = KEY_NAMES[event.key];
+  if (name) {
+    keyBoard[name] = isPressed;
   }
-});
+}
+
+
+/**
+ * Key pressed: the Space key must not scroll the page while jumping.
+ * @param {KeyboardEvent} event - The keydown event.
+ */
+function onKeyDown(event) {
+  if (event.code == "Space") {
+    event.preventDefault();
+  }
+  setKey(event, true);
+}
+
+
+/**
+ * Key released: the key counts as not pressed any more.
+ * @param {KeyboardEvent} event - The keyup event.
+ */
+function onKeyUp(event) {
+  setKey(event, false);
+}
+
+window.addEventListener("keydown", onKeyDown);
+window.addEventListener("keyup", onKeyUp);
