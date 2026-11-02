@@ -115,6 +115,19 @@ canvas {
   display: none;
 }
 
+/* Kleiner Link zum Impressum unten auf dem Startbildschirm */
+.imprint-link {
+  position: absolute;
+  bottom: 3%;
+  font-size: clamp(7px, 1.4vw, 10px);
+  color: var(--cream);
+  text-shadow: 2px 2px 0 var(--wood-dark);
+}
+
+.imprint-link:hover {
+  color: var(--leaf-light);
+}
+
 /* Endbildschirm: liegt wie der Startbildschirm über dem Canvas, das Spielbild bleibt abgedunkelt sichtbar */
 .end-screen {
   position: absolute;
