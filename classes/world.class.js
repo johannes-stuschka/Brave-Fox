@@ -6,7 +6,9 @@ class World {
   bullets = []; // alle Kugeln, die gerade fliegen
   thrownDucks = []; // alle Enten, die der Fuchs gerade geworfen hat
   camera_x = 0;
-  cameraOffset = 120; // so viele Pixel bleibt der Fuchs vom linken Rand entfernt
+  cameraOffset = 120; // so viele Pixel bleibt der Fuchs vom linken Rand entfernt (Computer)
+  touchCameraOffset = 220; // mit Touch-Buttons: Fuchs steht rechts neben den Lauf-Buttons (sie enden bei ca. 186 px)
+  touchQuery = window.matchMedia("(max-width: 1024px), (pointer: coarse)"); // gleiche Bedingung wie in style.css
   collisionHandler; // prüft alle Zusammenstöße (Gegner, Kugeln, Enten)
   healthBar = new StatusBar(20, 20, "#c0392b", HEART_IMAGE, 100);
   duckBar = new StatusBar(20, 56, "#f5c542", DUCK_IMAGE, MAX_DUCKS, 2);
@@ -245,12 +247,23 @@ class World {
 
 
   /**
-   * Moves the camera so the fox stays cameraOffset pixels from the left edge.
+   * Chooses how far the fox stays from the left edge.
+   * With touch buttons (tablet, phone) the fox stands further right, so the buttons do not cover it.
+   * touchQuery.matches is checked again every frame, so it also changes after a resize.
+   * @returns {number} Distance in canvas pixels.
+   */
+  getCameraOffset() {
+    return this.touchQuery.matches ? this.touchCameraOffset : this.cameraOffset;
+  }
+
+
+  /**
+   * Moves the camera so the fox stays getCameraOffset() pixels from the left edge.
    * The camera stops at the start and at the end of the level.
    * Math.round keeps whole pixels, so no thin lines appear between tiles.
    */
   updateCamera() {
-    let wantedX = this.cameraOffset - this.character.x;
+    let wantedX = this.getCameraOffset() - this.character.x;
     let minX = this.canvas.width - this.level.levelEndX;
     let cameraX = Math.min(0, Math.max(minX, wantedX));
     this.camera_x = Math.round(cameraX);
