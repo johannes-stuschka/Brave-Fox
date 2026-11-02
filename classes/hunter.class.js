@@ -11,6 +11,11 @@ class Hunter extends MovableObject {
   canBeStomped = true; // der Fuchs kann ihn durch Draufspringen besiegen (Endboss: false)
   deathTime = 0; // Zeitpunkt (ms), an dem der Jäger besiegt wurde
   removeDelay = 1200; // so lange (ms) bleibt der besiegte Jäger noch liegen
+  shotFrame = 1; // nur für schießende Jäger: in diesem Frame von Shot.png blitzt das Mündungsfeuer
+  isShooting = false;
+  bulletFired = false;
+  shotStartTime = 0;
+  nextShotTime = 0;
 
   /**
    * Shared base for all hunters: sets the position in the level.
@@ -80,5 +85,90 @@ class Hunter extends MovableObject {
    */
   isReadyToRemove() {
     return this.isDead() && Date.now() - this.deathTime >= this.removeDelay;
+  }
+
+
+  /**
+   * Starts the interval that updates a shooting hunter 60 times per second.
+   * The subclass decides in update() what happens on every tick.
+   */
+  watchFox() {
+    setStoppableInterval(() => this.update(), 1000 / 60);
+  }
+
+
+  /**
+   * Returns the horizontal distance from the hunter to the fox (center to center).
+   * Negative means the fox is to the left of the hunter.
+   * @returns {number} Distance in pixels.
+   */
+  getDistanceToFox() {
+    let fox = this.world.character;
+    return fox.x + fox.width / 2 - (this.x + this.width / 2);
+  }
+
+
+  /**
+   * Turns the hunter so it looks at the fox (sprite looks right, mirrored looks left).
+   */
+  faceFox() {
+    this.otherDirection = this.getDistanceToFox() < 0;
+  }
+
+
+  /**
+   * Starts the shot animation. The bullet comes later in fireAtShotFrame().
+   */
+  startShot() {
+    this.isShooting = true;
+    this.bulletFired = false;
+    this.shotStartTime = Date.now();
+  }
+
+
+  /**
+   * Fires one bullet (with a bang) as soon as the muzzle-flash frame of the shot is shown.
+   */
+  fireAtShotFrame() {
+    let isFlashFrame = this.currentAnimation === this.animations.shot && this.currentImage === this.shotFrame;
+    if (this.isShooting && !this.bulletFired && isFlashFrame) {
+      this.world.bullets.push(this.createBullet());
+      this.bulletFired = true;
+      this.playShotSound();
+    }
+  }
+
+
+  /**
+   * Creates a bullet at the gun muzzle that flies in the looking direction.
+   * @returns {Bullet} The new bullet.
+   */
+  createBullet() {
+    if (this.otherDirection) {
+      return new Bullet(this.x + this.width - this.muzzleOffsetX, this.muzzleY, -1);
+    }
+    return new Bullet(this.x + this.muzzleOffsetX, this.muzzleY, 1);
+  }
+
+
+  /**
+   * Ends the shot after all frames of Shot.png were shown and plans the next shot.
+   */
+  endShotWhenDone() {
+    let shot = this.animations.shot;
+    let shotDuration = (shot.frames * 1000) / shot.fps;
+    if (this.isShooting && Date.now() - this.shotStartTime >= shotDuration) {
+      this.isShooting = false;
+      this.nextShotTime = Date.now() + this.getRandomCooldown();
+    }
+  }
+
+
+  /**
+   * Picks a random pause between minCooldown and maxCooldown.
+   * @returns {number} Pause in milliseconds.
+   */
+  getRandomCooldown() {
+    return this.minCooldown + Math.random() * (this.maxCooldown - this.minCooldown);
   }
 }
