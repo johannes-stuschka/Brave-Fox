@@ -1,6 +1,10 @@
 const MAX_DUCKS = 10; // so viele Enten kann der Fuchs höchstens tragen
 const SLEEP_DELAY = 10000; // nach so vielen ms ohne Taste und ohne Treffer schläft der Fuchs ein (max. 15 s)
 
+/**
+ * The fox that the player controls: walk, jump, throw ducks, collect berries.
+ * @extends MovableObject
+ */
 class Character extends MovableObject {
   y = 389;
   frameWidth = 32;

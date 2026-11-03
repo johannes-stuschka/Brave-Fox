@@ -34,6 +34,10 @@ const BERRY_DULL_COLORS = { ...BERRY_COLORS, w: "#ff8a95" };
 const BERRY_IMAGE = createPixelImage(BERRY_PIXELS, BERRY_COLORS);
 const BERRY_DULL_IMAGE = createPixelImage(BERRY_PIXELS, BERRY_DULL_COLORS);
 
+/**
+ * A berry lying in the level. The fox collects it by touching it.
+ * @extends MovableObject
+ */
 class CollectibleBerry extends MovableObject {
   scale = 2; // jedes Muster-Pixel wird 2x2 gezeichnet, wie bei der Ente
   width = BERRY_PIXELS[0].length * this.scale;

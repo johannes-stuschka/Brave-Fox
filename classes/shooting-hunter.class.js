@@ -1,3 +1,7 @@
+/**
+ * A hunter that stands still and shoots at the fox when it comes into range.
+ * @extends Hunter
+ */
 class ShootingHunter extends Hunter {
   range = 450; // ab diesem Abstand (in Pixeln) zum Fuchs wird geschossen
   minCooldown = 2000; // Pause zwischen zwei Schüssen: 2 bis 2,5 Sekunden

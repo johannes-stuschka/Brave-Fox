@@ -16,6 +16,9 @@ const ZZZ_COLORS = {
 const ZZZ_SMALL_IMAGE = createPixelImage(ZZZ_PIXELS, ZZZ_COLORS, 1); // kleines "z" direkt über dem Kopf
 const ZZZ_BIG_IMAGE = createPixelImage(ZZZ_PIXELS, ZZZ_COLORS, 2); // großes "Z" weiter oben
 
+/**
+ * The "z Z" bubbles above the sleeping fox.
+ */
 class SleepZzz {
   cycle = 2700; // so lange (ms) braucht ein Z vom Kopf bis zum Verschwinden
   letterCount = 3; // so viele Z schweben gleichzeitig

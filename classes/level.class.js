@@ -1,3 +1,6 @@
+/**
+ * Holds all objects of one level: enemies, clouds, backgrounds, ducks and berries.
+ */
 class Level {
   sky;
   clouds;

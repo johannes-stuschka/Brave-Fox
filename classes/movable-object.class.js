@@ -1,3 +1,7 @@
+/**
+ * Base class for everything drawn in the level: position, size,
+ * sprite animation, gravity and collision checks.
+ */
 class MovableObject {
   x = 160;
   img;

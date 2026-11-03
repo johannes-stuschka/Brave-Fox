@@ -11,6 +11,11 @@ const BOSS_HAT_PIXELS = [
 
 const BOSS_HAT_IMAGE = createPixelImage(BOSS_HAT_PIXELS, { "#": "#7a4a24", b: "#8b1a1a", o: "#2b1d10" });
 
+/**
+ * The end boss: wakes up when the fox comes near, chases it and shoots.
+ * It can only be defeated with thrown ducks.
+ * @extends Hunter
+ */
 class BossHunter extends Hunter {
   width = 288; // 128px-Frame * 2.25 = 288px, 1.8x so groß wie ein normaler Jäger (160px)
   height = 288;

@@ -1,3 +1,7 @@
+/**
+ * A bullet shot by a hunter. It flies until it hits the fox or leaves the screen.
+ * @extends MovableObject
+ */
 class Bullet extends MovableObject {
   width = 10;
   height = 4;

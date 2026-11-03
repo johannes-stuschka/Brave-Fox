@@ -12,6 +12,9 @@ const SOUND_NAMES = [
   "game-over",
 ];
 
+/**
+ * Loads and plays all sounds and the music and remembers the mute setting.
+ */
 class SoundManager {
   storageKey = "braveFoxMuted"; // unter diesem Namen merkt sich der Browser, ob der Ton aus ist
   musicVolume = 0.25;

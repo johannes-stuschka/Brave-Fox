@@ -1,3 +1,7 @@
+/**
+ * A cloud that slowly drifts through the sky.
+ * @extends MovableObject
+ */
 class Cloud extends MovableObject {
   y = 20;
   width = 750;

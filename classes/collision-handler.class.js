@@ -1,3 +1,6 @@
+/**
+ * Checks all collisions between the fox and enemies, bullets, ducks and berries.
+ */
 class CollisionHandler {
   world; // die World, deren Objekte geprüft werden
   stompTolerance = 20; // Fuß des Fuchses darf so viele Pixel unter der Kopf-Oberkante des Gegners sein

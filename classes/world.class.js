@@ -1,3 +1,6 @@
+/**
+ * The game world: holds the fox and the level, runs the game loop and draws everything.
+ */
 class World {
   character = new Character();
   level;

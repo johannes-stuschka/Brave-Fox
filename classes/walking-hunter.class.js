@@ -1,3 +1,7 @@
+/**
+ * A hunter that walks slowly toward the fox.
+ * @extends Hunter
+ */
 class WalkingHunter extends Hunter {
   minSpeed = 0.6; // langsamer als der Fuchs (walkSpeed 4)
   maxSpeed = 1.2;

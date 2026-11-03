@@ -1,3 +1,7 @@
+/**
+ * A duck thrown by the fox. It flies in an arc and defeats hunters it hits.
+ * @extends MovableObject
+ */
 class ThrowableDuck extends MovableObject {
   scale = 2; // gleich groß wie die Ente zum Einsammeln
   width = DUCK_PIXELS[0].length * this.scale;

@@ -29,6 +29,10 @@ const DUCK_COLORS = {
 
 const DUCK_IMAGE = createPixelImage(DUCK_PIXELS, DUCK_COLORS);
 
+/**
+ * A duck lying in the level. The fox picks it up to throw it later.
+ * @extends MovableObject
+ */
 class CollectibleDuck extends MovableObject {
   scale = 2; // jedes Muster-Pixel wird 2x2 gezeichnet, wie beim Fuchs
   width = DUCK_PIXELS[0].length * this.scale;

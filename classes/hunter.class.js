@@ -1,3 +1,8 @@
+/**
+ * Shared base class for all hunters (walking, shooting and the boss).
+ * Contains the shooting logic used by ShootingHunter and BossHunter.
+ * @extends MovableObject
+ */
 class Hunter extends MovableObject {
   frameWidth = 128; // ein Frame im Cowboy-Spritesheet (z.B. Walk.png: 1536 / 12)
   frameHeight = 128;

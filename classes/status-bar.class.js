@@ -12,6 +12,9 @@ const HEART_PIXELS = [
 
 const HEART_IMAGE = createPixelImage(HEART_PIXELS, { "#": "#c0392b", o: "#2b1d10", w: "#ffffff" });
 
+/**
+ * A bar fixed on the screen with an icon, e.g. health, ducks, berries or boss energy.
+ */
 class StatusBar {
   x;
   y;

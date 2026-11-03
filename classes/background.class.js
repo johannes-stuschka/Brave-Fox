@@ -1,3 +1,7 @@
+/**
+ * One background image of the level (sky or a ground tile).
+ * @extends MovableObject
+ */
 class Background extends MovableObject {
   y = 0;
   width = 720;
