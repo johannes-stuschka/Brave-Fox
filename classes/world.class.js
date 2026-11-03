@@ -13,10 +13,10 @@ class World {
   touchCameraOffset = 220; // mit Touch-Buttons: Fuchs steht rechts neben den Lauf-Buttons (sie enden bei ca. 186 px)
   touchQuery = window.matchMedia("(max-width: 1024px), (pointer: coarse)"); // gleiche Bedingung wie in style.css
   collisionHandler; // prüft alle Zusammenstöße (Gegner, Kugeln, Enten)
-  healthBar = new StatusBar(20, 20, "#c0392b", HEART_IMAGE, 100);
-  duckBar = new StatusBar(20, 56, "#f5c542", DUCK_IMAGE, MAX_DUCKS, 2);
+  healthBar = new StatusBar(20, 20, "#c0392b", ICONS.heart, 100);
+  duckBar = new StatusBar(20, 56, "#f5c542", ICONS.duck, MAX_DUCKS, 2);
   berryBar; // wird im constructor erstellt, weil das Maximum von der Beeren-Anzahl im Level abhängt
-  bossBar = new StatusBar(507, 20, "#8b1a1a", BOSS_HAT_IMAGE, 100); // oben rechts: 720 - 20 - 193 (Breite des Balkens)
+  bossBar = new StatusBar(507, 20, "#8b1a1a", ICONS.bossHat, 100); // oben rechts: 720 - 20 - 193 (Breite des Balkens)
   boss; // der Endboss des Levels, seine Energie zeigt die bossBar
   sleepZzz = new SleepZzz(); // "Z z z" über dem schlafenden Fuchs
   animationFrameId; // id des nächsten requestAnimationFrame, damit wir das Zeichnen stoppen können
@@ -48,7 +48,7 @@ class World {
    * @returns {StatusBar} The berry bar.
    */
   createBerryBar() {
-    return new StatusBar(20, 92, "#e0243c", BERRY_IMAGE, this.level.berries.length, 2);
+    return new StatusBar(20, 92, "#e0243c", ICONS.berry, this.level.berries.length, 2);
   }
 
 
@@ -319,10 +319,13 @@ class World {
 
   /**
    * Draws the image of an object: one frame of a sprite sheet or the whole image.
-   * The whole image can also be a canvas (e.g. the painted bullet).
+   * The whole image can also be a canvas (e.g. the fox without shadow). Images that are not loaded yet are skipped.
    * @param {MovableObject} item - The object to draw.
    */
   drawImage(item) {
+    if (!isImageReady(item.getImage())) {
+      return;
+    }
     if (item.frameWidth) {
       let { sourceX, sourceY, frameWidth, frameHeight } = item;
       this.ctx.drawImage(item.getImage(), sourceX, sourceY, frameWidth, frameHeight, 0, 0, item.width, item.height);

@@ -4,8 +4,8 @@
  */
 class ThrowableDuck extends MovableObject {
   scale = 2; // gleich groß wie die Ente zum Einsammeln
-  width = DUCK_PIXELS[0].length * this.scale;
-  height = DUCK_PIXELS.length * this.scale;
+  width = 17 * this.scale; // duck.svg ist 17 x 14 Pixel groß
+  height = 14 * this.scale;
   groundY = 419; // hier berühren die Füße der Ente den Boden (wie DUCK_GROUND_Y)
   speedX = 7.5; // Pixel pro Tick nach vorne
   speedY = 7; // Start-Geschwindigkeit nach oben, so fliegt die Ente im Bogen
@@ -28,7 +28,7 @@ class ThrowableDuck extends MovableObject {
     this.y = y;
     this.direction = direction;
     this.otherDirection = direction < 0;
-    this.img = DUCK_IMAGE;
+    this.img = ICONS.duck;
   }
 
 

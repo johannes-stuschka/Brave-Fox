@@ -1,17 +1,3 @@
-// Pixel-Herz für die Lebensanzeige: "#" = Rot, "o" = dunkler Rand, "w" = Glanzpunkt, "." = durchsichtig
-const HEART_PIXELS = [
-  ".oo...oo.",
-  "o##o.o##o",
-  "o#w#####o",
-  "o#######o",
-  ".o#####o.",
-  "..o###o..",
-  "...o#o...",
-  "....o....",
-];
-
-const HEART_IMAGE = createPixelImage(HEART_PIXELS, { "#": "#c0392b", o: "#2b1d10", w: "#ffffff" });
-
 /**
  * A bar fixed on the screen with an icon, e.g. health, ducks, berries or boss energy.
  */
@@ -19,7 +5,7 @@ class StatusBar {
   x;
   y;
   color; // Füllfarbe des Balkens
-  icon; // Bild des Icons (z.B. HEART_IMAGE oder DUCK_IMAGE)
+  icon; // Bild des Icons (z.B. ICONS.heart oder ICONS.duck)
   pixelSize; // so groß wird ein Icon-Pixel gezeichnet
   maxValue; // dieser Wert entspricht einem vollen Balken
   percentage = 100;
@@ -36,7 +22,7 @@ class StatusBar {
    * @param {number} x - Left edge on the canvas.
    * @param {number} y - Top edge on the canvas.
    * @param {string} color - Fill color of the bar.
-   * @param {HTMLCanvasElement} icon - Icon image (made with createPixelImage).
+   * @param {HTMLImageElement} icon - Icon image from ICONS (a pixel-art SVG file).
    * @param {number} maxValue - The value that fills the whole bar.
    * @param {number} [pixelSize=3] - How big one icon pixel is drawn.
    */
@@ -79,10 +65,13 @@ class StatusBar {
 
 
   /**
-   * Draws the icon scaled up and centered in its icon box.
+   * Draws the icon scaled up and centered in its icon box. Nothing is drawn until the icon file has loaded.
    * @param {CanvasRenderingContext2D} ctx - The canvas context.
    */
   drawIcon(ctx) {
+    if (!isImageReady(this.icon)) {
+      return;
+    }
     let width = this.getIconWidth();
     let height = this.getIconHeight();
     let iconX = this.x + Math.round((this.iconBoxWidth - width) / 2);

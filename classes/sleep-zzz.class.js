@@ -1,21 +1,3 @@
-// Pixel-"Z" für den schlafenden Fuchs: "w" = helles Z, "s" = dunkler Schatten unten rechts, "." = durchsichtig
-const ZZZ_PIXELS = [
-  "wwwww.",
-  ".sswss",
-  "..w.s.",
-  ".w.s..",
-  "wwwww.",
-  ".sssss",
-];
-
-const ZZZ_COLORS = {
-  w: "#f4f8ff",
-  s: "#3b4a6b",
-};
-
-const ZZZ_SMALL_IMAGE = createPixelImage(ZZZ_PIXELS, ZZZ_COLORS, 1); // kleines "z" direkt über dem Kopf
-const ZZZ_BIG_IMAGE = createPixelImage(ZZZ_PIXELS, ZZZ_COLORS, 2); // großes "Z" weiter oben
-
 /**
  * The "z Z" bubbles above the sleeping fox.
  */
@@ -26,6 +8,8 @@ class SleepZzz {
   driftWidth = 14; // so viele Pixel wandert ein Z zur Seite (in Blickrichtung)
   headX = 50; // Kopf des liegenden Fuchses (Blick nach rechts), von der linken Kante aus
   headY = 26; // Kopf des liegenden Fuchses, von der Oberkante aus
+  smallSize = 6; // kleines "z" direkt über dem Kopf (zzz.svg in Originalgröße 6 x 6)
+  bigSize = 12; // großes "Z" weiter oben (doppelt so groß)
 
   /**
    * Draws all Z letters. Each one starts a bit later than the one before,
@@ -51,12 +35,15 @@ class SleepZzz {
    * @param {number} progress - How far the Z has flown, from 0 (at the head) to 1 (gone).
    */
   drawLetter(ctx, fox, progress) {
-    let image = progress < 0.4 ? ZZZ_SMALL_IMAGE : ZZZ_BIG_IMAGE;
-    let x = this.getLetterX(fox, progress) - image.width / 2;
-    let y = fox.y + this.headY - progress * this.riseHeight - image.height;
+    if (!isImageReady(ICONS.zzz)) {
+      return;
+    }
+    let size = progress < 0.4 ? this.smallSize : this.bigSize;
+    let x = this.getLetterX(fox, progress) - size / 2;
+    let y = fox.y + this.headY - progress * this.riseHeight - size;
     ctx.save();
     ctx.globalAlpha = this.getAlpha(progress);
-    ctx.drawImage(image, Math.round(x), Math.round(y));
+    ctx.drawImage(ICONS.zzz, Math.round(x), Math.round(y), size, size);
     ctx.restore();
   }
 

@@ -1,31 +1,6 @@
-// Pixel-Ecken für den Vollbild-Button: "#" = hell, "." = durchsichtig
-const FULLSCREEN_ENTER_PIXELS = [
-  "###...###",
-  "#.......#",
-  "#.......#",
-  ".........",
-  ".........",
-  ".........",
-  "#.......#",
-  "#.......#",
-  "###...###",
-];
-
-const FULLSCREEN_EXIT_PIXELS = [
-  "..#...#..",
-  "..#...#..",
-  "###...###",
-  ".........",
-  ".........",
-  ".........",
-  "###...###",
-  "..#...#..",
-  "..#...#..",
-];
-
-const FULLSCREEN_COLORS = { "#": "#fff4dc" };
-const FULLSCREEN_ENTER_URL = createPixelImage(FULLSCREEN_ENTER_PIXELS, FULLSCREEN_COLORS, 3).toDataURL();
-const FULLSCREEN_EXIT_URL = createPixelImage(FULLSCREEN_EXIT_PIXELS, FULLSCREEN_COLORS, 3).toDataURL();
+// Ecken-Icons für den Vollbild-Button: "größer" (Vollbild an) und "kleiner" (Vollbild aus)
+const FULLSCREEN_ENTER_ICON = "./imgs/icons/fullscreen-enter.svg";
+const FULLSCREEN_EXIT_ICON = "./imgs/icons/fullscreen-exit.svg";
 
 
 /**
@@ -93,7 +68,7 @@ function updateFullscreenButton() {
   let isFullscreen = getFullscreenElement() != null;
   let label = isFullscreen ? "Exit fullscreen" : "Fullscreen";
   let button = document.getElementById("fullscreenButton");
-  document.getElementById("fullscreenIcon").src = isFullscreen ? FULLSCREEN_EXIT_URL : FULLSCREEN_ENTER_URL;
+  document.getElementById("fullscreenIcon").src = isFullscreen ? FULLSCREEN_EXIT_ICON : FULLSCREEN_ENTER_ICON;
   button.setAttribute("aria-label", label);
   button.title = label;
 }

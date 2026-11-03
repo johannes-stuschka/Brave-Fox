@@ -15,7 +15,6 @@ class Bullet extends MovableObject {
 
   /**
    * Creates a bullet at the gun muzzle, aimed at a target point (the fox).
-   * It has no image file, the image is painted on a tiny canvas instead.
    * @param {number} x - Start position (left edge) in the level.
    * @param {number} y - Start height (the muzzle of the gun).
    * @param {number} targetX - x of the point the bullet flies toward.
@@ -26,7 +25,7 @@ class Bullet extends MovableObject {
     this.x = x;
     this.y = y;
     this.aimAt(targetX, targetY);
-    this.img = this.createBulletImage();
+    this.img = ICONS.bullet;
   }
 
 
@@ -43,24 +42,6 @@ class Bullet extends MovableObject {
     this.stepX = (distanceX / length) * this.speed;
     this.stepY = (distanceY / length) * this.speed;
     this.rotation = Math.atan2(this.stepY, this.stepX);
-  }
-
-
-  /**
-   * Paints a small bullet on its own canvas, so no image file is needed.
-   * World.addToMap can draw a canvas exactly like an image.
-   * @returns {HTMLCanvasElement} The painted bullet.
-   */
-  createBulletImage() {
-    let canvas = document.createElement("canvas");
-    canvas.width = this.width;
-    canvas.height = this.height;
-    let ctx = canvas.getContext("2d");
-    ctx.fillStyle = "#3b3b3b";
-    ctx.fillRect(0, 0, this.width, this.height);
-    ctx.fillStyle = "#f2c94c"; // heller Streifen, damit die Kugel auffällt
-    ctx.fillRect(1, 1, this.width - 2, 1);
-    return canvas;
   }
 
 

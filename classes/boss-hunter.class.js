@@ -1,16 +1,3 @@
-// Pixel-Cowboyhut für die Boss-Lebensanzeige: "#" = Hut, "b" = Hutband, "o" = dunkler Rand, "." = durchsichtig
-const BOSS_HAT_PIXELS = [
-  "...ooo...",
-  "..o###o..",
-  "..o###o..",
-  "..obbbo..",
-  "oo#####oo",
-  "o#######o",
-  ".ooooooo.",
-];
-
-const BOSS_HAT_IMAGE = createPixelImage(BOSS_HAT_PIXELS, { "#": "#7a4a24", b: "#8b1a1a", o: "#2b1d10" });
-
 /**
  * The end boss: wakes up when the fox comes near, chases it and shoots.
  * It can only be defeated with thrown ducks.

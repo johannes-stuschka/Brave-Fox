@@ -1,28 +1,5 @@
 const MIN_PRESS_TIME = 100; // so lange (ms) bleibt eine Touch-Taste mindestens gedrückt, damit der Fuchs auch ganz kurze Tipper bemerkt
 
-// Pixel-Pfeile für die Touch-Buttons: "#" = helle Farbe, "." = durchsichtig
-const ARROW_RIGHT_PIXELS = [
-  "...#...",
-  "...##..",
-  "######.",
-  "#######",
-  "######.",
-  "...##..",
-  "...#...",
-];
-
-const ARROW_UP_PIXELS = [
-  "...#...",
-  "..###..",
-  ".#####.",
-  "#######",
-  "..###..",
-  "..###..",
-  "..###..",
-];
-
-const ARROW_COLORS = { "#": "#fff4dc" };
-
 // Welcher Button welche Taste im keyBoard drückt
 const TOUCH_BUTTONS = [
   { id: "touchLeft", key: "left" },
@@ -32,30 +9,6 @@ const TOUCH_BUTTONS = [
 ];
 
 let touchPressTimes = {}; // Zeitpunkt (ms), an dem jede Touch-Taste zuletzt gedrückt wurde
-
-
-/**
- * Turns a pixel pattern around from left to right (e.g. the right arrow becomes a left arrow).
- * @param {string[]} pixels - The pattern, one string per row.
- * @returns {string[]} The mirrored pattern.
- */
-function mirrorPixels(pixels) {
-  return pixels.map((row) => row.split("").reverse().join(""));
-}
-
-
-/**
- * Puts the pixel icons (arrows and the duck) into the four touch buttons.
- */
-function setTouchIcons() {
-  let rightArrow = createPixelImage(ARROW_RIGHT_PIXELS, ARROW_COLORS, 4);
-  let leftArrow = createPixelImage(mirrorPixels(ARROW_RIGHT_PIXELS), ARROW_COLORS, 4);
-  let upArrow = createPixelImage(ARROW_UP_PIXELS, ARROW_COLORS, 4);
-  document.getElementById("touchLeftIcon").src = leftArrow.toDataURL();
-  document.getElementById("touchRightIcon").src = rightArrow.toDataURL();
-  document.getElementById("touchJumpIcon").src = upArrow.toDataURL();
-  document.getElementById("touchThrowIcon").src = DUCK_IMAGE.toDataURL();
-}
 
 
 /**
@@ -116,10 +69,9 @@ function registerTouchButton(button, key) {
 
 
 /**
- * Sets the icons and connects all touch buttons with their keys.
+ * Connects all touch buttons with their keys.
  */
 function initTouchControls() {
-  setTouchIcons();
   TOUCH_BUTTONS.forEach((button) => registerTouchButton(document.getElementById(button.id), button.key));
 }
 
