@@ -17,9 +17,23 @@ const SOUND_NAMES = [
  */
 class SoundManager {
   storageKey = "braveFoxMuted"; // unter diesem Namen merkt sich der Browser, ob der Ton aus ist
-  musicVolume = 0.25;
-  effectVolume = 0.45;
-  loopVolume = 0.35; // Schnarchen ist leiser als die anderen Effekte
+  musicVolume = 0.35; // die Musik ist die gleichmäßige Grundlautstärke
+  // Lautstärke pro Effekt: alle Dateien sind gleich laut erzeugt, hier liegen sie hörbar unter der Musik.
+  // Kurze, harte Sounds (Sprung, Schuss, Treffer) sind am leisesten, die Jingles etwa so laut wie die Musik.
+  volumes = {
+    jump: 0.11,
+    throw: 0.12,
+    quack: 0.16,
+    berry: 0.15,
+    hurt: 0.1,
+    shot: 0.1,
+    "hunter-dead": 0.13,
+    "boss-alert": 0.16,
+    "boss-hurt": 0.13,
+    win: 0.2,
+    "game-over": 0.2,
+    snore: 0.18,
+  };
   muted = false;
   musicWanted = false; // soll die Musik gerade laufen (wenn der Ton an ist)?
   effects = {}; // vorgeladene Effekte, z.B. effects.jump
@@ -34,9 +48,9 @@ class SoundManager {
   constructor() {
     this.music = this.createAudio("music", this.musicVolume, true);
     SOUND_NAMES.forEach((name) => {
-      this.effects[name] = this.createAudio(name, this.effectVolume, false);
+      this.effects[name] = this.createAudio(name, this.volumes[name], false);
     });
-    this.loops.snore = this.createAudio("snore", this.loopVolume, true);
+    this.loops.snore = this.createAudio("snore", this.volumes.snore, true);
     this.muted = this.loadMuted();
   }
 
@@ -67,7 +81,8 @@ class SoundManager {
 
 
   /**
-   * Plays a short effect. A copy is played, so the same effect can sound several times at once.
+   * Plays a short effect with its own volume from "volumes".
+   * A copy is played, so the same effect can sound several times at once.
    * @param {string} name - Name of the effect, e.g. "jump".
    */
   play(name) {
@@ -75,7 +90,7 @@ class SoundManager {
       return;
     }
     let sound = this.effects[name].cloneNode();
-    sound.volume = this.effectVolume;
+    sound.volume = this.volumes[name];
     sound.addEventListener("ended", () => this.forgetEffect(sound));
     this.playingEffects.push(sound);
     this.startAudio(sound);

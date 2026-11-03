@@ -159,6 +159,56 @@ function normalize(buffer, peak) {
 
 
 /**
+ * Removes the deep part of the sound (simple high-pass filter at 500 Hz).
+ * Our ears hear deep tones as quieter, so this is closer to how loud a sound feels.
+ * @param {Float32Array} buffer - The sound.
+ * @returns {Float32Array} A new buffer without the deep part.
+ */
+function removeBass(buffer) {
+  let keep = 1 / (1 + 2 * Math.PI * 500 / SAMPLE_RATE);
+  let result = new Float32Array(buffer.length);
+  let previousInput = 0;
+  let previousOutput = 0;
+  buffer.forEach((value, index) => {
+    previousOutput = keep * (previousOutput + value - previousInput);
+    previousInput = value;
+    result[index] = previousOutput;
+  });
+  return result;
+}
+
+
+/**
+ * Measures how loud a sound feels: the loudest 0.1-second part (RMS, deep tones count less).
+ * @param {Float32Array} buffer - The sound.
+ * @returns {number} Felt loudness, e.g. 0.15.
+ */
+function measureLoudness(buffer) {
+  let samples = removeBass(buffer);
+  let window = Math.round(0.1 * SAMPLE_RATE);
+  let loudest = 0;
+  for (let start = 0; start + window <= samples.length; start += Math.round(window / 4)) {
+    let part = samples.subarray(start, start + window);
+    let energy = part.reduce((sum, value) => sum + value * value, 0);
+    loudest = Math.max(loudest, Math.sqrt(energy / window));
+  }
+  return loudest;
+}
+
+
+/**
+ * Scales the sound so it feels as loud as "target" (square waves and noise are turned down more than soft tones).
+ * @param {Float32Array} buffer - The sound.
+ * @param {number} target - Wanted felt loudness from measureLoudness, e.g. 0.15.
+ * @returns {Float32Array} The same sound, now scaled.
+ */
+function normalizeLoudness(buffer, target) {
+  let factor = target / measureLoudness(buffer);
+  return buffer.map((value) => value * factor);
+}
+
+
+/**
  * Writes the 44-byte RIFF/WAVE header for mono 16-bit PCM.
  * @param {Buffer} file - The file bytes.
  * @param {number} dataSize - Number of bytes of the samples.
@@ -195,7 +245,7 @@ function writeWav(name, buffer) {
 }
 
 
-module.exports = { createBuffer, addTone, addNoise, addNotes, normalize, noteToFrequency, EIGHTH };
+module.exports = { createBuffer, addTone, addNoise, addNotes, normalize, normalizeLoudness, noteToFrequency, EIGHTH };
 
 if (require.main === module) {
   fs.mkdirSync(AUDIO_FOLDER, { recursive: true });

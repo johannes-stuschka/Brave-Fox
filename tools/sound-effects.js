@@ -1,9 +1,11 @@
 // Die kurzen Soundeffekte. Jede Funktion baut einen Sound aus Tönen und Rauschen zusammen.
 // Wird von generate-sounds.js geladen (node tools/generate-sounds.js).
 
-const { createBuffer, addTone, addNoise, addNotes, normalize, noteToFrequency } = require("./generate-sounds.js");
+const { createBuffer, addTone, addNoise, addNotes, normalize, normalizeLoudness, noteToFrequency } = require("./generate-sounds.js");
 
-const EFFECT_PEAK = 0.8; // lautester Wert der Effekte (1.0 wäre Übersteuerung)
+// Alle Effekte und Jingles fühlen sich in der Datei gleich laut an (nicht nur gleicher Spitzenwert).
+// Wie laut sie im Spiel klingen, steht in SoundManager (volumes).
+const EFFECT_LOUDNESS = 0.15;
 
 
 /**
@@ -13,7 +15,7 @@ const EFFECT_PEAK = 0.8; // lautester Wert der Effekte (1.0 wäre Übersteuerung
 function jump() {
   let buffer = createBuffer(0.2);
   addTone(buffer, { start: 0, duration: 0.18, from: 280, to: 660, wave: "square", duty: 0.25, volume: 1, decay: 6 });
-  return normalize(buffer, EFFECT_PEAK);
+  return normalizeLoudness(buffer, EFFECT_LOUDNESS);
 }
 
 
@@ -25,7 +27,7 @@ function throwDuck() {
   let buffer = createBuffer(0.32);
   addNoise(buffer, { start: 0, duration: 0.3, brightness: 0.35, swell: true, volume: 1, attack: 0.08, release: 0.15 });
   addTone(buffer, { start: 0, duration: 0.25, from: 500, to: 220, wave: "triangle", volume: 0.25, release: 0.1 });
-  return normalize(buffer, EFFECT_PEAK);
+  return normalizeLoudness(buffer, EFFECT_LOUDNESS);
 }
 
 
@@ -38,7 +40,7 @@ function quack() {
   let base = { start: 0, duration: 0.17, wave: "square", attack: 0.01, release: 0.06, vibrato: 0.06, vibratoSpeed: 30 };
   addTone(buffer, { ...base, from: 640, to: 470, duty: 0.35, volume: 1 });
   addTone(buffer, { ...base, from: 320, to: 235, duty: 0.5, volume: 0.5 });
-  return normalize(buffer, EFFECT_PEAK);
+  return normalizeLoudness(buffer, EFFECT_LOUDNESS);
 }
 
 
@@ -51,7 +53,7 @@ function berry() {
   let settings = { wave: "square", duty: 0.25, volume: 1, decay: 8, release: 0.02 };
   addNotes(buffer, ["E6", "G#6", "B6", "E7"], 0.05, settings);
   addTone(buffer, { ...settings, start: 0.2, duration: 0.18, from: noteToFrequency("E7"), decay: 15 });
-  return normalize(buffer, EFFECT_PEAK);
+  return normalizeLoudness(buffer, EFFECT_LOUDNESS);
 }
 
 
@@ -63,7 +65,7 @@ function hurt() {
   let buffer = createBuffer(0.26);
   let yelp = { start: 0, duration: 0.24, from: 950, to: 380, wave: "square", duty: 0.5, volume: 1, decay: 4 };
   addTone(buffer, { ...yelp, vibrato: 0.08, vibratoSpeed: 25 });
-  return normalize(buffer, EFFECT_PEAK);
+  return normalizeLoudness(buffer, EFFECT_LOUDNESS);
 }
 
 
@@ -75,7 +77,7 @@ function shot() {
   let buffer = createBuffer(0.4);
   addNoise(buffer, { start: 0, duration: 0.38, brightness: 1, volume: 1, attack: 0.001, decay: 14 });
   addTone(buffer, { start: 0, duration: 0.15, from: 160, to: 40, wave: "triangle", volume: 1, attack: 0.001 });
-  return normalize(buffer, EFFECT_PEAK);
+  return normalizeLoudness(buffer, EFFECT_LOUDNESS);
 }
 
 
@@ -88,7 +90,7 @@ function hunterDead() {
   let fall = { start: 0, duration: 0.48, from: 520, to: 110, wave: "square", duty: 0.25, volume: 1, decay: 2 };
   addTone(buffer, { ...fall, vibrato: 0.05, vibratoSpeed: 12, release: 0.1 });
   addNoise(buffer, { start: 0, duration: 0.12, brightness: 0.5, volume: 0.4, decay: 20 });
-  return normalize(buffer, EFFECT_PEAK);
+  return normalizeLoudness(buffer, EFFECT_LOUDNESS);
 }
 
 
@@ -103,7 +105,7 @@ function bossAlert() {
   addTone(buffer, { ...settings, start: 0.16, duration: 0.12, from: noteToFrequency("E3") });
   addTone(buffer, { ...settings, start: 0.32, duration: 0.55, from: noteToFrequency("A#3"), vibrato: 0.02, release: 0.2 });
   addTone(buffer, { start: 0.32, duration: 0.55, from: noteToFrequency("A#2"), wave: "triangle", volume: 1, release: 0.2 });
-  return normalize(buffer, EFFECT_PEAK);
+  return normalizeLoudness(buffer, EFFECT_LOUDNESS);
 }
 
 
@@ -116,7 +118,7 @@ function bossHurt() {
   let grunt = { start: 0, duration: 0.28, from: 220, to: 90, wave: "square", duty: 0.5, volume: 1, decay: 3 };
   addTone(buffer, { ...grunt, vibrato: 0.1, vibratoSpeed: 20 });
   addNoise(buffer, { start: 0, duration: 0.1, brightness: 0.3, volume: 0.6, decay: 15 });
-  return normalize(buffer, EFFECT_PEAK);
+  return normalizeLoudness(buffer, EFFECT_LOUDNESS);
 }
 
 
@@ -144,7 +146,7 @@ function win() {
   addNotes(buffer, ["C5", "E5", "G5", "C6", "G5"], 0.12, lead);
   addTone(buffer, { ...lead, start: 0.6, duration: 0.9, from: noteToFrequency("C6"), vibrato: 0.01, release: 0.3 });
   addNotes(buffer, ["C4", "G3", "C4"], 0.5, { wave: "triangle", volume: 0.8, release: 0.1 });
-  return normalize(buffer, 0.7);
+  return normalizeLoudness(buffer, EFFECT_LOUDNESS);
 }
 
 
@@ -158,7 +160,7 @@ function gameOver() {
   addNotes(buffer, ["G4", "F#4", "F4"], 0.35, lead);
   addTone(buffer, { ...lead, start: 1.05, duration: 1, from: noteToFrequency("E4"), vibrato: 0.03, release: 0.4 });
   addNotes(buffer, ["C3", "B2", "A#2", "A2"], 0.35, { wave: "triangle", volume: 0.8, release: 0.05 });
-  return normalize(buffer, 0.7);
+  return normalizeLoudness(buffer, EFFECT_LOUDNESS);
 }
 
 
