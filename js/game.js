@@ -5,12 +5,11 @@ const SHOW_HITBOXES = false; // true zeigt die Hitboxen als Rahmen (zum Einstell
 let keyBoard = {
   left: false,
   right: false,
-  shift: false,
   space: false,
   d: false,
 };
 
-const KEY_NAMES = { ArrowLeft: "left", ArrowRight: "right", Shift: "shift", d: "d", D: "d" }; // welche Taste welchen Eintrag in keyBoard setzt
+const KEY_NAMES = { ArrowLeft: "left", ArrowRight: "right", d: "d", D: "d" }; // welche Taste welchen Eintrag in keyBoard setzt
 
 let intervalIds = [];
 

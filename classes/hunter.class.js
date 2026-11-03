@@ -145,14 +145,17 @@ class Hunter extends MovableObject {
 
 
   /**
-   * Creates a bullet at the gun muzzle that flies in the looking direction.
+   * Creates a bullet at the gun muzzle, aimed at the middle of the fox's hitbox.
+   * The bullet flies straight to where the fox is now, so the fox can still dodge.
    * @returns {Bullet} The new bullet.
    */
   createBullet() {
+    let muzzleX = this.x + this.muzzleOffsetX;
     if (this.otherDirection) {
-      return new Bullet(this.x + this.width - this.muzzleOffsetX, this.muzzleY, -1);
+      muzzleX = this.x + this.width - this.muzzleOffsetX;
     }
-    return new Bullet(this.x + this.muzzleOffsetX, this.muzzleY, 1);
+    let fox = this.world.character.getHitbox();
+    return new Bullet(muzzleX, this.muzzleY, fox.x + fox.width / 2, fox.y + fox.height / 2);
   }
 
 

@@ -11,7 +11,6 @@ class Character extends MovableObject {
   frameHeight = 32;
   walkSpeed = 4;
   world; // wird von der World gesetzt (für levelEndX)
-  runSpeed = 7;
   ducks = 0; // gesammelte Enten (Munition)
   berries = 0; // gesammelte Beeren
   throwCooldown = 400; // so lange (ms) muss der Fuchs zwischen zwei Würfen warten
@@ -25,7 +24,7 @@ class Character extends MovableObject {
   animations = {
     idle: { path: "./imgs/fox/Fox_Idle_with_shadow.png", frames: 4, fps: 6, row: 3 },
     walk: { path: "./imgs/fox/Fox_walk_with_shadow.png", frames: 6, fps: 10, row: 3 },
-    run: { path: "./imgs/fox/Fox_Run_with_shadow.png", frames: 6, fps: 13, row: 3 },
+    // der Sprung leiht sich zwei feste Frames aus dem Renn-Spritesheet
     jumpUp: { path: "./imgs/fox/Fox_Run_with_shadow.png", frames: 1, fps: 1, row: 3, firstFrame: 3 },
     jumpDown: { path: "./imgs/fox/Fox_Run_with_shadow.png", frames: 1, fps: 1, row: 3, firstFrame: 0 },
     hurt: { path: "./imgs/fox/Fox_Hurt_with_shadow.png", frames: 4, fps: 8, row: 3 },
@@ -244,7 +243,7 @@ class Character extends MovableObject {
    * Moves the fox to the left, but not past the start of the level (x = 0).
    */
   moveLeft() {
-    this.x = Math.max(0, this.x - this.getSpeed());
+    this.x = Math.max(0, this.x - this.walkSpeed);
     this.otherDirection = true;
   }
 
@@ -254,20 +253,8 @@ class Character extends MovableObject {
    */
   moveRight() {
     let maxX = this.world.level.levelEndX - this.width;
-    this.x = Math.min(maxX, this.x + this.getSpeed());
+    this.x = Math.min(maxX, this.x + this.walkSpeed);
     this.otherDirection = false;
-  }
-
-
-  /**
-   * Returns the current speed: faster while Shift is held.
-   * @returns {number} Pixels the fox moves per tick.
-   */
-  getSpeed() {
-    if (keyBoard.shift == true) {
-      return this.runSpeed;
-    }
-    return this.walkSpeed;
   }
 
 
@@ -311,15 +298,12 @@ class Character extends MovableObject {
 
 
   /**
-   * Chooses the animation on the ground: sleep, run (moving + Shift), walk (moving) or idle.
+   * Chooses the animation on the ground: sleep, walk (moving) or idle.
    * @returns {{path: string, frames: number, fps: number, row: number}} The ground animation.
    */
   getGroundAnimation() {
     if (this.isSleeping()) {
       return this.animations.sleep;
-    }
-    if (this.isMoving() && keyBoard.shift == true) {
-      return this.animations.run;
     }
     if (this.isMoving()) {
       return this.animations.walk;

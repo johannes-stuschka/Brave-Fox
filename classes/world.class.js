@@ -91,14 +91,14 @@ class World {
 
 
   /**
-   * A bullet is needed while it is inside the level and not far away from the fox.
+   * A bullet is needed while it is inside the level, above the ground and not far away from the fox.
    * @param {Bullet} bullet - The bullet to check.
    * @returns {boolean} True if the bullet should keep flying.
    */
   isBulletNeeded(bullet) {
     let insideLevel = bullet.x + bullet.width > 0 && bullet.x < this.level.levelEndX;
     let nearFox = Math.abs(bullet.x - this.character.x) < this.canvas.width;
-    return insideLevel && nearFox;
+    return insideLevel && nearFox && !bullet.hasHitGround();
   }
 
 

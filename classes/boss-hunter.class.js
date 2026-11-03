@@ -27,7 +27,7 @@ class BossHunter extends Hunter {
   invulnerableTime = 500; // kurze Pause nach einem Treffer, so trifft eine Ente nicht doppelt
   alertRange = 500; // so nah (Mitte zu Mitte) muss der Fuchs kommen, damit der Boss aufwacht
   alertDuration = 1000; // so lange (ms) dauert die Kampfhaltung, bevor die Jagd beginnt
-  speed = 2.5; // schneller als die laufenden Jäger (max 1.2), langsamer als der Fuchs (4 / 7)
+  speed = 2.5; // schneller als die laufenden Jäger (max 1.2), langsamer als der Fuchs (walkSpeed 4)
   stopDistance = 20; // so nah läuft der Boss an den Fuchs heran, dann bleibt er stehen
   minCooldown = 2000; // Pause zwischen zwei Schüssen: 2 bis 3 Sekunden
   maxCooldown = 3000;
