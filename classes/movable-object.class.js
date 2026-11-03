@@ -48,6 +48,15 @@ class MovableObject {
 
 
   /**
+   * Returns the image World draws right now. Subclasses can swap it (e.g. the fox without shadow in the air).
+   * @returns {HTMLImageElement|HTMLCanvasElement} The image to draw.
+   */
+  getImage() {
+    return this.img;
+  }
+
+
+  /**
    * Starts the single animation interval of this object.
    * Shows the first frame right away so there is always an image to draw.
    */

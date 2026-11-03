@@ -21,6 +21,7 @@ class Character extends MovableObject {
   bounceSpeed = 7; // kleiner Hüpfer nach oben, wenn der Fuchs auf einen Gegner springt
   lastActivity = Date.now(); // Zeitpunkt (ms) der letzten Taste oder des letzten Treffers
   offset = { top: 12, right: 4, bottom: 10, left: 12 }; // Kopf bis Pfoten, ohne Schwanzspitze und Schatten
+  shadowFreeImages = {}; // Kopien der Spritesheets ohne Schatten, z.B. shadowFreeImages["./imgs/fox/..."]
   animations = {
     idle: { path: "./imgs/fox/Fox_Idle_with_shadow.png", frames: 4, fps: 6, row: 3 },
     walk: { path: "./imgs/fox/Fox_walk_with_shadow.png", frames: 6, fps: 10, row: 3 },
@@ -41,6 +42,74 @@ class Character extends MovableObject {
     this.animate();
     this.move();
     this.applyGravity();
+  }
+
+
+  /**
+   * Returns the image to draw: in the air (jumping, falling, hurt or dying) the fox has no shadow,
+   * because the shadow belongs on the ground.
+   * @returns {HTMLImageElement|HTMLCanvasElement} The sprite sheet to draw.
+   */
+  getImage() {
+    if (!this.isAboveGround()) {
+      return this.img;
+    }
+    return this.getShadowFreeImage(this.img);
+  }
+
+
+  /**
+   * Returns a copy of the sprite sheet without shadow. The copy is made only once per sheet.
+   * Until the sheet has loaded, the normal image is used.
+   * @param {HTMLImageElement} img - The sprite sheet with shadow.
+   * @returns {HTMLImageElement|HTMLCanvasElement} The sheet without shadow.
+   */
+  getShadowFreeImage(img) {
+    if (!img.complete || img.naturalWidth == 0) {
+      return img;
+    }
+    if (!this.shadowFreeImages[img.src]) {
+      this.shadowFreeImages[img.src] = this.removeShadow(img);
+    }
+    return this.shadowFreeImages[img.src];
+  }
+
+
+  /**
+   * Paints the sheet onto a new canvas and erases the shadow.
+   * The shadow is the only half-transparent part of the fox images, the fox itself is fully opaque.
+   * If the pixels can not be read (e.g. game opened as a file), the normal image is kept.
+   * @param {HTMLImageElement} img - The sprite sheet with shadow.
+   * @returns {HTMLImageElement|HTMLCanvasElement} The canvas without shadow (or the original image).
+   */
+  removeShadow(img) {
+    let canvas = document.createElement("canvas");
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+    let ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0);
+    try {
+      ctx.putImageData(this.eraseHalfTransparentPixels(ctx.getImageData(0, 0, canvas.width, canvas.height)), 0, 0);
+      return canvas;
+    } catch (error) {
+      return img;
+    }
+  }
+
+
+  /**
+   * Makes every half-transparent pixel fully transparent (each pixel has 4 values: red, green, blue, alpha).
+   * @param {ImageData} imageData - The pixels of the sprite sheet.
+   * @returns {ImageData} The same pixels, now without shadow.
+   */
+  eraseHalfTransparentPixels(imageData) {
+    let pixels = imageData.data;
+    for (let i = 3; i < pixels.length; i += 4) {
+      if (pixels[i] < 255) {
+        pixels[i] = 0;
+      }
+    }
+    return imageData;
   }
 
 

@@ -325,9 +325,9 @@ class World {
   drawImage(item) {
     if (item.frameWidth) {
       let { sourceX, sourceY, frameWidth, frameHeight } = item;
-      this.ctx.drawImage(item.img, sourceX, sourceY, frameWidth, frameHeight, 0, 0, item.width, item.height);
+      this.ctx.drawImage(item.getImage(), sourceX, sourceY, frameWidth, frameHeight, 0, 0, item.width, item.height);
     } else {
-      this.ctx.drawImage(item.img, 0, 0, item.width, item.height);
+      this.ctx.drawImage(item.getImage(), 0, 0, item.width, item.height);
     }
   }
 }
