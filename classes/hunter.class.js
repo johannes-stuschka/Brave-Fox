@@ -69,7 +69,7 @@ class Hunter extends MovableObject {
    * @returns {boolean} True if the hunter can be seen on the canvas.
    */
   isOnScreen() {
-    let screenLeft = -this.world.camera_x;
+    let screenLeft = -this.world.cameraX;
     let screenRight = screenLeft + this.world.canvas.width;
     return this.x + this.width > screenLeft && this.x < screenRight;
   }

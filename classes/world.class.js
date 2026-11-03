@@ -8,7 +8,7 @@ class World {
   ctx;
   bullets = []; // alle Kugeln, die gerade fliegen
   thrownDucks = []; // alle Enten, die der Fuchs gerade geworfen hat
-  camera_x = 0;
+  cameraX = 0;
   cameraOffset = 120; // so viele Pixel bleibt der Fuchs vom linken Rand entfernt (Computer)
   touchCameraOffset = 220; // mit Touch-Buttons: Fuchs steht rechts neben den Lauf-Buttons (sie enden bei ca. 186 px)
   touchQuery = window.matchMedia("(max-width: 1024px), (pointer: coarse)"); // gleiche Bedingung wie in style.css
@@ -168,9 +168,9 @@ class World {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.addToMap(this.level.sky);
     this.updateCamera();
-    this.ctx.translate(this.camera_x, 0);
+    this.ctx.translate(this.cameraX, 0);
     this.drawWorldObjects();
-    this.ctx.translate(-this.camera_x, 0);
+    this.ctx.translate(-this.cameraX, 0);
     this.drawStatusBars();
     this.animationFrameId = requestAnimationFrame(() => this.draw());
   }
@@ -269,7 +269,7 @@ class World {
     let wantedX = this.getCameraOffset() - this.character.x;
     let minX = this.canvas.width - this.level.levelEndX;
     let cameraX = Math.min(0, Math.max(minX, wantedX));
-    this.camera_x = Math.round(cameraX);
+    this.cameraX = Math.round(cameraX);
   }
 
 
