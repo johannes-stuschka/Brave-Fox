@@ -1,12 +1,7 @@
 .touch-controls {
-  position: absolute;
-  left: 3%;
-  right: 3%;
-  bottom: 4%;
-  z-index: 2;
   display: none;
   justify-content: space-between;
-  pointer-events: none;
+  align-items: center;
 }
 
 .touch-group {
@@ -21,8 +16,8 @@
   width: clamp(48px, 15vmin, 76px);
   aspect-ratio: 1;
   padding: 0;
-  background-color: rgba(107, 66, 38, 0.35);
-  border: 3px solid rgba(59, 36, 20, 0.6);
+  background-color: var(--wood);
+  border: 3px solid var(--wood-dark);
   border-radius: 8px;
   box-shadow: 0 3px 0 rgba(59, 36, 20, 0.6);
   pointer-events: auto;
@@ -48,21 +43,69 @@
 }
 
 @media (max-width: 1024px), (pointer: coarse) {
-  .touch-controls {
-    display: flex;
+  body {
+    --button-size: clamp(48px, 15vmin, 76px);
+    --button-space: calc(var(--button-size) + 32px);
+    --frame-width: min(100vw, (100dvh - var(--button-space)) * 1.5);
   }
 
-  .game-container {
-    width: min(100vw, 100dvh * 1.5);
+  .game-container,
+  .game-container:fullscreen {
+    width: 100vw;
+    height: 100dvh;
+    aspect-ratio: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
     border: none;
     border-radius: 0;
     box-shadow: none;
+  }
+
+  .game-frame,
+  .game-container:fullscreen .game-frame {
+    flex: none;
+    width: var(--frame-width);
+    height: auto;
+    aspect-ratio: 3 / 2;
+  }
+
+  .touch-controls {
+    display: flex;
+    width: var(--frame-width);
+    padding: 0 16px;
+  }
+}
+
+@media (max-width: 1024px) and (min-aspect-ratio: 3 / 2), (pointer: coarse) and (min-aspect-ratio: 3 / 2) {
+  body {
+    --frame-width: min(100vw - 2 * var(--button-space), 100dvh * 1.5);
+  }
+
+  .game-container,
+  .game-container:fullscreen {
+    flex-direction: row;
+  }
+
+  .touch-controls {
+    display: contents;
+  }
+
+  .touch-group {
+    flex-direction: column;
+    padding: 0 16px;
+  }
+
+  .touch-group:first-child {
+    order: -1;
   }
 }
 
 .game-container:has(#startScreen:not(.d-none)) .touch-controls,
 .game-container:has(#endScreen:not(.d-none)) .touch-controls {
-  display: none;
+  visibility: hidden;
 }
 
 .rotate-hint {

@@ -10,8 +10,6 @@ class World {
   thrownDucks = [];
   cameraX = 0;
   cameraOffset = 120;
-  touchCameraOffset = 220;
-  touchQuery = window.matchMedia("(max-width: 1024px), (pointer: coarse)");
   collisionHandler;
   healthBar = new StatusBar(20, 20, "#c0392b", ICONS.heart, 100);
   duckBar = new StatusBar(20, 56, "#f5c542", ICONS.duck, MAX_DUCKS, 2);
@@ -238,23 +236,12 @@ class World {
 
 
   /**
-   * Chooses how far the fox stays from the left edge.
-   * With touch buttons (tablet, phone) the fox stands further right, so the buttons do not cover it.
-   * touchQuery.matches is checked again every frame, so it also changes after a resize.
-   * @returns {number} Distance in canvas pixels.
-   */
-  getCameraOffset() {
-    return this.touchQuery.matches ? this.touchCameraOffset : this.cameraOffset;
-  }
-
-
-  /**
-   * Moves the camera so the fox stays getCameraOffset() pixels from the left edge.
+   * Moves the camera so the fox stays cameraOffset pixels from the left edge.
    * The camera stops at the start and at the end of the level.
    * Math.round keeps whole pixels, so no thin lines appear between tiles.
    */
   updateCamera() {
-    let wantedX = this.getCameraOffset() - this.character.x;
+    let wantedX = this.cameraOffset - this.character.x;
     let minX = this.canvas.width - this.level.levelEndX;
     let cameraX = Math.min(0, Math.max(minX, wantedX));
     this.cameraX = Math.round(cameraX);
