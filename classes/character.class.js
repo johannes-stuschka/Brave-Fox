@@ -1,5 +1,4 @@
-const MAX_DUCKS = 10; // so viele Enten kann der Fuchs höchstens tragen
-const SLEEP_DELAY = 5000; // nach so vielen ms ohne Taste und ohne Treffer schläft der Fuchs ein (max. 15 s)
+const MAX_DUCKS = 10;
 
 /**
  * The fox that the player controls: walk, jump, throw ducks, collect berries.
@@ -10,37 +9,40 @@ class Character extends MovableObject {
   frameWidth = 32;
   frameHeight = 32;
   walkSpeed = 4;
-  world; // wird von der World gesetzt (für levelEndX)
-  ducks = 0; // gesammelte Enten (Munition)
-  berries = 0; // gesammelte Beeren
-  throwCooldown = 400; // so lange (ms) muss der Fuchs zwischen zwei Würfen warten
-  lastThrow = 0; // Zeitpunkt (ms) des letzten Wurfs
-  throwKeyWasPressed = false; // war D im letzten Tick schon gedrückt? (kein Dauerfeuer)
-  throwDistance = 24; // so weit vor der Fuchs-Mitte erscheint die geworfene Ente
-  throwHeight = 10; // so weit unter der Oberkante des Fuchses startet die Ente
-  bounceSpeed = 7; // kleiner Hüpfer nach oben, wenn der Fuchs auf einen Gegner springt
-  lastActivity = Date.now(); // Zeitpunkt (ms) der letzten Taste oder des letzten Treffers
-  offset = { top: 12, right: 4, bottom: 10, left: 12 }; // Kopf bis Pfoten, ohne Schwanzspitze und Schatten
-  shadowFreeImages = {}; // Kopien der Spritesheets ohne Schatten, z.B. shadowFreeImages["./imgs/fox/..."]
+  world;
+  ducks = 0;
+  berries = 0;
+  throwCooldown = 400;
+  lastThrow = 0;
+  throwKeyWasPressed = false;
+  throwDistance = 24;
+  throwHeight = 10;
+  bounceSpeed = 7;
+  pushSpeed = 0;
+  pushFriction = 0.5;
+  sleepDelay = 5000;
+  lastActivity = Date.now();
+  offset = { top: 12, right: 4, bottom: 10, left: 12 };
+  shadowFreeImages = {};
   animations = {
     idle: { path: "./imgs/fox/Fox_Idle_with_shadow.png", frames: 4, fps: 6, row: 3 },
     walk: { path: "./imgs/fox/Fox_walk_with_shadow.png", frames: 6, fps: 10, row: 3 },
-    // der Sprung leiht sich zwei feste Frames aus dem Renn-Spritesheet,
-    // dort sind die Zeilen vertauscht: Zeile 2 schaut nach rechts, Zeile 3 nach links
     jumpUp: { path: "./imgs/fox/Fox_Run_with_shadow.png", frames: 1, fps: 1, row: 2, firstFrame: 3 },
     jumpDown: { path: "./imgs/fox/Fox_Run_with_shadow.png", frames: 1, fps: 1, row: 2, firstFrame: 0 },
     hurt: { path: "./imgs/fox/Fox_Hurt_with_shadow.png", frames: 4, fps: 8, row: 3 },
     death: { path: "./imgs/fox/Fox_Death_with_shadow.png", frames: 6, fps: 6, row: 3, loop: false },
-    sleep: { path: "./imgs/fox/Fox_Death_with_shadow.png", frames: 1, fps: 1, row: 3, firstFrame: 5 }, // liegender Fuchs
+    sleep: { path: "./imgs/fox/Fox_Death_with_shadow.png", frames: 1, fps: 1, row: 3, firstFrame: 5 },
   };
 
   /**
    * Creates the fox, preloads its animations and starts animation, movement and gravity.
+   * The jump borrows two fixed frames of the run sheet (its rows are swapped: row 2 looks right).
+   * The sleep frame is the last frame of the lying death animation.
+   * pushSpeed is the sideways speed of a knockback, pushFriction slows it down every tick.
    */
   constructor() {
     super();
-    this.loadImages(Object.values(this.animations));
-    this.animate();
+    this.startAnimations();
     this.move();
     this.applyGravity();
   }
@@ -113,12 +115,12 @@ class Character extends MovableObject {
    * Starts the movement interval of the fox (60 times per second).
    */
   move() {
-    setStoppableInterval(() => this.handleKeys(), 1000 / 60);
+    setTickInterval(() => this.handleKeys());
   }
 
   /**
-   * One input tick: snore sound, remembers activity, then walks, jumps and throws.
-   * A dead fox ignores every key.
+   * One input tick: snore sound, remembers activity, slides from a knockback,
+   * then walks, jumps and throws. A dead fox ignores every key.
    */
   handleKeys() {
     this.updateSnore();
@@ -126,6 +128,7 @@ class Character extends MovableObject {
       return;
     }
     this.trackActivity();
+    this.slideByPush();
     this.moveByKeys();
     this.jumpByKey();
     this.throwByKey();
@@ -181,11 +184,11 @@ class Character extends MovableObject {
    * @returns {number} Milliseconds since falling asleep (negative while still awake).
    */
   getSleepTime() {
-    return Date.now() - this.lastActivity - SLEEP_DELAY;
+    return Date.now() - this.lastActivity - this.sleepDelay;
   }
 
   /**
-   * Checks if the fox did nothing for longer than SLEEP_DELAY and is still alive.
+   * Checks if the fox did nothing for longer than sleepDelay and is still alive.
    * @returns {boolean} True while the fox sleeps.
    */
   isSleeping() {
@@ -228,7 +231,7 @@ class Character extends MovableObject {
    * @returns {ThrowableDuck} The new thrown duck.
    */
   createThrownDuck() {
-    let direction = this.otherDirection ? -1 : 1;
+    let direction = this.getDirection();
     let centerX = this.x + this.width / 2 + direction * this.throwDistance;
     return new ThrowableDuck(centerX, this.y + this.throwHeight, direction);
   }
@@ -238,6 +241,28 @@ class Character extends MovableObject {
    */
   bounce() {
     this.speedY = this.bounceSpeed;
+  }
+
+  /**
+   * Knocks the fox away from an enemy: a sideways slide plus a small hop.
+   * @param {number} direction - -1 pushes to the left, 1 pushes to the right.
+   * @param {number} speed - Start speed of the slide in pixels per tick.
+   */
+  knockBack(direction, speed) {
+    this.pushSpeed = direction * speed;
+    this.bounce();
+  }
+
+  /**
+   * Moves the fox by the current knockback speed and slows the slide down until it stops.
+   */
+  slideByPush() {
+    if (this.pushSpeed === 0) {
+      return;
+    }
+    this.moveTo(this.x + this.pushSpeed);
+    let slowdown = Math.min(Math.abs(this.pushSpeed), this.pushFriction);
+    this.pushSpeed -= Math.sign(this.pushSpeed) * slowdown;
   }
 
   /**
@@ -290,7 +315,7 @@ class Character extends MovableObject {
    * Moves the fox to the left, but not past the start of the level (x = 0).
    */
   moveLeft() {
-    this.x = Math.max(0, this.x - this.walkSpeed);
+    this.moveTo(this.x - this.walkSpeed);
     this.otherDirection = true;
   }
 
@@ -298,9 +323,17 @@ class Character extends MovableObject {
    * Moves the fox to the right, but not past the end of the level.
    */
   moveRight() {
-    let maxX = this.world.level.levelEndX - this.width;
-    this.x = Math.min(maxX, this.x + this.walkSpeed);
+    this.moveTo(this.x + this.walkSpeed);
     this.otherDirection = false;
+  }
+
+  /**
+   * Puts the fox at a new x position, but never outside the level.
+   * @param {number} x - The wanted x position.
+   */
+  moveTo(x) {
+    let maxX = this.world.level.levelEndX - this.width;
+    this.x = Math.min(maxX, Math.max(0, x));
   }
 
   /**

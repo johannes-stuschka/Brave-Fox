@@ -2,11 +2,12 @@
  * Checks all collisions between the fox and enemies, bullets, ducks and berries.
  */
 class CollisionHandler {
-  world; // die World, deren Objekte geprüft werden
-  stompTolerance = 20; // Fuß des Fuchses darf so viele Pixel unter der Kopf-Oberkante des Gegners sein
+  world;
+  stompTolerance = 20;
 
   /**
    * Creates the collision handler for one world.
+   * stompTolerance: how many pixels the fox's feet may be below the top of an enemy for a stomp.
    * @param {World} world - The world whose fox, enemies, bullets, ducks and berries are checked.
    */
   constructor(world) {
@@ -48,7 +49,7 @@ class CollisionHandler {
 
   /**
    * One enemy against the fox: a stomp defeats the enemy and lets the fox bounce,
-   * any other touch costs the fox energy. Dead enemies do no harm.
+   * any other touch is handled by the enemy (energy loss, maybe a push). Dead enemies do no harm.
    * @param {Hunter} enemy - The enemy to check.
    */
   checkEnemyCollision(enemy) {
@@ -60,7 +61,7 @@ class CollisionHandler {
       enemy.die();
       fox.bounce();
     } else {
-      fox.hit(enemy.contactDamage);
+      enemy.touchFox(fox);
     }
   }
 
@@ -91,16 +92,12 @@ class CollisionHandler {
 
 
   /**
-   * The fox loses energy when a bullet hits it. The bullet disappears on impact.
+   * Every bullet that touches the fox's hitbox hits it and disappears on impact.
+   * During the short invulnerability after a hit the bullet is used up without damage.
    */
   checkBulletCollisions() {
     let fox = this.world.character;
-    this.world.bullets.forEach((bullet) => {
-      if (fox.isColliding(bullet)) {
-        fox.hit(bullet.damage);
-      }
-    });
-    this.world.bullets = this.world.bullets.filter((bullet) => !fox.isColliding(bullet));
+    this.world.bullets = this.removeTouchedItems(this.world.bullets, () => true, (bullet) => fox.hit(bullet.damage));
   }
 
 
@@ -111,7 +108,7 @@ class CollisionHandler {
   checkDuckCollisions() {
     let fox = this.world.character;
     let level = this.world.level;
-    level.ducks = this.collectItems(level.ducks, () => fox.canCollectDuck(), () => fox.collectDuck());
+    level.ducks = this.removeTouchedItems(level.ducks, () => fox.canCollectDuck(), () => fox.collectDuck());
   }
 
 
@@ -122,25 +119,25 @@ class CollisionHandler {
   checkBerryCollisions() {
     let fox = this.world.character;
     let level = this.world.level;
-    level.berries = this.collectItems(level.berries, () => true, () => fox.collectBerry());
+    level.berries = this.removeTouchedItems(level.berries, () => true, () => fox.collectBerry());
   }
 
 
   /**
-   * Shared pickup logic for ducks and berries: the fox picks up every item it touches
-   * while canPickUp() allows it. Items that are not picked up stay lying in the level.
-   * @param {MovableObject[]} items - The items lying in the level.
-   * @param {Function} canPickUp - Returns true if the fox may pick up one more item.
-   * @param {Function} pickUp - Gives the picked up item to the fox.
-   * @returns {MovableObject[]} The items that are still lying in the level.
+   * Shared logic for bullets, ducks and berries: every item the fox touches is handled
+   * by onTouch and removed, as long as canTouch() allows it. All other items stay.
+   * @param {MovableObject[]} items - The items in the level.
+   * @param {Function} canTouch - Returns true if the fox may take one more item.
+   * @param {Function} onTouch - Handles the touched item (gets the item as parameter).
+   * @returns {MovableObject[]} The items that stay in the level.
    */
-  collectItems(items, canPickUp, pickUp) {
+  removeTouchedItems(items, canTouch, onTouch) {
     let fox = this.world.character;
     return items.filter((item) => {
-      if (!canPickUp() || !fox.isColliding(item)) {
+      if (!canTouch() || !fox.isColliding(item)) {
         return true;
       }
-      pickUp();
+      onTouch(item);
       return false;
     });
   }

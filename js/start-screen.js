@@ -10,8 +10,7 @@ function startGame() {
     return;
   }
   gameStarted = true;
-  document.activeElement.blur(); // sonst würde die Leertaste den Start-Button nochmal drücken
-  document.getElementById("startScreen").classList.add("d-none");
+  hideScreen("startScreen");
   startNewGame();
 }
 

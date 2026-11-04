@@ -1,6 +1,5 @@
-// Ecken-Icons für den Vollbild-Button: "größer" (Vollbild an) und "kleiner" (Vollbild aus)
-const FULLSCREEN_ENTER_ICON = "./imgs/icons/fullscreen-enter.svg";
-const FULLSCREEN_EXIT_ICON = "./imgs/icons/fullscreen-exit.svg";
+const fullscreenEnterIcon = "./imgs/icons/fullscreen-enter.svg";
+const fullscreenExitIcon = "./imgs/icons/fullscreen-exit.svg";
 
 
 /**
@@ -67,10 +66,7 @@ function toggleFullscreen() {
 function updateFullscreenButton() {
   let isFullscreen = getFullscreenElement() != null;
   let label = isFullscreen ? "Exit fullscreen" : "Fullscreen";
-  let button = document.getElementById("fullscreenButton");
-  document.getElementById("fullscreenIcon").src = isFullscreen ? FULLSCREEN_EXIT_ICON : FULLSCREEN_ENTER_ICON;
-  button.setAttribute("aria-label", label);
-  button.title = label;
+  updateIconButton("fullscreenButton", "fullscreenIcon", isFullscreen ? fullscreenExitIcon : fullscreenEnterIcon, label);
 }
 
 

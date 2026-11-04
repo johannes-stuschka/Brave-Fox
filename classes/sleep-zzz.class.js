@@ -2,14 +2,14 @@
  * The "z Z" bubbles above the sleeping fox.
  */
 class SleepZzz {
-  cycle = 2700; // so lange (ms) braucht ein Z vom Kopf bis zum Verschwinden
-  letterCount = 3; // so viele Z schweben gleichzeitig
-  riseHeight = 30; // so viele Pixel steigt ein Z nach oben
-  driftWidth = 14; // so viele Pixel wandert ein Z zur Seite (in Blickrichtung)
-  headX = 50; // Kopf des liegenden Fuchses (Blick nach rechts), von der linken Kante aus
-  headY = 26; // Kopf des liegenden Fuchses, von der Oberkante aus
-  smallSize = 6; // kleines "z" direkt über dem Kopf (zzz.svg in Originalgröße 6 x 6)
-  bigSize = 12; // großes "Z" weiter oben (doppelt so groß)
+  cycle = 2700;
+  letterCount = 3;
+  riseHeight = 30;
+  driftWidth = 14;
+  headX = 50;
+  headY = 26;
+  smallSize = 6;
+  bigSize = 12;
 
   /**
    * Draws all Z letters. Each one starts a bit later than the one before,
@@ -55,7 +55,7 @@ class SleepZzz {
    * @returns {number} The x position in level coordinates.
    */
   getLetterX(fox, progress) {
-    let direction = fox.otherDirection ? -1 : 1;
+    let direction = fox.getDirection();
     let startX = fox.otherDirection ? fox.x + fox.width - this.headX : fox.x + this.headX;
     let wobble = Math.sin(progress * Math.PI * 2) * 2;
     return startX + direction * progress * this.driftWidth + wobble;

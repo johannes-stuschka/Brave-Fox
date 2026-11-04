@@ -18,8 +18,7 @@
     <script src="./classes/bullet.class.js"></script>
     <script src="./classes/shooting-hunter.class.js"></script>
     <script src="./classes/boss-hunter.class.js"></script>
-    <script src="./classes/collectible-duck.class.js"></script>
-    <script src="./classes/collectible-berry.class.js"></script>
+    <script src="./classes/collectible.class.js"></script>
     <script src="./classes/throwable-duck.class.js"></script>
     <script src="./classes/cloud.class.js"></script>
     <script src="./classes/background.class.js"></script>
@@ -36,7 +35,6 @@
   </head>
   <body>
     <main class="game-container">
-      <!-- game-frame behält das Seitenverhältnis 3:2, auch im Vollbild -->
       <div class="game-frame">
         <canvas id="canvas" width="720" height="480"></canvas>
 
@@ -59,7 +57,6 @@
           </div>
         </section>
 
-        <!-- X-Button: nur sichtbar, während das Spiel läuft (siehe style.css), führt zurück zum Startbildschirm -->
         <button id="exitButton" class="exit-button" onclick="exitGame()" aria-label="Leave game" title="Leave game (Esc)">
           <img src="./imgs/icons/close.svg" alt="" />
         </button>
@@ -72,7 +69,6 @@
           <img id="muteIcon" src="./imgs/icons/speaker-on.svg" alt="" />
         </button>
 
-        <!-- Touch-Buttons: nur auf Tablet/Handy sichtbar und nur, während das Spiel läuft (siehe mobile.css) -->
         <div class="touch-controls">
           <div class="touch-group">
             <button id="touchLeft" class="touch-button" aria-label="Walk left"><img src="./imgs/icons/arrow-left.svg" alt="" /></button>
@@ -86,7 +82,6 @@
       </div>
     </main>
 
-    <!-- Hinweis im Hochformat auf Handys: Gerät drehen -->
     <section class="rotate-hint">
       <div class="rotate-phone"></div>
       <p>Turn your device to play</p>

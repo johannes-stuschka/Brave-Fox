@@ -6,20 +6,20 @@ class World {
   level;
   canvas;
   ctx;
-  bullets = []; // alle Kugeln, die gerade fliegen
-  thrownDucks = []; // alle Enten, die der Fuchs gerade geworfen hat
+  bullets = [];
+  thrownDucks = [];
   cameraX = 0;
-  cameraOffset = 120; // so viele Pixel bleibt der Fuchs vom linken Rand entfernt (Computer)
-  touchCameraOffset = 220; // mit Touch-Buttons: Fuchs steht rechts neben den Lauf-Buttons (sie enden bei ca. 186 px)
-  touchQuery = window.matchMedia("(max-width: 1024px), (pointer: coarse)"); // gleiche Bedingung wie in style.css
-  collisionHandler; // prüft alle Zusammenstöße (Gegner, Kugeln, Enten)
+  cameraOffset = 120;
+  touchCameraOffset = 220;
+  touchQuery = window.matchMedia("(max-width: 1024px), (pointer: coarse)");
+  collisionHandler;
   healthBar = new StatusBar(20, 20, "#c0392b", ICONS.heart, 100);
   duckBar = new StatusBar(20, 56, "#f5c542", ICONS.duck, MAX_DUCKS, 2);
-  berryBar; // wird im constructor erstellt, weil das Maximum von der Beeren-Anzahl im Level abhängt
-  bossBar = new StatusBar(507, 20, "#8b1a1a", ICONS.bossHat, 100); // oben rechts: 720 - 20 - 193 (Breite des Balkens)
-  boss; // der Endboss des Levels, seine Energie zeigt die bossBar
-  sleepZzz = new SleepZzz(); // "Z z z" über dem schlafenden Fuchs
-  animationFrameId; // id des nächsten requestAnimationFrame, damit wir das Zeichnen stoppen können
+  berryBar;
+  bossBar = new StatusBar(507, 20, "#8b1a1a", ICONS.bossHat, 100);
+  boss;
+  sleepZzz = new SleepZzz();
+  animationFrameId;
 
   /**
    * Creates the world, connects fox and enemies with it,
@@ -36,9 +36,7 @@ class World {
     this.boss = this.findBoss();
     this.setWorld();
     this.collisionHandler = new CollisionHandler(this);
-    this.moveBullets();
-    this.moveThrownDucks();
-    this.startCollisionCheck();
+    this.startUpdates();
     this.draw();
   }
 
@@ -73,10 +71,20 @@ class World {
 
 
   /**
-   * Starts the interval that moves all bullets (60 times per second).
+   * Starts the game tick of the world (60 times per second).
    */
-  moveBullets() {
-    setStoppableInterval(() => this.updateBullets(), 1000 / 60);
+  startUpdates() {
+    setTickInterval(() => this.update());
+  }
+
+
+  /**
+   * One game tick: moves bullets and thrown ducks, then checks all collisions.
+   */
+  update() {
+    this.updateBullets();
+    this.updateThrownDucks();
+    this.checkCollisions();
   }
 
 
@@ -96,17 +104,8 @@ class World {
    * @returns {boolean} True if the bullet should keep flying.
    */
   isBulletNeeded(bullet) {
-    let insideLevel = bullet.x + bullet.width > 0 && bullet.x < this.level.levelEndX;
     let nearFox = Math.abs(bullet.x - this.character.x) < this.canvas.width;
-    return insideLevel && nearFox && !bullet.hasHitGround();
-  }
-
-
-  /**
-   * Starts the interval that moves all thrown ducks (60 times per second).
-   */
-  moveThrownDucks() {
-    setStoppableInterval(() => this.updateThrownDucks(), 1000 / 60);
+    return this.isInsideLevel(bullet) && nearFox && !bullet.hasHitGround();
   }
 
 
@@ -115,26 +114,17 @@ class World {
    */
   updateThrownDucks() {
     this.thrownDucks.forEach((duck) => duck.move());
-    this.thrownDucks = this.thrownDucks.filter((duck) => this.isThrownDuckNeeded(duck));
+    this.thrownDucks = this.thrownDucks.filter((duck) => this.isInsideLevel(duck) && !duck.hasLanded());
   }
 
 
   /**
-   * A thrown duck is needed while it has not landed and is still inside the level.
-   * @param {ThrowableDuck} duck - The thrown duck to check.
-   * @returns {boolean} True if the duck should keep flying.
+   * Checks if a part of the object is still inside the level.
+   * @param {MovableObject} item - The object to check.
+   * @returns {boolean} True while the object has not left the level on the left or right.
    */
-  isThrownDuckNeeded(duck) {
-    let insideLevel = duck.x + duck.width > 0 && duck.x < this.level.levelEndX;
-    return insideLevel && !duck.hasLanded();
-  }
-
-
-  /**
-   * Starts the interval that checks all collisions (60 times per second).
-   */
-  startCollisionCheck() {
-    setStoppableInterval(() => this.checkCollisions(), 1000 / 60);
+  isInsideLevel(item) {
+    return item.x + item.width > 0 && item.x < this.level.levelEndX;
   }
 
 
@@ -278,9 +268,7 @@ class World {
    * @param {MovableObject[]} objects - The objects to draw.
    */
   addObjectsToMap(objects) {
-    objects.forEach((item) => {
-      this.addToMap(item);
-    });
+    objects.forEach((item) => this.addToMap(item));
   }
 
 
@@ -291,10 +279,10 @@ class World {
   addToMap(item) {
     this.ctx.save();
     if (item.otherDirection) {
-      this.ctx.translate(item.x + item.width, item.y); // Nullpunkt an rechte Kante
-      this.ctx.scale(-1, 1); // spiegeln
+      this.ctx.translate(item.x + item.width, item.y);
+      this.ctx.scale(-1, 1);
     } else {
-      this.ctx.translate(item.x, item.y); // Nullpunkt an linke Kante
+      this.ctx.translate(item.x, item.y);
     }
     this.rotateAroundCenter(item);
     this.drawImage(item);

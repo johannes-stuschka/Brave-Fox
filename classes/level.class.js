@@ -16,8 +16,8 @@ class Level {
    * @param {Cloud[]} clouds - Clouds that drift over the whole level.
    * @param {Background[]} backgrounds - Background tiles, placed side by side.
    * @param {MovableObject[]} enemies - All enemies of the level.
-   * @param {CollectibleDuck[]} ducks - Ducks the fox can collect as ammo.
-   * @param {CollectibleBerry[]} berries - Berries the fox can collect.
+   * @param {Collectible[]} ducks - Ducks the fox can collect as ammo.
+   * @param {Collectible[]} berries - Berries the fox can collect.
    * @param {number} levelEndX - Right end of the level in pixels.
    */
   constructor(sky, clouds, backgrounds, enemies, ducks, berries, levelEndX) {

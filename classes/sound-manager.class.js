@@ -1,26 +1,10 @@
-const SOUND_NAMES = [
-  "jump",
-  "throw",
-  "quack",
-  "berry",
-  "hurt",
-  "shot",
-  "hunter-dead",
-  "boss-alert",
-  "boss-hurt",
-  "win",
-  "game-over",
-];
-
 /**
  * Loads and plays all sounds and the music and remembers the mute setting.
  */
 class SoundManager {
-  storageKey = "braveFoxMuted"; // unter diesem Namen merkt sich der Browser, ob der Ton aus ist
-  musicVolume = 0.35; // die Musik ist die gleichmäßige Grundlautstärke
-  // Lautstärke pro Effekt: alle Dateien sind gleich laut erzeugt, hier liegen sie hörbar unter der Musik.
-  // Kurze, harte Sounds (Sprung, Schuss, Treffer) sind am leisesten, die Jingles etwa so laut wie die Musik.
-  volumes = {
+  storageKey = "braveFoxMuted";
+  musicVolume = 0.35;
+  effectVolumes = {
     jump: 0.11,
     throw: 0.12,
     quack: 0.16,
@@ -32,14 +16,14 @@ class SoundManager {
     "boss-hurt": 0.13,
     win: 0.2,
     "game-over": 0.2,
-    snore: 0.18,
   };
+  snoreVolume = 0.18;
   muted = false;
-  musicWanted = false; // soll die Musik gerade laufen (wenn der Ton an ist)?
-  effects = {}; // vorgeladene Effekte, z.B. effects.jump
-  playingEffects = []; // Kopien der Effekte, die gerade klingen
-  loops = {}; // Sounds, die sich wiederholen, z.B. loops.snore
-  activeLoops = []; // Namen der Loops, die gerade laufen sollen
+  musicWanted = false;
+  effects = {};
+  playingEffects = [];
+  loops = {};
+  activeLoops = [];
   music;
 
   /**
@@ -47,10 +31,10 @@ class SoundManager {
    */
   constructor() {
     this.music = this.createAudio("music", this.musicVolume, true);
-    SOUND_NAMES.forEach((name) => {
-      this.effects[name] = this.createAudio(name, this.volumes[name], false);
+    Object.entries(this.effectVolumes).forEach(([name, volume]) => {
+      this.effects[name] = this.createAudio(name, volume, false);
     });
-    this.loops.snore = this.createAudio("snore", this.volumes.snore, true);
+    this.loops.snore = this.createAudio("snore", this.snoreVolume, true);
     this.muted = this.loadMuted();
   }
 
@@ -81,7 +65,7 @@ class SoundManager {
 
 
   /**
-   * Plays a short effect with its own volume from "volumes".
+   * Plays a short effect with its own volume from "effectVolumes".
    * A copy is played, so the same effect can sound several times at once.
    * @param {string} name - Name of the effect, e.g. "jump".
    */
@@ -90,7 +74,7 @@ class SoundManager {
       return;
     }
     let sound = this.effects[name].cloneNode();
-    sound.volume = this.volumes[name];
+    sound.volume = this.effectVolumes[name];
     sound.addEventListener("ended", () => this.forgetEffect(sound));
     this.playingEffects.push(sound);
     this.startAudio(sound);
@@ -233,7 +217,6 @@ class SoundManager {
     try {
       localStorage.setItem(this.storageKey, String(this.muted));
     } catch (error) {
-      // ohne localStorage (z.B. privater Modus) gilt die Einstellung nur bis zum Neuladen
     }
   }
 }

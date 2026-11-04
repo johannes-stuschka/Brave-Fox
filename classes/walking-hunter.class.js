@@ -3,14 +3,12 @@
  * @extends Hunter
  */
 class WalkingHunter extends Hunter {
-  minSpeed = 0.6; // langsamer als der Fuchs (walkSpeed 4)
+  static animationNames = ["walk", "dead"];
+
+  minSpeed = 0.6;
   maxSpeed = 1.2;
-  fpsPerSpeed = 10; // 1 px pro Tick = 10 fps, so passen Schritte und Bewegung zusammen
+  fpsPerSpeed = 10;
   speed;
-  animations = {
-    walk: { path: "./imgs/Cowboy_1/Walk.png", frames: 12, fps: 10, row: 0 },
-    dead: { path: "./imgs/Cowboy_1/Dead.png", frames: 5, fps: 8, row: 0, loop: false },
-  };
 
   /**
    * Creates a walking hunter with a random slow speed and lets it walk left.
@@ -38,7 +36,7 @@ class WalkingHunter extends Hunter {
    * Starts the movement interval of the hunter (60 times per second).
    */
   walk() {
-    setStoppableInterval(() => this.moveLeft(), 1000 / 60);
+    setTickInterval(() => this.moveLeft());
   }
 
 

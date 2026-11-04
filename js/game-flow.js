@@ -1,8 +1,8 @@
-const END_SCREEN_DELAY = 1500; // so lange (ms) läuft die Sterbe-Animation, bevor der Endbildschirm kommt
+const endScreenDelay = 1500;
 
-let gameResult = null; // "won" oder "lost", sobald Fuchs oder Boss tot ist
-let gameResultTime = 0; // Zeitpunkt (ms), an dem das Ergebnis feststand
-let gameEnded = false; // true, sobald der Endbildschirm gezeigt wurde
+let gameResult = null;
+let gameResultTime = 0;
+let gameEnded = false;
 
 
 /**
@@ -21,7 +21,7 @@ function startNewGame() {
 
 
 /**
- * Checks if the game is won or lost. The end screen comes after END_SCREEN_DELAY,
+ * Checks if the game is won or lost. The end screen comes after endScreenDelay,
  * so the death animation of the fox or the boss can finish first.
  */
 function checkGameState() {
@@ -31,7 +31,7 @@ function checkGameState() {
   if (!gameResult) {
     rememberGameResult();
   }
-  if (gameResult && Date.now() - gameResultTime >= END_SCREEN_DELAY) {
+  if (gameResult && Date.now() - gameResultTime >= endScreenDelay) {
     endGame();
   }
 }
@@ -95,7 +95,7 @@ function showEndScreen() {
   title.classList.toggle("end-title-won", won);
   title.classList.toggle("end-title-lost", !won);
   document.getElementById("endStats").textContent = getBerryStats();
-  document.getElementById("endScreen").classList.remove("d-none");
+  showScreen("endScreen");
 }
 
 
@@ -112,8 +112,7 @@ function getBerryStats() {
  * Restart button: hides the end screen and starts a fresh game (no page reload).
  */
 function restartGame() {
-  document.activeElement.blur(); // sonst würde die Leertaste den Button nochmal drücken
-  document.getElementById("endScreen").classList.add("d-none");
+  hideScreen("endScreen");
   startNewGame();
 }
 
@@ -123,10 +122,29 @@ function restartGame() {
  */
 function goToHome() {
   soundManager.stopAll();
+  hideScreen("endScreen");
+  showScreen("startScreen");
+  gameStarted = false;
+}
+
+
+/**
+ * Shows a screen (start or end screen) above the canvas.
+ * @param {string} id - The id of the screen element.
+ */
+function showScreen(id) {
+  document.getElementById(id).classList.remove("d-none");
+}
+
+
+/**
+ * Hides a screen and removes the focus from its button,
+ * so the space key does not press that button again.
+ * @param {string} id - The id of the screen element.
+ */
+function hideScreen(id) {
   document.activeElement.blur();
-  document.getElementById("endScreen").classList.add("d-none");
-  document.getElementById("startScreen").classList.remove("d-none");
-  gameStarted = false; // damit der Start-Button wieder ein Spiel starten kann
+  document.getElementById(id).classList.add("d-none");
 }
 
 

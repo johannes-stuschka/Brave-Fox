@@ -1,47 +1,38 @@
 /**
  * The end boss: wakes up when the fox comes near, chases it and shoots.
- * It can only be defeated with thrown ducks.
- * @extends Hunter
+ * It reuses the shooting of ShootingHunter (without a range limit) and the
+ * inherited constructor; it can only be defeated with thrown ducks.
+ * Its fast bullets fly straight ahead at the height of the fox's body, so the fox
+ * has to jump over them. Touching the boss hurts and knocks the fox back,
+ * and duck hits do not interrupt its shots.
+ * @extends ShootingHunter
  */
-class BossHunter extends Hunter {
-  width = 288; // 128px-Frame * 2.25 = 288px, 1.8x so groß wie ein normaler Jäger (160px)
+class BossHunter extends ShootingHunter {
+  static animationNames = ["idle", "alert", "run", "shot", "hurt", "dead"];
+
+  width = 288;
   height = 288;
-  y = 159; // Füße (unterste Sprite-Zeile) stehen auf der Bodenlinie des Fuchses: 159 + 288 = 447
-  offset = { top: 126, right: 110, bottom: 0, left: 106 }; // sichtbarer Körper: Frame-Pixel 47-78 / 56-127, mal 2.25
-  contactDamage = 30; // stärker als ein normaler Jäger (20)
-  canBeStomped = false; // der Boss kann nur mit Enten besiegt werden
-  duckDamage = 20; // 5 Enten-Treffer bis der Boss besiegt ist
-  invulnerableTime = 500; // kurze Pause nach einem Treffer, so trifft eine Ente nicht doppelt
-  alertRange = 500; // so nah (Mitte zu Mitte) muss der Fuchs kommen, damit der Boss aufwacht
-  alertDuration = 1000; // so lange (ms) dauert die Kampfhaltung, bevor die Jagd beginnt
-  speed = 2.5; // schneller als die laufenden Jäger (max 1.2), langsamer als der Fuchs (walkSpeed 4)
-  stopDistance = 20; // so nah läuft der Boss an den Fuchs heran, dann bleibt er stehen
-  minCooldown = 2000; // Pause zwischen zwei Schüssen: 2 bis 3 Sekunden
-  maxCooldown = 3000;
-  muzzleOffsetX = 234; // Mündung: 104px im Frame * 2.25 (Abstand zur Bildkante)
-  muzzleY = 321; // y (159) + 72px im Frame * 2.25
-  state = "idle"; // "idle" (wartet), "alert" (Kampfhaltung) oder "chase" (jagt den Fuchs)
+  y = 159;
+  offset = { top: 126, right: 110, bottom: 0, left: 106 };
+  contactDamage = 35;
+  knockbackSpeed = 10;
+  canBeStomped = false;
+  duckDamage = 20;
+  invulnerableTime = 1000;
+  alertRange = 500;
+  alertDuration = 1000;
+  speed = 2.5;
+  stopDistance = 20;
+  range = Infinity;
+  minCooldown = 700;
+  maxCooldown = 1100;
+  muzzleOffsetX = 234;
+  muzzleY = 412;
+  bulletSpeed = 9;
+  bulletDamage = 35;
+  aimDistance = 1000;
+  state = "idle";
   alertStartTime = 0;
-  animations = {
-    idle: { path: "./imgs/Cowboy_1/Idle.png", frames: 6, fps: 6, row: 0 },
-    // Achtung: der Dateiname beginnt mit einem kyrillischen "С" (С), nicht mit einem lateinischen "C"
-    alert: { path: "./imgs/Cowboy_1/Сharging.png", frames: 9, fps: 9, row: 0, loop: false },
-    run: { path: "./imgs/Cowboy_1/Run.png", frames: 12, fps: 14, row: 0 },
-    shot: { path: "./imgs/Cowboy_1/Shot.png", frames: 4, fps: 8, row: 0 },
-    hurt: { path: "./imgs/Cowboy_1/Hurt.png", frames: 4, fps: 8, row: 0 },
-    dead: { path: "./imgs/Cowboy_1/Dead.png", frames: 5, fps: 8, row: 0, loop: false },
-  };
-
-  /**
-   * Creates the big end boss. It waits until the fox comes near.
-   * @param {number} x - Position of the boss in the level.
-   */
-  constructor(x) {
-    super(x);
-    this.startAnimations();
-    this.watchFox();
-  }
-
 
   /**
    * One tick: runs the method of the current state.
@@ -88,19 +79,47 @@ class BossHunter extends Hunter {
 
   /**
    * Chase state: shoots now and then, otherwise runs toward the fox.
-   * While hurt the boss stands still for a moment.
+   * While hurt the boss stands still for a moment, but it keeps shooting.
    */
   chaseFox() {
-    if (this.isHurt()) {
-      return;
-    }
-    this.faceFox();
-    this.startShotIfReady();
-    this.fireAtShotFrame();
-    this.endShotWhenDone();
-    if (!this.isShooting) {
+    this.shootAtFox();
+    if (!this.isShooting && !this.isHurt()) {
       this.runTowardFox();
     }
+  }
+
+
+  /**
+   * Creates a normal bullet, but the boss bullets hurt more.
+   * @returns {Bullet} The new bullet.
+   */
+  createBullet() {
+    let bullet = super.createBullet();
+    bullet.damage = this.bulletDamage;
+    return bullet;
+  }
+
+
+  /**
+   * Aims straight ahead in the looking direction, at the height of the muzzle.
+   * The bullet flies horizontally through the fox's body height, so only a jump dodges it.
+   * @returns {{x: number, y: number}} The point the bullet flies toward.
+   */
+  getAimPoint() {
+    let direction = this.getDirection();
+    return { x: this.getMuzzleX() + direction * this.aimDistance, y: this.muzzleY };
+  }
+
+
+  /**
+   * Touching the boss hurts like any hunter and also knocks the fox away from the boss,
+   * so the fox can not stand inside the boss.
+   * @param {Character} fox - The fox that touches the boss.
+   */
+  touchFox(fox) {
+    super.touchFox(fox);
+    let direction = Math.sign(this.getDistanceToFox()) || 1;
+    fox.knockBack(direction, this.knockbackSpeed);
   }
 
 
@@ -120,26 +139,14 @@ class BossHunter extends Hunter {
 
 
   /**
-   * Starts the shot animation when the cooldown is over.
-   */
-  startShotIfReady() {
-    if (this.isShooting || Date.now() < this.nextShotTime) {
-      return;
-    }
-    this.startShot();
-  }
-
-
-  /**
    * A thrown duck hit the boss: it loses duckDamage energy (not while still hurt).
-   * A hit wakes the boss up, and a shot that was running is cancelled.
+   * A hit wakes the boss up; a shot that is already running is not cancelled.
    */
   takeDuckHit() {
     if (this.isHurt()) {
       return;
     }
     this.hit(this.duckDamage);
-    this.isShooting = false;
     this.wakeUp();
     this.reactToHit();
   }
@@ -187,15 +194,12 @@ class BossHunter extends Hunter {
 
 
   /**
-   * Picks the animation for the current state: dead, hurt, alert, shot, run or idle.
+   * Picks the animation for the current state: dead, alert, or one of the chase animations.
    * @returns {{path: string, frames: number, fps: number, row: number}} The current animation.
    */
   getCurrentAnimation() {
     if (this.isDead()) {
       return this.animations.dead;
-    }
-    if (this.isHurt()) {
-      return this.animations.hurt;
     }
     if (this.state === "alert") {
       return this.animations.alert;
@@ -205,7 +209,8 @@ class BossHunter extends Hunter {
 
 
   /**
-   * Animation while chasing: shot while shooting, otherwise run. Before the chase: idle.
+   * Animation while chasing: shot while shooting (even when hurt, so the bullet still fires),
+   * hurt after a duck hit, otherwise run. Before the chase: idle.
    * @returns {{path: string, frames: number, fps: number, row: number}} The current animation.
    */
   getChaseAnimation() {
@@ -214,6 +219,9 @@ class BossHunter extends Hunter {
     }
     if (this.isShooting) {
       return this.animations.shot;
+    }
+    if (this.isHurt()) {
+      return this.animations.hurt;
     }
     return this.animations.run;
   }

@@ -1,8 +1,7 @@
 let soundManager = new SoundManager();
 
-// Lautsprecher-Icons für den Mute-Button: mit Schallwellen (Ton an) und mit rotem Kreuz (Ton aus)
-const SPEAKER_ON_ICON = "./imgs/icons/speaker-on.svg";
-const SPEAKER_OFF_ICON = "./imgs/icons/speaker-off.svg";
+const speakerOnIcon = "./imgs/icons/speaker-on.svg";
+const speakerOffIcon = "./imgs/icons/speaker-off.svg";
 
 
 /**
@@ -22,10 +21,7 @@ function toggleMute() {
 function updateMuteButton() {
   let muted = soundManager.muted;
   let label = muted ? "Sound on" : "Sound off";
-  let button = document.getElementById("muteButton");
-  document.getElementById("muteIcon").src = muted ? SPEAKER_OFF_ICON : SPEAKER_ON_ICON;
-  button.setAttribute("aria-label", label);
-  button.title = label + " (M)";
+  updateIconButton("muteButton", "muteIcon", muted ? speakerOffIcon : speakerOnIcon, label, label + " (M)");
 }
 
 

@@ -1,6 +1,3 @@
-/* Handy und Tablet: Touch-Buttons, Querformat und Hinweis "Gerät drehen" (Farben aus style.css) */
-
-/* Touch-Buttons: unten links laufen, unten rechts springen und werfen */
 .touch-controls {
   position: absolute;
   left: 3%;
@@ -9,7 +6,7 @@
   z-index: 2;
   display: none;
   justify-content: space-between;
-  pointer-events: none; /* nur die Buttons selbst fangen Finger ab, nicht die Fläche dazwischen */
+  pointer-events: none;
 }
 
 .touch-group {
@@ -24,16 +21,16 @@
   width: clamp(48px, 15vmin, 76px);
   aspect-ratio: 1;
   padding: 0;
-  background-color: rgba(107, 66, 38, 0.35); /* halb durchsichtig, damit man den Fuchs dahinter noch sieht */
+  background-color: rgba(107, 66, 38, 0.35);
   border: 3px solid rgba(59, 36, 20, 0.6);
   border-radius: 8px;
   box-shadow: 0 3px 0 rgba(59, 36, 20, 0.6);
   pointer-events: auto;
   cursor: pointer;
-  touch-action: none; /* kein Scrollen und kein Zoomen auf den Buttons */
+  touch-action: none;
   user-select: none;
   -webkit-user-select: none;
-  -webkit-touch-callout: none; /* kein Menü bei langem Drücken (iOS) */
+  -webkit-touch-callout: none;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -50,21 +47,11 @@
   pointer-events: none;
 }
 
-/* Tablet- und Handy-Größe (oder Touch-Bildschirm): Touch-Buttons zeigen */
 @media (max-width: 1024px), (pointer: coarse) {
   .touch-controls {
     display: flex;
   }
-}
 
-/* Auf dem Start- und Endbildschirm keine Touch-Buttons, nur während das Spiel läuft */
-.game-container:has(#startScreen:not(.d-none)) .touch-controls,
-.game-container:has(#endScreen:not(.d-none)) .touch-controls {
-  display: none;
-}
-
-/* Handy im Querformat (wenig Höhe): Spiel so groß wie möglich, ohne Holzrahmen */
-@media (orientation: landscape) and (max-height: 500px) {
   .game-container {
     width: min(100vw, 100dvh * 1.5);
     border: none;
@@ -73,7 +60,11 @@
   }
 }
 
-/* Hinweis "Gerät drehen": im Normalfall versteckt */
+.game-container:has(#startScreen:not(.d-none)) .touch-controls,
+.game-container:has(#endScreen:not(.d-none)) .touch-controls {
+  display: none;
+}
+
 .rotate-hint {
   position: fixed;
   inset: 0;
@@ -90,7 +81,6 @@
   background-color: var(--wood-dark);
 }
 
-/* Pixel-Handy aus dicken Rändern, das sich immer wieder ins Querformat dreht */
 .rotate-phone {
   width: 48px;
   height: 80px;
@@ -112,7 +102,6 @@
   }
 }
 
-/* Handy oder Tablet im Hochformat: Spiel verstecken, Dreh-Hinweis zeigen */
 @media (orientation: portrait) and (max-width: 900px) and (pointer: coarse),
   (orientation: portrait) and (max-width: 600px) {
   .rotate-hint {

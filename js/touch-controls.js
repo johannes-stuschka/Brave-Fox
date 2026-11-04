@@ -1,14 +1,13 @@
-const MIN_PRESS_TIME = 100; // so lange (ms) bleibt eine Touch-Taste mindestens gedrückt, damit der Fuchs auch ganz kurze Tipper bemerkt
+const minPressTime = 100;
 
-// Welcher Button welche Taste im keyBoard drückt
-const TOUCH_BUTTONS = [
+const touchButtons = [
   { id: "touchLeft", key: "left" },
   { id: "touchRight", key: "right" },
   { id: "touchJump", key: "space" },
   { id: "touchThrow", key: "d" },
 ];
 
-let touchPressTimes = {}; // Zeitpunkt (ms), an dem jede Touch-Taste zuletzt gedrückt wurde
+let touchPressTimes = {};
 
 
 /**
@@ -19,14 +18,14 @@ let touchPressTimes = {}; // Zeitpunkt (ms), an dem jede Touch-Taste zuletzt ged
  */
 function pressTouchKey(event, key) {
   event.preventDefault();
-  event.currentTarget.setPointerCapture(event.pointerId); // auch beim Rausrutschen kommt das "Loslassen" an
+  event.currentTarget.setPointerCapture(event.pointerId);
   keyBoard[key] = true;
   touchPressTimes[key] = Date.now();
 }
 
 
 /**
- * Finger (or mouse) leaves a touch button: the key is released after at least MIN_PRESS_TIME.
+ * Finger (or mouse) leaves a touch button: the key is released after at least minPressTime.
  * So even a very short tap is seen by the fox (jump or exactly one throw like the D key).
  * @param {PointerEvent} event - The pointerup or pointercancel event.
  * @param {string} key - The key in keyBoard, e.g. "left" or "d".
@@ -34,7 +33,7 @@ function pressTouchKey(event, key) {
 function releaseTouchKey(event, key) {
   event.preventDefault();
   let pressTime = touchPressTimes[key];
-  let waitTime = Math.max(0, MIN_PRESS_TIME - (Date.now() - pressTime));
+  let waitTime = Math.max(0, minPressTime - (Date.now() - pressTime));
   setTimeout(() => releaseKeyIfNotPressedAgain(key, pressTime), waitTime);
 }
 
@@ -72,7 +71,7 @@ function registerTouchButton(button, key) {
  * Connects all touch buttons with their keys.
  */
 function initTouchControls() {
-  TOUCH_BUTTONS.forEach((button) => registerTouchButton(document.getElementById(button.id), button.key));
+  touchButtons.forEach((button) => registerTouchButton(document.getElementById(button.id), button.key));
 }
 
 

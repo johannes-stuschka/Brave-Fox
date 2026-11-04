@@ -6,24 +6,27 @@
 class Bullet extends MovableObject {
   width = 10;
   height = 4;
-  speed = 7; // Pixel pro Tick, viel schneller als der Fuchs (walkSpeed 4)
-  groundY = 447; // Bodenlinie: hier schlägt die Kugel in den Boden ein
-  damage = 15; // so viel Energie verliert der Fuchs bei einem Treffer
-  stepX = 0; // so weit fliegt die Kugel pro Tick nach rechts (negativ = nach links)
-  stepY = 0; // so weit fliegt die Kugel pro Tick nach unten (negativ = nach oben)
-  rotation = 0; // Flugwinkel, World.addToMap zeichnet die Kugel damit gedreht
+  speed;
+  groundY = 447;
+  damage = 15;
+  stepX = 0;
+  stepY = 0;
+  rotation = 0;
 
   /**
-   * Creates a bullet at the gun muzzle, aimed at a target point (the fox).
+   * Creates a bullet at the gun muzzle, aimed at a target point.
+   * Speeds are pixels per tick; the fox walks 4 pixels per tick.
    * @param {number} x - Start position (left edge) in the level.
    * @param {number} y - Start height (the muzzle of the gun).
    * @param {number} targetX - x of the point the bullet flies toward.
    * @param {number} targetY - y of the point the bullet flies toward.
+   * @param {number} speed - Flight speed in pixels per tick.
    */
-  constructor(x, y, targetX, targetY) {
+  constructor(x, y, targetX, targetY, speed) {
     super();
     this.x = x;
     this.y = y;
+    this.speed = speed;
     this.aimAt(targetX, targetY);
     this.img = ICONS.bullet;
   }

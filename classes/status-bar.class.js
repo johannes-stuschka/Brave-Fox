@@ -4,17 +4,17 @@
 class StatusBar {
   x;
   y;
-  color; // Füllfarbe des Balkens
-  icon; // Bild des Icons (z.B. ICONS.heart oder ICONS.duck)
-  pixelSize; // so groß wird ein Icon-Pixel gezeichnet
-  maxValue; // dieser Wert entspricht einem vollen Balken
+  color;
+  icon;
+  pixelSize;
+  maxValue;
   percentage = 100;
-  iconBoxWidth = 34; // fester Platz für das Icon, damit alle Balken bündig untereinander stehen
+  iconBoxWidth = 34;
   iconBoxHeight = 28;
   barWidth = 150;
   barHeight = 14;
-  frameColor = "#5b3a1e"; // Holz-Rahmen
-  emptyColor = "#2b1d10"; // dunkles Holz, wenn der Balken leer ist
+  frameColor = "#5b3a1e";
+  emptyColor = "#2b1d10";
 
   /**
    * Creates a status bar that stays fixed on the screen.
@@ -94,7 +94,7 @@ class StatusBar {
     let fillWidth = Math.round((this.barWidth * this.percentage) / 100);
     ctx.fillStyle = this.color;
     ctx.fillRect(barX, barY, fillWidth, this.barHeight);
-    ctx.fillStyle = "rgba(255, 255, 255, 0.35)"; // heller Streifen oben = Glanz
+    ctx.fillStyle = "rgba(255, 255, 255, 0.35)";
     ctx.fillRect(barX, barY + 2, fillWidth, 2);
   }
 

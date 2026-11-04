@@ -1,6 +1,4 @@
-// Pixel-Art-Grafiken für das Canvas (SVG-Dateien in imgs/icons).
-// Sie werden schon beim Laden der Seite vorgeladen, damit sie beim Spielstart fertig sind.
-const ICON_FOLDER = "./imgs/icons/";
+const iconFolder = "./imgs/icons/";
 
 
 /**
@@ -10,7 +8,7 @@ const ICON_FOLDER = "./imgs/icons/";
  */
 function loadIcon(fileName) {
   let img = new Image();
-  img.src = ICON_FOLDER + fileName;
+  img.src = iconFolder + fileName;
   return img;
 }
 
@@ -29,11 +27,27 @@ function isImageReady(image) {
 
 
 const ICONS = {
-  heart: loadIcon("heart.svg"), // Lebensanzeige
-  duck: loadIcon("duck.svg"), // Enten-Anzeige, Ente zum Einsammeln und geworfene Ente
-  berry: loadIcon("berry.svg"), // Beeren mit weißem Glanzpunkt
-  berryDull: loadIcon("berry-dull.svg"), // gleiche Beeren mit hellrotem Glanzpunkt (für das Funkeln)
-  bossHat: loadIcon("boss-hat.svg"), // Boss-Lebensanzeige
-  zzz: loadIcon("zzz.svg"), // "Z" über dem schlafenden Fuchs
-  bullet: loadIcon("bullet.svg"), // Kugel der Jäger
+  heart: loadIcon("heart.svg"),
+  duck: loadIcon("duck.svg"),
+  berry: loadIcon("berry.svg"),
+  berryDull: loadIcon("berry-dull.svg"),
+  bossHat: loadIcon("boss-hat.svg"),
+  zzz: loadIcon("zzz.svg"),
+  bullet: loadIcon("bullet.svg"),
 };
+
+
+/**
+ * Updates an icon button (mute or fullscreen): new icon, screen reader label and tooltip.
+ * @param {string} buttonId - The id of the button.
+ * @param {string} iconId - The id of the img inside the button.
+ * @param {string} iconSrc - Path of the new icon.
+ * @param {string} label - Text for screen readers.
+ * @param {string} [title=label] - Text for the tooltip (e.g. with a key hint).
+ */
+function updateIconButton(buttonId, iconId, iconSrc, label, title = label) {
+  let button = document.getElementById(buttonId);
+  document.getElementById(iconId).src = iconSrc;
+  button.setAttribute("aria-label", label);
+  button.title = title;
+}

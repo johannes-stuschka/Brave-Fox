@@ -1,6 +1,8 @@
 let world;
 
-const SHOW_HITBOXES = false; // true zeigt die Hitboxen als Rahmen (zum Einstellen der offsets)
+const SHOW_HITBOXES = false;
+
+const TICK_TIME = 1000 / 60;
 
 let keyBoard = {
   left: false,
@@ -9,7 +11,7 @@ let keyBoard = {
   d: false,
 };
 
-const KEY_NAMES = { ArrowLeft: "left", ArrowRight: "right", d: "d", D: "d" }; // welche Taste welchen Eintrag in keyBoard setzt
+const keyNames = { ArrowLeft: "left", ArrowRight: "right", d: "d", D: "d" };
 
 let intervalIds = [];
 
@@ -23,6 +25,16 @@ function setStoppableInterval(fn, ms) {
   let id = setInterval(fn, ms);
   intervalIds.push(id);
   return id;
+}
+
+
+/**
+ * Starts an interval that runs 60 times per second (one game tick).
+ * @param {Function} fn - Function that runs on every tick.
+ * @returns {number} The id of the new interval.
+ */
+function setTickInterval(fn) {
+  return setStoppableInterval(fn, TICK_TIME);
 }
 
 
@@ -46,7 +58,7 @@ function init() {
 
 /**
  * Saves in keyBoard whether one of the game keys was pressed or released.
- * KEY_NAMES tells which keyBoard entry belongs to which key (Space is checked by its code).
+ * keyNames tells which keyBoard entry belongs to which key (Space is checked by its code).
  * @param {KeyboardEvent} event - The keydown or keyup event.
  * @param {boolean} isPressed - true on keydown, false on keyup.
  */
@@ -54,7 +66,7 @@ function setKey(event, isPressed) {
   if (event.code == "Space") {
     keyBoard.space = isPressed;
   }
-  let name = KEY_NAMES[event.key];
+  let name = keyNames[event.key];
   if (name) {
     keyBoard[name] = isPressed;
   }

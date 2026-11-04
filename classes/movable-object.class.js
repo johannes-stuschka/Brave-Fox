@@ -13,16 +13,15 @@ class MovableObject {
   currentImage = 0;
   imageCache = {};
   currentAnimation = null;
-  animationTime = 0; // vergangene ms seit dem letzten Frame-Wechsel
-  animationTick = 1000 / 60; // so oft prüft animate(), ob ein neuer Frame dran ist
-  groundY = 389; // y-Wert, auf dem das Objekt auf dem Boden steht
-  speedY = 0; // Geschwindigkeit nach oben (positiv = steigt, negativ = fällt)
-  acceleration = 0.5; // so stark zieht die Schwerkraft pro Tick nach unten
-  jumpSpeed = 12; // Start-Geschwindigkeit beim Absprung
-  offset = { top: 0, right: 0, bottom: 0, left: 0 }; // durchsichtiger Rand im Bild, gilt für Blick nach rechts
-  energy = 100; // Lebenspunkte
-  lastHit = 0; // Zeitpunkt (ms) des letzten Treffers
-  invulnerableTime = 1000; // so lange (ms) nach einem Treffer gibt es keinen neuen Schaden
+  animationTime = 0;
+  groundY = 389;
+  speedY = 0;
+  acceleration = 0.5;
+  jumpSpeed = 12;
+  offset = { top: 0, right: 0, bottom: 0, left: 0 };
+  energy = 100;
+  lastHit = 0;
+  invulnerableTime = 1000;
 
   /**
    * Loads a single image and uses it as the current image.
@@ -57,12 +56,21 @@ class MovableObject {
 
 
   /**
+   * Preloads the sprite sheets of all animations of this object and starts its animation interval.
+   */
+  startAnimations() {
+    this.loadImages(Object.values(this.animations));
+    this.animate();
+  }
+
+
+  /**
    * Starts the single animation interval of this object.
    * Shows the first frame right away so there is always an image to draw.
    */
   animate() {
     this.playAnimation(this.getCurrentAnimation());
-    setStoppableInterval(() => this.updateAnimation(), this.animationTick);
+    setTickInterval(() => this.updateAnimation());
   }
 
 
@@ -82,7 +90,7 @@ class MovableObject {
    */
   updateAnimation() {
     let animation = this.getCurrentAnimation();
-    this.animationTime += this.animationTick;
+    this.animationTime += TICK_TIME;
     let frameDuration = 1000 / animation.fps;
     if (animation !== this.currentAnimation || this.animationTime >= frameDuration) {
       this.animationTime = 0;
@@ -134,10 +142,19 @@ class MovableObject {
 
 
   /**
+   * Returns the direction the object looks in.
+   * @returns {number} -1 when it looks left, 1 when it looks right.
+   */
+  getDirection() {
+    return this.otherDirection ? -1 : 1;
+  }
+
+
+  /**
    * Starts the gravity interval (60 times per second).
    */
   applyGravity() {
-    setStoppableInterval(() => this.updateGravity(), 1000 / 60);
+    setTickInterval(() => this.updateGravity());
   }
 
 
