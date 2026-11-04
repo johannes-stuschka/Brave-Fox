@@ -21,14 +21,12 @@ class Cloud extends MovableObject {
     this.animate();
   }
 
-
   /**
    * Starts the interval that lets the cloud drift.
    */
   animate() {
     setTickInterval(() => this.drift());
   }
-
 
   /**
    * Moves the cloud a little to the left and starts again at the end of the level.

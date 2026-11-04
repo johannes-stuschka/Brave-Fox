@@ -38,7 +38,6 @@ class SoundManager {
     this.muted = this.loadMuted();
   }
 
-
   /**
    * Creates one preloaded audio element for a file in the audio folder.
    * @param {string} name - File name without ".wav".
@@ -54,7 +53,6 @@ class SoundManager {
     return audio;
   }
 
-
   /**
    * Starts an audio element. Errors (e.g. the browser blocks sound before the first click) are ignored.
    * @param {HTMLAudioElement} audio - The sound to start.
@@ -62,7 +60,6 @@ class SoundManager {
   startAudio(audio) {
     audio.play().catch(() => {});
   }
-
 
   /**
    * Plays a short effect with its own volume from "effectVolumes".
@@ -80,7 +77,6 @@ class SoundManager {
     this.startAudio(sound);
   }
 
-
   /**
    * Removes a finished effect from the list of playing effects.
    * @param {HTMLAudioElement} sound - The effect that ended.
@@ -89,7 +85,6 @@ class SoundManager {
     this.playingEffects = this.playingEffects.filter((item) => item !== sound);
   }
 
-
   /**
    * Stops all effects that are still sounding.
    */
@@ -97,7 +92,6 @@ class SoundManager {
     this.playingEffects.forEach((sound) => sound.pause());
     this.playingEffects = [];
   }
-
 
   /**
    * Starts the background music from the beginning (only one music at a time).
@@ -110,7 +104,6 @@ class SoundManager {
     }
   }
 
-
   /**
    * Stops the background music and rewinds it.
    */
@@ -119,7 +112,6 @@ class SoundManager {
     this.music.pause();
     this.music.currentTime = 0;
   }
-
 
   /**
    * Starts a repeating sound (e.g. "snore"). Calling it again while it runs does nothing.
@@ -136,7 +128,6 @@ class SoundManager {
     }
   }
 
-
   /**
    * Stops a repeating sound. Does nothing if it is not running.
    * @param {string} name - Name of the loop.
@@ -149,7 +140,6 @@ class SoundManager {
     this.loops[name].pause();
   }
 
-
   /**
    * Stops every sound: music, loops and effects.
    */
@@ -158,7 +148,6 @@ class SoundManager {
     [...this.activeLoops].forEach((name) => this.stopLoop(name));
     this.stopEffects();
   }
-
 
   /**
    * Turns the sound off or on and saves the choice.
@@ -175,7 +164,6 @@ class SoundManager {
     }
   }
 
-
   /**
    * Pauses music and loops (they can continue later) and stops all effects.
    */
@@ -184,7 +172,6 @@ class SoundManager {
     this.activeLoops.forEach((name) => this.loops[name].pause());
     this.stopEffects();
   }
-
 
   /**
    * Continues the music and the loops that should be running right now.
@@ -195,7 +182,6 @@ class SoundManager {
     }
     this.activeLoops.forEach((name) => this.startAudio(this.loops[name]));
   }
-
 
   /**
    * Reads the saved mute setting. If localStorage is not available, the sound is on.
@@ -209,14 +195,12 @@ class SoundManager {
     }
   }
 
-
   /**
    * Saves the mute setting, so it is still the same after a reload.
    */
   saveMuted() {
     try {
       localStorage.setItem(this.storageKey, String(this.muted));
-    } catch (error) {
-    }
+    } catch (error) {}
   }
 }

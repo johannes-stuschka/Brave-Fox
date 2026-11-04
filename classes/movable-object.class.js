@@ -16,7 +16,6 @@ class MovableObject extends DrawableObject {
     setTickInterval(() => this.updateGravity());
   }
 
-
   /**
    * One gravity step: moves the object by speedY and slows it down.
    * Does nothing while the object stands on the ground.
@@ -29,7 +28,6 @@ class MovableObject extends DrawableObject {
     }
   }
 
-
   /**
    * Puts the object exactly on the ground if it fell below it.
    */
@@ -39,7 +37,6 @@ class MovableObject extends DrawableObject {
       this.speedY = 0;
     }
   }
-
 
   /**
    * Checks if the object is in the air.

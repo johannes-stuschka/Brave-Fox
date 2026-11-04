@@ -44,7 +44,6 @@ class Hunter extends Creature {
     this.animations = Hunter.createAnimations(this.constructor.animationNames);
   }
 
-
   /**
    * Builds fresh animation objects from the catalog, so every hunter can change its own copy.
    * @param {string[]} names - Names of the animations to create.
@@ -59,7 +58,6 @@ class Hunter extends Creature {
     return animations;
   }
 
-
   /**
    * Defeats the hunter: no energy left, remembers when it happened.
    * The dead animation and the removal are based on this.
@@ -70,7 +68,6 @@ class Hunter extends Creature {
     soundManager.play("hunter-dead");
   }
 
-
   /**
    * A thrown duck hit the hunter: a normal hunter is defeated right away.
    * The end boss can override this and only lose some energy instead.
@@ -78,7 +75,6 @@ class Hunter extends Creature {
   takeDuckHit() {
     this.die();
   }
-
 
   /**
    * The fox ran into the hunter (not a stomp): the fox loses contactDamage energy.
@@ -89,7 +85,6 @@ class Hunter extends Creature {
     fox.hit(this.contactDamage);
   }
 
-
   /**
    * Checks if a thrown duck can hit this hunter right now. Dead hunters can not be hit again.
    * @returns {boolean} True if the hunter can be hit.
@@ -97,7 +92,6 @@ class Hunter extends Creature {
   canBeHit() {
     return !this.isDead();
   }
-
 
   /**
    * Checks if the hunter is dead long enough to be removed from the level.

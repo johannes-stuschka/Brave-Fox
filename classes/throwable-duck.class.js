@@ -33,7 +33,6 @@ class ThrowableDuck extends MovableObject {
     this.img = ICONS.duck;
   }
 
-
   /**
    * One flight step: forward, up or down along the arc, and a little spin.
    * Called 60 times per second by the World.
@@ -43,5 +42,4 @@ class ThrowableDuck extends MovableObject {
     this.updateGravity();
     this.rotation += this.spinSpeed;
   }
-
 }

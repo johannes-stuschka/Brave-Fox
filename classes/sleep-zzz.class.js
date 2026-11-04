@@ -27,7 +27,6 @@ class SleepZzz {
     }
   }
 
-
   /**
    * Draws one Z: it rises, wobbles a little and fades in and out softly.
    * @param {CanvasRenderingContext2D} ctx - The canvas to draw on.
@@ -47,7 +46,6 @@ class SleepZzz {
     ctx.restore();
   }
 
-
   /**
    * Returns the middle x of a Z: above the head, drifting away in the direction the fox looks.
    * @param {Character} fox - The sleeping fox.
@@ -60,7 +58,6 @@ class SleepZzz {
     let wobble = Math.sin(progress * Math.PI * 2) * 2;
     return startX + direction * progress * this.driftWidth + wobble;
   }
-
 
   /**
    * Returns how visible a Z is: it fades in quickly at the start and fades out slowly.

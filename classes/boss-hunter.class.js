@@ -3,8 +3,8 @@
  * It reuses the shooting of ShootingHunter (without a range limit) and the
  * inherited constructor; it can only be defeated with thrown ducks.
  * It shoots more often and its bullets hurt more than those of a normal hunter.
- * Touching the boss hurts and knocks the fox back. After every duck hit it leaps
- * high toward the fox; while it is in the air, ducks fly below it.
+ * Touching the boss hurts and knocks the fox back. After every duck hit it plays
+ * its hurt animation and then leaps high toward the fox; while it is in the air, ducks fly below it.
  * @extends ShootingHunter
  */
 class BossHunter extends ShootingHunter {
@@ -35,6 +35,7 @@ class BossHunter extends ShootingHunter {
   bulletDamage = 30;
   state = "idle";
   alertStartTime = 0;
+  leapPending = false;
 
   /**
    * One tick: gravity, then the method of the current state.
@@ -85,17 +86,43 @@ class BossHunter extends ShootingHunter {
 
   /**
    * Chase state: flies on during a leap, otherwise shoots now and then and runs toward the fox.
-   * While hurt the boss stands still for a moment, but it keeps shooting.
+   * After a duck hit the boss stands still until its hurt animation is over and then leaps.
    */
   chaseFox() {
     if (this.isAboveGround()) {
       this.moveInsideLevel(this.x + this.leapDirection * this.leapSpeedX);
       return;
     }
+    if (this.leapPending) {
+      this.leapAfterHurt();
+      return;
+    }
     this.shootAtFox();
-    if (!this.isShooting && !this.isHurt()) {
+    if (!this.isShooting) {
       this.runTowardFox();
     }
+  }
+
+
+  /**
+   * Waits until all frames of the hurt animation were shown, then leaps toward the fox.
+   */
+  leapAfterHurt() {
+    if (!this.isShowingHurt()) {
+      this.leapPending = false;
+      this.leap();
+    }
+  }
+
+
+  /**
+   * Checks if the hurt animation after the last hit is still playing.
+   * @returns {boolean} True while the hurt animation is not finished.
+   */
+  isShowingHurt() {
+    let hurt = this.animations.hurt;
+    let hurtDuration = (hurt.frames * 1000) / hurt.fps;
+    return Date.now() - this.lastHit < hurtDuration;
   }
 
 
@@ -156,7 +183,7 @@ class BossHunter extends ShootingHunter {
 
   /**
    * A thrown duck hit the boss: it loses duckDamage energy (not while still hurt).
-   * A hit wakes the boss up; a shot that is already running is not cancelled.
+   * A hit wakes the boss up.
    */
   takeDuckHit() {
     if (this.isHurt()) {
@@ -169,14 +196,16 @@ class BossHunter extends ShootingHunter {
 
 
   /**
-   * After a hit: the boss dies when the energy is gone, otherwise it grunts in pain and leaps.
+   * After a hit: the boss dies when the energy is gone, otherwise it grunts in pain,
+   * stops a running shot and leaps as soon as its hurt animation is over (see chaseFox()).
    */
   reactToHit() {
     if (this.isDead()) {
       this.die();
     } else {
       soundManager.play("boss-hurt");
-      this.leap();
+      this.isShooting = false;
+      this.leapPending = true;
     }
   }
 
@@ -226,8 +255,8 @@ class BossHunter extends ShootingHunter {
 
 
   /**
-   * Animation while chasing: jump in the air, shot while shooting (even when hurt, so the bullet still fires),
-   * hurt after a duck hit, otherwise run. Before the chase: idle.
+   * Animation while chasing: jump in the air, hurt right after a duck hit,
+   * shot while shooting, otherwise run. Before the chase: idle.
    * @returns {{path: string, frames: number, fps: number, row: number}} The current animation.
    */
   getChaseAnimation() {
@@ -237,11 +266,11 @@ class BossHunter extends ShootingHunter {
     if (this.isAboveGround()) {
       return this.animations.jump;
     }
+    if (this.leapPending) {
+      return this.animations.hurt;
+    }
     if (this.isShooting) {
       return this.animations.shot;
-    }
-    if (this.isHurt()) {
-      return this.animations.hurt;
     }
     return this.animations.run;
   }

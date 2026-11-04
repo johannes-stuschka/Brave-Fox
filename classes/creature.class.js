@@ -30,7 +30,6 @@ class Creature extends MovableObject {
     });
   }
 
-
   /**
    * Preloads the sprite sheets of all animations of this creature and starts its animation interval.
    */
@@ -38,7 +37,6 @@ class Creature extends MovableObject {
     this.loadImages(Object.values(this.animations));
     this.animate();
   }
-
 
   /**
    * Starts the single animation interval of this creature.
@@ -49,7 +47,6 @@ class Creature extends MovableObject {
     setTickInterval(() => this.updateAnimation());
   }
 
-
   /**
    * Returns the animation that should play right now.
    * Subclasses override this (e.g. walk while a key is pressed).
@@ -58,7 +55,6 @@ class Creature extends MovableObject {
   getCurrentAnimation() {
     return this.animations.idle;
   }
-
 
   /**
    * Called every tick: plays the next frame when the animation changed
@@ -73,7 +69,6 @@ class Creature extends MovableObject {
       this.playAnimation(animation);
     }
   }
-
 
   /**
    * Switches to a new animation (starting at frame 0) or advances one frame.
@@ -90,7 +85,6 @@ class Creature extends MovableObject {
     this.showFrame(animation);
   }
 
-
   /**
    * Returns the number of the next frame. Normal animations start again at 0,
    * animations with loop: false stay on their last frame (e.g. dying).
@@ -104,7 +98,6 @@ class Creature extends MovableObject {
     return (this.currentImage + 1) % animation.frames;
   }
 
-
   /**
    * Sets sourceX/sourceY so that drawImage() cuts out the current frame.
    * firstFrame (optional) lets an animation start later in the row.
@@ -116,7 +109,6 @@ class Creature extends MovableObject {
     this.sourceY = (animation.row || 0) * this.frameHeight;
   }
 
-
   /**
    * Draws only the current frame of the sprite sheet.
    * @param {CanvasRenderingContext2D} ctx - The canvas context, already moved to the creature.
@@ -125,7 +117,6 @@ class Creature extends MovableObject {
     let { sourceX, sourceY, frameWidth, frameHeight } = this;
     ctx.drawImage(this.getImage(), sourceX, sourceY, frameWidth, frameHeight, 0, 0, this.width, this.height);
   }
-
 
   /**
    * Takes damage, but only if the creature is not invulnerable after the last hit.
@@ -140,7 +131,6 @@ class Creature extends MovableObject {
     this.lastHit = Date.now();
   }
 
-
   /**
    * Checks if the last hit was less than invulnerableTime ago.
    * @returns {boolean} True while the creature is still invulnerable.
@@ -148,7 +138,6 @@ class Creature extends MovableObject {
   isHurt() {
     return Date.now() - this.lastHit < this.invulnerableTime;
   }
-
 
   /**
    * Checks if the creature has no energy left.

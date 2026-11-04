@@ -21,7 +21,6 @@ class DrawableObject {
     this.img.src = path;
   }
 
-
   /**
    * Returns the image that is drawn right now. Subclasses can swap it (e.g. the fox without shadow in the air).
    * @returns {HTMLImageElement|HTMLCanvasElement} The image to draw.
@@ -30,7 +29,6 @@ class DrawableObject {
     return this.img;
   }
 
-
   /**
    * Returns the direction the object looks in.
    * @returns {number} -1 when it looks left, 1 when it looks right.
@@ -38,7 +36,6 @@ class DrawableObject {
   getDirection() {
     return this.otherDirection ? -1 : 1;
   }
-
 
   /**
    * Draws the object, mirrored if it looks to the left and turned if it has a rotation.
@@ -55,7 +52,6 @@ class DrawableObject {
     ctx.restore();
   }
 
-
   /**
    * Moves the origin of the canvas to the object. A mirrored object starts at its right edge.
    * @param {CanvasRenderingContext2D} ctx - The canvas context.
@@ -68,7 +64,6 @@ class DrawableObject {
       ctx.translate(this.x, this.y);
     }
   }
-
 
   /**
    * Turns the canvas around the middle of the object (e.g. a spinning thrown duck).
@@ -84,7 +79,6 @@ class DrawableObject {
     ctx.translate(-this.width / 2, -this.height / 2);
   }
 
-
   /**
    * Draws the whole image into the object's rectangle. Sprite sheets override this.
    * @param {CanvasRenderingContext2D} ctx - The canvas context, already moved to the object.
@@ -92,7 +86,6 @@ class DrawableObject {
   drawImage(ctx) {
     ctx.drawImage(this.getImage(), 0, 0, this.width, this.height);
   }
-
 
   /**
    * Returns the hitbox: the drawn rectangle minus the transparent border (offset).
@@ -109,7 +102,6 @@ class DrawableObject {
       height: this.height - this.offset.top - this.offset.bottom,
     };
   }
-
 
   /**
    * Checks if the hitboxes of this object and another object overlap.

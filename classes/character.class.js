@@ -300,10 +300,10 @@ class Character extends Creature {
   }
 
   /**
-   * Lets the fox jump while Space is pressed, but only from the ground (then the jump sound plays).
+   * Lets the fox jump while ArrowUp is pressed, but only from the ground (then the jump sound plays).
    */
   jumpByKey() {
-    if (keyBoard.space == true && !this.isAboveGround()) {
+    if (keyBoard.up == true && !this.isAboveGround()) {
       this.jump();
       soundManager.play("jump");
     }

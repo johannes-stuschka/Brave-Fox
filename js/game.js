@@ -7,11 +7,11 @@ const TICK_TIME = 1000 / 60;
 let keyBoard = {
   left: false,
   right: false,
-  space: false,
+  up: false,
   d: false,
 };
 
-const keyNames = { ArrowLeft: "left", ArrowRight: "right", d: "d", D: "d" };
+const KEY_NAMES = { ArrowLeft: "left", ArrowRight: "right", ArrowUp: "up", d: "d", D: "d" };
 
 let intervalIds = [];
 
@@ -27,7 +27,6 @@ function setStoppableInterval(fn, ms) {
   return id;
 }
 
-
 /**
  * Starts an interval that runs 60 times per second (one game tick).
  * @param {Function} fn - Function that runs on every tick.
@@ -37,7 +36,6 @@ function setTickInterval(fn) {
   return setStoppableInterval(fn, TICK_TIME);
 }
 
-
 /**
  * Stops all intervals started with setStoppableInterval (e.g. for a restart).
  */
@@ -45,7 +43,6 @@ function stopAllIntervals() {
   intervalIds.forEach((id) => clearInterval(id));
   intervalIds = [];
 }
-
 
 /**
  * Creates the game world with level 1 on the canvas.
@@ -55,35 +52,29 @@ function init() {
   world = new World(canvas, createLevel1());
 }
 
-
 /**
  * Saves in keyBoard whether one of the game keys was pressed or released.
- * keyNames tells which keyBoard entry belongs to which key (Space is checked by its code).
+ * KEY_NAMES tells which keyBoard entry belongs to which key.
  * @param {KeyboardEvent} event - The keydown or keyup event.
  * @param {boolean} isPressed - true on keydown, false on keyup.
  */
 function setKey(event, isPressed) {
-  if (event.code == "Space") {
-    keyBoard.space = isPressed;
-  }
-  let name = keyNames[event.key];
+  let name = KEY_NAMES[event.key];
   if (name) {
     keyBoard[name] = isPressed;
   }
 }
 
-
 /**
- * Key pressed: the Space key must not scroll the page while jumping.
+ * Key pressed: the ArrowUp key must not scroll the page while jumping.
  * @param {KeyboardEvent} event - The keydown event.
  */
 function onKeyDown(event) {
-  if (event.code == "Space") {
+  if (event.key == "ArrowUp") {
     event.preventDefault();
   }
   setKey(event, true);
 }
-
 
 /**
  * Key released: the key counts as not pressed any more.

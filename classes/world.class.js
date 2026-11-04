@@ -38,7 +38,6 @@ class World {
     this.draw();
   }
 
-
   /**
    * Creates the berry bar under the duck bar. It is full when all berries of the level are collected.
    * @returns {StatusBar} The berry bar.
@@ -47,7 +46,6 @@ class World {
     return new StatusBar(20, 92, "#e0243c", ICONS.berry, this.level.berries.length, 2);
   }
 
-
   /**
    * Finds the end boss among the enemies of the level.
    * @returns {BossHunter|undefined} The boss, or undefined if the level has none.
@@ -55,7 +53,6 @@ class World {
   findBoss() {
     return this.level.enemies.find((enemy) => enemy instanceof BossHunter);
   }
-
 
   /**
    * Gives the fox and every enemy access to the world (e.g. to find the fox).
@@ -67,14 +64,12 @@ class World {
     });
   }
 
-
   /**
    * Starts the game tick of the world (60 times per second).
    */
   startUpdates() {
     setTickInterval(() => this.update());
   }
-
 
   /**
    * One game tick: moves bullets and thrown ducks, then checks all collisions.
@@ -85,7 +80,6 @@ class World {
     this.checkCollisions();
   }
 
-
   /**
    * Moves every bullet one step and keeps only the bullets that are still needed,
    * so the array does not grow forever.
@@ -94,7 +88,6 @@ class World {
     this.bullets.forEach((bullet) => bullet.move());
     this.bullets = this.bullets.filter((bullet) => this.isBulletNeeded(bullet));
   }
-
 
   /**
    * A bullet is needed while it is inside the level, above the ground and not far away from the fox.
@@ -106,7 +99,6 @@ class World {
     return this.isInsideLevel(bullet) && nearFox && bullet.isAboveGround();
   }
 
-
   /**
    * Moves every thrown duck one step and keeps only the ducks that are still flying.
    */
@@ -114,7 +106,6 @@ class World {
     this.thrownDucks.forEach((duck) => duck.move());
     this.thrownDucks = this.thrownDucks.filter((duck) => this.isInsideLevel(duck) && duck.isAboveGround());
   }
-
 
   /**
    * Checks if a part of the object is still inside the level.
@@ -125,7 +116,6 @@ class World {
     return item.x + item.width > 0 && item.x < this.level.levelEndX;
   }
 
-
   /**
    * One collision tick: the collision handler checks everything, then the bars are updated.
    */
@@ -133,7 +123,6 @@ class World {
     this.collisionHandler.checkAll();
     this.updateStatusBars();
   }
-
 
   /**
    * Shows the current energy, the collected ducks and the collected berries of the fox
@@ -147,7 +136,6 @@ class World {
       this.bossBar.setValue(this.boss.energy);
     }
   }
-
 
   /**
    * Draws one frame: fixed sky, everything that moves with the camera, then the fixed bars.
@@ -163,14 +151,12 @@ class World {
     this.animationFrameId = requestAnimationFrame(() => this.draw());
   }
 
-
   /**
    * Stops the drawing loop, so this world does not keep running after the game ended.
    */
   stop() {
     cancelAnimationFrame(this.animationFrameId);
   }
-
 
   /**
    * Draws the fixed bars of the fox. The boss bar only appears once the boss noticed the fox.
@@ -181,7 +167,6 @@ class World {
       this.bossBar.draw(this.ctx);
     }
   }
-
 
   /**
    * Draws all objects that live in the level (they scroll with the camera).
@@ -199,7 +184,6 @@ class World {
     this.drawHitboxes();
   }
 
-
   /**
    * Draws the rising "Z z z" above the fox while it sleeps.
    */
@@ -208,7 +192,6 @@ class World {
       this.sleepZzz.draw(this.ctx, this.character);
     }
   }
-
 
   /**
    * Debug help: draws the hitboxes of fox, hunters, bullets, berries and all ducks when SHOW_HITBOXES is true.
@@ -222,7 +205,6 @@ class World {
     objects.forEach((item) => this.drawHitbox(item));
   }
 
-
   /**
    * Draws the hitbox of one object as a thin red frame.
    * @param {DrawableObject} item - The object whose hitbox is shown.
@@ -233,7 +215,6 @@ class World {
     this.ctx.lineWidth = 1;
     this.ctx.strokeRect(box.x, box.y, box.width, box.height);
   }
-
 
   /**
    * Moves the camera so the fox stays cameraOffset pixels from the left edge.
@@ -247,7 +228,6 @@ class World {
     this.cameraX = Math.round(cameraX);
   }
 
-
   /**
    * Lets every object of a list draw itself on the canvas.
    * @param {DrawableObject[]} objects - The objects to draw.
@@ -255,5 +235,4 @@ class World {
   addObjectsToMap(objects) {
     objects.forEach((item) => item.draw(this.ctx));
   }
-
 }

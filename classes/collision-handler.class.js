@@ -14,7 +14,6 @@ class CollisionHandler {
     this.world = world;
   }
 
-
   /**
    * One collision tick: everything against the fox (only while it is alive),
    * then the thrown ducks against the enemies.
@@ -27,7 +26,6 @@ class CollisionHandler {
     this.checkThrownDuckCollisions();
   }
 
-
   /**
    * Checks enemies, bullets, ducks and berries against the fox.
    */
@@ -38,14 +36,12 @@ class CollisionHandler {
     this.checkBerryCollisions();
   }
 
-
   /**
    * Checks every enemy against the fox.
    */
   checkEnemyCollisions() {
     this.world.level.enemies.forEach((enemy) => this.checkEnemyCollision(enemy));
   }
-
 
   /**
    * One enemy against the fox: a stomp defeats the enemy and lets the fox bounce,
@@ -65,7 +61,6 @@ class CollisionHandler {
     }
   }
 
-
   /**
    * A stomp: the enemy can be stomped, the fox is falling (speedY < 0)
    * and the feet of the fox are only a little below the top of the enemy.
@@ -81,7 +76,6 @@ class CollisionHandler {
     return enemy.canBeStomped && isFalling && foxBottom - enemyTop <= this.stompTolerance;
   }
 
-
   /**
    * Removes all enemies that were dead for longer than their removeDelay.
    */
@@ -90,16 +84,18 @@ class CollisionHandler {
     level.enemies = level.enemies.filter((enemy) => !enemy.isReadyToRemove());
   }
 
-
   /**
    * Every bullet that touches the fox's hitbox hits it and disappears on impact.
    * During the short invulnerability after a hit the bullet is used up without damage.
    */
   checkBulletCollisions() {
     let fox = this.world.character;
-    this.world.bullets = this.removeTouchedItems(this.world.bullets, () => true, (bullet) => fox.hit(bullet.damage));
+    this.world.bullets = this.removeTouchedItems(
+      this.world.bullets,
+      () => true,
+      (bullet) => fox.hit(bullet.damage),
+    );
   }
-
 
   /**
    * Removes every duck the fox collects in this tick from the level.
@@ -108,9 +104,12 @@ class CollisionHandler {
   checkDuckCollisions() {
     let fox = this.world.character;
     let level = this.world.level;
-    level.ducks = this.removeTouchedItems(level.ducks, () => fox.canCollectDuck(), () => fox.collectDuck());
+    level.ducks = this.removeTouchedItems(
+      level.ducks,
+      () => fox.canCollectDuck(),
+      () => fox.collectDuck(),
+    );
   }
-
 
   /**
    * Removes every berry the fox collects in this tick from the level.
@@ -119,9 +118,12 @@ class CollisionHandler {
   checkBerryCollisions() {
     let fox = this.world.character;
     let level = this.world.level;
-    level.berries = this.removeTouchedItems(level.berries, () => true, () => fox.collectBerry());
+    level.berries = this.removeTouchedItems(
+      level.berries,
+      () => true,
+      () => fox.collectBerry(),
+    );
   }
-
 
   /**
    * Shared logic for bullets, ducks and berries: every item the fox touches is handled
@@ -142,7 +144,6 @@ class CollisionHandler {
     });
   }
 
-
   /**
    * Removes every thrown duck that hit an enemy in this tick.
    */
@@ -150,7 +151,6 @@ class CollisionHandler {
     let world = this.world;
     world.thrownDucks = world.thrownDucks.filter((duck) => !this.tryHitEnemy(duck));
   }
-
 
   /**
    * Looks for an enemy that can be hit and that the thrown duck touches, and hits it (the duck quacks).

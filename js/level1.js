@@ -1,19 +1,19 @@
-const tileWidth = 720;
+const TILE_WIDTH = 720;
 
-const level1TileCount = 6;
+const LEVEL1_TILE_COUNT = 6;
 
-const bossX = 3950;
+const BOSS_X = 3950;
 
 /**
  * Builds a fresh level 1 (can be called again for a restart).
  * @returns {Level} The new level with sky, clouds, backgrounds, enemies, ducks and berries.
  */
 function createLevel1() {
-  let levelEndX = tileWidth * level1TileCount;
+  let levelEndX = TILE_WIDTH * LEVEL1_TILE_COUNT;
   return new Level(
     new Background("./imgs/background/nature_4/1.png", 0),
     createClouds(levelEndX),
-    createBackgroundTiles(level1TileCount),
+    createBackgroundTiles(LEVEL1_TILE_COUNT),
     createEnemies(),
     createDucks(),
     createBerries(),
@@ -21,10 +21,9 @@ function createLevel1() {
   );
 }
 
-
 /**
  * Places both background layers side by side, each tile exactly
- * tileWidth pixels after the one before, so there are no gaps.
+ * TILE_WIDTH pixels after the one before, so there are no gaps.
  * Every second tile is mirrored, so neighbouring tiles share the same
  * edge pixels and no hard cut is visible at the tile borders.
  * @param {number} count - How many tiles per layer.
@@ -36,12 +35,11 @@ function createBackgroundTiles(count) {
   layers.forEach((path) => {
     for (let i = 0; i < count; i++) {
       let mirrored = i % 2 === 1;
-      tiles.push(new Background(path, i * tileWidth, mirrored));
+      tiles.push(new Background(path, i * TILE_WIDTH, mirrored));
     }
   });
   return tiles;
 }
-
 
 /**
  * Creates one cloud per tile, so clouds cover the whole level.
@@ -50,16 +48,15 @@ function createBackgroundTiles(count) {
  */
 function createClouds(levelEndX) {
   let clouds = [];
-  for (let x = 0; x < levelEndX; x += tileWidth) {
+  for (let x = 0; x < levelEndX; x += TILE_WIDTH) {
     clouds.push(new Cloud(x, levelEndX));
   }
   return clouds;
 }
 
-
 /**
  * Spreads the walking hunters over the level, far enough from the start of the fox.
- * The shooting hunters stand in the gaps between the walking hunters.
+ * The standing hunters stand in the gaps between the walking hunters. All of them shoot.
  * The big boss waits alone in the arena at the end (no normal hunter starts there).
  * @returns {Hunter[]} The enemies.
  */
@@ -72,10 +69,9 @@ function createEnemies() {
     new WalkingHunter(2700),
     new ShootingHunter(3100),
     new WalkingHunter(3400),
-    new BossHunter(bossX),
+    new BossHunter(BOSS_X),
   ];
 }
-
 
 /**
  * Places the collectible ducks on the ground, spread over the whole level.
@@ -88,14 +84,17 @@ function createDucks() {
   return duckXs.map((x) => new Collectible(x, Collectible.duck));
 }
 
-
 /**
- * Places the collectible berries on the ground, spread over the whole level.
+ * Places the collectible berries, spread over the whole level.
  * Some lie in small groups, so exploring is rewarded.
  * They lie between the ducks and the start points of the hunters.
+ * About every second berry floats in the air, so the fox has to jump for it.
  * @returns {Collectible[]} The berries.
  */
 function createBerries() {
-  let berryXs = [380, 680, 710, 740, 900, 1110, 1290, 1510, 1540, 1900, 2130, 2420, 2450, 2850, 3220];
-  return berryXs.map((x) => new Collectible(x, Collectible.berry));
+  let groundBerryXs = [380, 680, 900, 1290, 1510, 1900, 2420, 2850];
+  let floatingBerryXs = [710, 740, 1110, 1540, 2130, 2450, 3220];
+  let groundBerries = groundBerryXs.map((x) => new Collectible(x, Collectible.berry));
+  let floatingBerries = floatingBerryXs.map((x) => new Collectible(x, Collectible.berry, true));
+  return [...groundBerries, ...floatingBerries];
 }

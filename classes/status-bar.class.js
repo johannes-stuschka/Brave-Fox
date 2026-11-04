@@ -35,7 +35,6 @@ class StatusBar extends DrawableObject {
     this.pixelSize = pixelSize;
   }
 
-
   /**
    * Converts a value (e.g. energy 60 of 100) into a percentage for the bar.
    * @param {number} value - The current value.
@@ -43,7 +42,6 @@ class StatusBar extends DrawableObject {
   setValue(value) {
     this.setPercentage((value / this.maxValue) * 100);
   }
-
 
   /**
    * Sets how full the bar is, kept between 0 and 100.
@@ -53,7 +51,6 @@ class StatusBar extends DrawableObject {
     this.percentage = Math.min(100, Math.max(0, percentage));
   }
 
-
   /**
    * Draws icon and bar. Must be called after the camera translate was undone.
    * @param {CanvasRenderingContext2D} ctx - The canvas context.
@@ -62,7 +59,6 @@ class StatusBar extends DrawableObject {
     this.drawIcon(ctx);
     this.drawBar(ctx);
   }
-
 
   /**
    * Draws the icon scaled up and centered in its icon box. Nothing is drawn until the icon file has loaded.
@@ -78,7 +74,6 @@ class StatusBar extends DrawableObject {
     let iconY = this.y + Math.round((this.iconBoxHeight - height) / 2);
     ctx.drawImage(this.icon, iconX, iconY, width, height);
   }
-
 
   /**
    * Draws the wooden frame, the empty part and the filled part of the bar.
@@ -98,7 +93,6 @@ class StatusBar extends DrawableObject {
     ctx.fillRect(barX, barY + 2, fillWidth, 2);
   }
 
-
   /**
    * Returns the drawn width of the icon.
    * @returns {number} Width in pixels.
@@ -106,7 +100,6 @@ class StatusBar extends DrawableObject {
   getIconWidth() {
     return this.icon.width * this.pixelSize;
   }
-
 
   /**
    * Returns the drawn height of the icon.

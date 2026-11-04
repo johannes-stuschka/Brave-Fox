@@ -1,14 +1,13 @@
-const minPressTime = 100;
+const MIN_PRESS_TIME = 100;
 
-const touchButtons = [
+const TOUCH_BUTTONS = [
   { id: "touchLeft", key: "left" },
   { id: "touchRight", key: "right" },
-  { id: "touchJump", key: "space" },
+  { id: "touchJump", key: "up" },
   { id: "touchThrow", key: "d" },
 ];
 
 let touchPressTimes = {};
-
 
 /**
  * Finger (or mouse) goes down on a touch button: the matching key counts as pressed.
@@ -23,9 +22,8 @@ function pressTouchKey(event, key) {
   touchPressTimes[key] = Date.now();
 }
 
-
 /**
- * Finger (or mouse) leaves a touch button: the key is released after at least minPressTime.
+ * Finger (or mouse) leaves a touch button: the key is released after at least MIN_PRESS_TIME.
  * So even a very short tap is seen by the fox (jump or exactly one throw like the D key).
  * @param {PointerEvent} event - The pointerup or pointercancel event.
  * @param {string} key - The key in keyBoard, e.g. "left" or "d".
@@ -33,10 +31,9 @@ function pressTouchKey(event, key) {
 function releaseTouchKey(event, key) {
   event.preventDefault();
   let pressTime = touchPressTimes[key];
-  let waitTime = Math.max(0, minPressTime - (Date.now() - pressTime));
+  let waitTime = Math.max(0, MIN_PRESS_TIME - (Date.now() - pressTime));
   setTimeout(() => releaseKeyIfNotPressedAgain(key, pressTime), waitTime);
 }
-
 
 /**
  * Sets the key back to false, but only if the button was not pressed again in the meantime.
@@ -48,7 +45,6 @@ function releaseKeyIfNotPressedAgain(key, pressTime) {
     keyBoard[key] = false;
   }
 }
-
 
 /**
  * Connects one touch button with its key. Pointer events work for fingers and the mouse.
@@ -66,13 +62,11 @@ function registerTouchButton(button, key) {
   button.addEventListener("contextmenu", (event) => event.preventDefault());
 }
 
-
 /**
  * Connects all touch buttons with their keys.
  */
 function initTouchControls() {
-  touchButtons.forEach((button) => registerTouchButton(document.getElementById(button.id), button.key));
+  TOUCH_BUTTONS.forEach((button) => registerTouchButton(document.getElementById(button.id), button.key));
 }
-
 
 window.addEventListener("DOMContentLoaded", initTouchControls);

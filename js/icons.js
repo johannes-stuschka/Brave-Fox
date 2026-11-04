@@ -1,5 +1,4 @@
-const iconFolder = "./imgs/icons/";
-
+const ICON_FOLDER = "./imgs/icons/";
 
 /**
  * Starts loading one icon file from the icon folder.
@@ -8,10 +7,9 @@ const iconFolder = "./imgs/icons/";
  */
 function loadIcon(fileName) {
   let img = new Image();
-  img.src = iconFolder + fileName;
+  img.src = ICON_FOLDER + fileName;
   return img;
 }
-
 
 /**
  * Checks if an image can be drawn. A canvas is always ready, an image file only after it has loaded.
@@ -25,7 +23,6 @@ function isImageReady(image) {
   return image.complete && image.naturalWidth > 0;
 }
 
-
 const ICONS = {
   heart: loadIcon("heart.svg"),
   duck: loadIcon("duck.svg"),
@@ -35,7 +32,6 @@ const ICONS = {
   zzz: loadIcon("zzz.svg"),
   bullet: loadIcon("bullet.svg"),
 };
-
 
 /**
  * Updates an icon button (mute or fullscreen): new icon, screen reader label and tooltip.

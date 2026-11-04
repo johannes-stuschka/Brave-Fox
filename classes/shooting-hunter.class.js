@@ -1,6 +1,6 @@
 /**
  * A hunter that stands still and shoots at the fox when it comes into range.
- * Owns all shooting logic, so the end boss can reuse it.
+ * Owns all shooting logic, so the walking hunter and the end boss can reuse it.
  * @extends Hunter
  */
 class ShootingHunter extends Hunter {
@@ -29,7 +29,6 @@ class ShootingHunter extends Hunter {
     this.watchFox();
   }
 
-
   /**
    * Starts the interval that updates the hunter 60 times per second.
    * update() decides what happens on every tick.
@@ -37,7 +36,6 @@ class ShootingHunter extends Hunter {
   watchFox() {
     setTickInterval(() => this.update());
   }
-
 
   /**
    * One tick: shoots at the fox.
@@ -50,7 +48,6 @@ class ShootingHunter extends Hunter {
     this.shootAtFox();
   }
 
-
   /**
    * The full shooting sequence of one tick: look at the fox, start a shot,
    * fire the bullet at the right frame and end the shot when it is done.
@@ -62,7 +59,6 @@ class ShootingHunter extends Hunter {
     this.endShotWhenDone();
   }
 
-
   /**
    * Returns the horizontal distance from the hunter to the fox (center to center).
    * Negative means the fox is to the left of the hunter.
@@ -73,14 +69,12 @@ class ShootingHunter extends Hunter {
     return fox.x + fox.width / 2 - (this.x + this.width / 2);
   }
 
-
   /**
    * Turns the hunter so it looks at the fox (sprite looks right, mirrored looks left).
    */
   faceFox() {
     this.otherDirection = this.getDistanceToFox() < 0;
   }
-
 
   /**
    * Starts the shot animation when the fox is in range and the cooldown is over.
@@ -93,7 +87,6 @@ class ShootingHunter extends Hunter {
     this.startShot();
   }
 
-
   /**
    * Starts the shot animation. The bullet comes later in fireAtShotFrame().
    */
@@ -102,7 +95,6 @@ class ShootingHunter extends Hunter {
     this.bulletFired = false;
     this.shotStartTime = Date.now();
   }
-
 
   /**
    * Fires one bullet (with a bang) as soon as the muzzle-flash frame of the shot is shown.
@@ -116,7 +108,6 @@ class ShootingHunter extends Hunter {
     }
   }
 
-
   /**
    * Creates a bullet at the gun muzzle that flies toward the aim point.
    * @returns {Bullet} The new bullet.
@@ -125,7 +116,6 @@ class ShootingHunter extends Hunter {
     let aim = this.getAimPoint();
     return new Bullet(this.getMuzzleX(), this.muzzleY, aim.x, aim.y, this.bulletSpeed, this.bulletDamage);
   }
-
 
   /**
    * Returns the x position of the gun muzzle, mirrored when the hunter looks left.
@@ -138,7 +128,6 @@ class ShootingHunter extends Hunter {
     return this.x + this.muzzleOffsetX;
   }
 
-
   /**
    * Aims at the middle of the fox's hitbox. The bullet flies straight to where
    * the fox is now, so the fox can still dodge.
@@ -148,7 +137,6 @@ class ShootingHunter extends Hunter {
     let fox = this.world.character.getHitbox();
     return { x: fox.x + fox.width / 2, y: fox.y + fox.height / 2 };
   }
-
 
   /**
    * Plays the gun shot, but only if the hunter is visible on the canvas
@@ -160,7 +148,6 @@ class ShootingHunter extends Hunter {
     }
   }
 
-
   /**
    * Checks if a part of the hunter is inside the visible part of the level.
    * @returns {boolean} True if the hunter can be seen on the canvas.
@@ -170,7 +157,6 @@ class ShootingHunter extends Hunter {
     let screenRight = screenLeft + this.world.canvas.width;
     return this.x + this.width > screenLeft && this.x < screenRight;
   }
-
 
   /**
    * Ends the shot after all frames of Shot.png were shown and plans the next shot.
@@ -184,7 +170,6 @@ class ShootingHunter extends Hunter {
     }
   }
 
-
   /**
    * Picks a random pause between minCooldown and maxCooldown.
    * @returns {number} Pause in milliseconds.
@@ -192,7 +177,6 @@ class ShootingHunter extends Hunter {
   getRandomCooldown() {
     return this.minCooldown + Math.random() * (this.maxCooldown - this.minCooldown);
   }
-
 
   /**
    * Plays the dead animation when defeated, the shot animation while shooting, otherwise idle.

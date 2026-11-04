@@ -1,6 +1,6 @@
-const fullscreenEnterIcon = "./imgs/icons/fullscreen-enter.svg";
-const fullscreenExitIcon = "./imgs/icons/fullscreen-exit.svg";
+const FULLSCREEN_ENTER_ICON = "./imgs/icons/fullscreen-enter.svg";
 
+const FULLSCREEN_EXIT_ICON = "./imgs/icons/fullscreen-exit.svg";
 
 /**
  * Checks if the browser can show an element in fullscreen.
@@ -11,7 +11,6 @@ function isFullscreenSupported() {
   return Boolean(document.fullscreenEnabled || document.webkitFullscreenEnabled);
 }
 
-
 /**
  * Finds the element that is in fullscreen right now.
  * @returns {Element|null} The fullscreen element, or null if nothing is in fullscreen.
@@ -19,7 +18,6 @@ function isFullscreenSupported() {
 function getFullscreenElement() {
   return document.fullscreenElement || document.webkitFullscreenElement || null;
 }
-
 
 /**
  * Shows an element in fullscreen (with the webkit name as fallback for Safari).
@@ -33,7 +31,6 @@ function enterFullscreen(element) {
   }
 }
 
-
 /**
  * Leaves the fullscreen (with the webkit name as fallback for Safari).
  */
@@ -44,7 +41,6 @@ function exitFullscreen() {
     document.webkitExitFullscreen();
   }
 }
-
 
 /**
  * Fullscreen button: puts the game into fullscreen or back into the normal window.
@@ -59,16 +55,19 @@ function toggleFullscreen() {
   document.getElementById("fullscreenButton").blur();
 }
 
-
 /**
  * Shows the "bigger" corners or the "smaller" corners, depending on the fullscreen state.
  */
 function updateFullscreenButton() {
   let isFullscreen = getFullscreenElement() != null;
   let label = isFullscreen ? "Exit fullscreen" : "Fullscreen";
-  updateIconButton("fullscreenButton", "fullscreenIcon", isFullscreen ? fullscreenExitIcon : fullscreenEnterIcon, label);
+  updateIconButton(
+    "fullscreenButton",
+    "fullscreenIcon",
+    isFullscreen ? FULLSCREEN_EXIT_ICON : FULLSCREEN_ENTER_ICON,
+    label,
+  );
 }
-
 
 /**
  * Hides the button where fullscreen is not possible, otherwise sets the icon.
@@ -83,6 +82,5 @@ function initFullscreenButton() {
   document.addEventListener("fullscreenchange", updateFullscreenButton);
   document.addEventListener("webkitfullscreenchange", updateFullscreenButton);
 }
-
 
 window.addEventListener("DOMContentLoaded", initFullscreenButton);
