@@ -10,7 +10,7 @@ class ThrowableDuck extends MovableObject {
   width = Collectible.duck.svgWidth * this.scale;
   height = Collectible.duck.svgHeight * this.scale;
   groundY = Collectible.duck.groundY;
-  speedX = 7.5;
+  speed = 7.5;
   speedY = 7;
   acceleration = 0.4;
   spinSpeed = 0.2;
@@ -39,7 +39,7 @@ class ThrowableDuck extends MovableObject {
    * Called 60 times per second by the World.
    */
   move() {
-    this.x += this.speedX * this.direction;
+    this.x += this.speed * this.direction;
     this.updateGravity();
     this.rotation += this.spinSpeed;
   }

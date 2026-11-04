@@ -14,6 +14,7 @@ class Hunter extends Creature {
     alert: { file: "Сharging.png", frames: 9, fps: 9, loop: false },
     shot: { file: "Shot.png", frames: 4, fps: 8 },
     hurt: { file: "Hurt.png", frames: 4, fps: 10 },
+    jump: { file: "Jump.png", frames: 10, fps: 12, loop: false },
     dead: { file: "Dead.png", frames: 5, fps: 8, loop: false },
   };
 
@@ -86,6 +87,15 @@ class Hunter extends Creature {
    */
   touchFox(fox) {
     fox.hit(this.contactDamage);
+  }
+
+
+  /**
+   * Checks if a thrown duck can hit this hunter right now. Dead hunters can not be hit again.
+   * @returns {boolean} True if the hunter can be hit.
+   */
+  canBeHit() {
+    return !this.isDead();
   }
 
 

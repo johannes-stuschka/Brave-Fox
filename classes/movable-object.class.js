@@ -1,9 +1,10 @@
 /**
- * A drawable object that moves through the level. It can fall with gravity
- * (speedY up, acceleration down) until it reaches its ground line.
+ * A drawable object that moves through the level with its own speed (pixels per tick).
+ * It can also fall with gravity (speedY up, acceleration down) until it reaches its ground line.
  * @extends DrawableObject
  */
 class MovableObject extends DrawableObject {
+  speed = 0;
   groundY = 389;
   speedY = 0;
   acceleration = 0.5;

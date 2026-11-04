@@ -3,15 +3,20 @@
  * It reuses the shooting of ShootingHunter (without a range limit) and the
  * inherited constructor; it can only be defeated with thrown ducks.
  * It shoots more often and its bullets hurt more than those of a normal hunter.
- * Touching the boss hurts and knocks the fox back, and duck hits do not interrupt its shots.
+ * Touching the boss hurts and knocks the fox back. After every duck hit it leaps
+ * high toward the fox; while it is in the air, ducks fly below it.
  * @extends ShootingHunter
  */
 class BossHunter extends ShootingHunter {
-  static animationNames = ["idle", "alert", "run", "shot", "hurt", "dead"];
+  static animationNames = ["idle", "alert", "run", "shot", "hurt", "jump", "dead"];
 
   width = 288;
   height = 288;
   y = 159;
+  groundY = 159;
+  leapSpeed = 13;
+  leapSpeedX = 5;
+  leapDirection = 1;
   offset = { top: 126, right: 110, bottom: 0, left: 106 };
   contactDamage = 35;
   knockbackSpeed = 10;
@@ -32,11 +37,15 @@ class BossHunter extends ShootingHunter {
   alertStartTime = 0;
 
   /**
-   * One tick: runs the method of the current state.
-   * Waits until the World has connected itself (this.world). A dead boss does nothing.
+   * One tick: gravity, then the method of the current state.
+   * Waits until the World has connected itself (this.world). A dead boss only falls down.
    */
   update() {
-    if (!this.world || this.isDead()) {
+    if (!this.world) {
+      return;
+    }
+    this.updateGravity();
+    if (this.isDead()) {
       return;
     }
     if (this.state === "idle") {
@@ -75,10 +84,14 @@ class BossHunter extends ShootingHunter {
 
 
   /**
-   * Chase state: shoots now and then, otherwise runs toward the fox.
+   * Chase state: flies on during a leap, otherwise shoots now and then and runs toward the fox.
    * While hurt the boss stands still for a moment, but it keeps shooting.
    */
   chaseFox() {
+    if (this.isAboveGround()) {
+      this.moveInsideLevel(this.x + this.leapDirection * this.leapSpeedX);
+      return;
+    }
     this.shootAtFox();
     if (!this.isShooting && !this.isHurt()) {
       this.runTowardFox();
@@ -108,8 +121,36 @@ class BossHunter extends ShootingHunter {
       return;
     }
     let step = distance < 0 ? -this.speed : this.speed;
+    this.moveInsideLevel(this.x + step);
+  }
+
+
+  /**
+   * Puts the boss at a new x position, but never outside the level.
+   * @param {number} x - The wanted x position.
+   */
+  moveInsideLevel(x) {
     let maxX = this.world.level.levelEndX - this.width;
-    this.x = Math.min(maxX, Math.max(0, this.x + step));
+    this.x = Math.min(maxX, Math.max(0, x));
+  }
+
+
+  /**
+   * Leaps high toward the fox. A shot that was running is cancelled.
+   */
+  leap() {
+    this.speedY = this.leapSpeed;
+    this.leapDirection = Math.sign(this.getDistanceToFox()) || 1;
+    this.isShooting = false;
+  }
+
+
+  /**
+   * The boss can only be hit by a duck while it stands on the ground.
+   * @returns {boolean} True if a thrown duck can hit the boss now.
+   */
+  canBeHit() {
+    return super.canBeHit() && !this.isAboveGround();
   }
 
 
@@ -128,13 +169,14 @@ class BossHunter extends ShootingHunter {
 
 
   /**
-   * After a hit: the boss dies when the energy is gone, otherwise it grunts in pain.
+   * After a hit: the boss dies when the energy is gone, otherwise it grunts in pain and leaps.
    */
   reactToHit() {
     if (this.isDead()) {
       this.die();
     } else {
       soundManager.play("boss-hurt");
+      this.leap();
     }
   }
 
@@ -184,13 +226,16 @@ class BossHunter extends ShootingHunter {
 
 
   /**
-   * Animation while chasing: shot while shooting (even when hurt, so the bullet still fires),
+   * Animation while chasing: jump in the air, shot while shooting (even when hurt, so the bullet still fires),
    * hurt after a duck hit, otherwise run. Before the chase: idle.
    * @returns {{path: string, frames: number, fps: number, row: number}} The current animation.
    */
   getChaseAnimation() {
     if (this.state !== "chase") {
       return this.animations.idle;
+    }
+    if (this.isAboveGround()) {
+      return this.animations.jump;
     }
     if (this.isShooting) {
       return this.animations.shot;

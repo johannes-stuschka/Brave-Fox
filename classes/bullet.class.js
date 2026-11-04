@@ -7,7 +7,6 @@ class Bullet extends MovableObject {
   scale = 2;
   width = 10 * this.scale;
   height = 4 * this.scale;
-  speed;
   groundY = 447 - this.height;
   damage;
   stepX = 0;

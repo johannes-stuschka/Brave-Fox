@@ -8,7 +8,6 @@ class WalkingHunter extends Hunter {
   minSpeed = 0.6;
   maxSpeed = 1.2;
   fpsPerSpeed = 10;
-  speed;
 
   /**
    * Creates a walking hunter with a random slow speed and lets it walk left.

@@ -9,7 +9,7 @@ class Character extends Creature {
   y = 389;
   frameWidth = 32;
   frameHeight = 32;
-  walkSpeed = 4;
+  speed = 4;
   jumpSpeed = 12;
   ducks = 0;
   berries = 0;
@@ -325,7 +325,7 @@ class Character extends Creature {
    * Moves the fox to the left, but not past the start of the level (x = 0).
    */
   moveLeft() {
-    this.moveTo(this.x - this.walkSpeed);
+    this.moveTo(this.x - this.speed);
     this.otherDirection = true;
   }
 
@@ -333,7 +333,7 @@ class Character extends Creature {
    * Moves the fox to the right, but not past the end of the level.
    */
   moveRight() {
-    this.moveTo(this.x + this.walkSpeed);
+    this.moveTo(this.x + this.speed);
     this.otherDirection = false;
   }
 

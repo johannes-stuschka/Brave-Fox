@@ -153,13 +153,13 @@ class CollisionHandler {
 
 
   /**
-   * Looks for a living enemy the thrown duck touches and hits it (the duck quacks).
-   * Dead enemies are skipped, so they can not be hit again.
+   * Looks for an enemy that can be hit and that the thrown duck touches, and hits it (the duck quacks).
+   * Dead enemies and a boss in the air are skipped, the duck flies on.
    * @param {ThrowableDuck} duck - The thrown duck to check.
    * @returns {boolean} True if the duck hit an enemy.
    */
   tryHitEnemy(duck) {
-    let enemy = this.world.level.enemies.find((item) => !item.isDead() && duck.isColliding(item));
+    let enemy = this.world.level.enemies.find((item) => item.canBeHit() && duck.isColliding(item));
     if (!enemy) {
       return false;
     }
