@@ -1,6 +1,6 @@
 @font-face {
   font-family: "Press Start 2P";
-  src: url("./fonts/PressStart2P-Regular.ttf") format("truetype");
+  src: url("../fonts/PressStart2P-Regular.ttf") format("truetype");
   font-display: block;
 }
 
@@ -29,7 +29,7 @@ body {
   font-family: "Press Start 2P", monospace;
   color: var(--cream);
   background: linear-gradient(rgba(20, 35, 20, 0.6), rgba(20, 35, 20, 0.6)),
-    url("./imgs/background/nature_4/origbig.png") center / cover;
+    url("../imgs/background/nature_4/origbig.png") center / cover;
 }
 
 /* Der Spielrahmen: 720x480, wird auf kleinen Bildschirmen kleiner (Seitenverhältnis 3:2 bleibt) */
@@ -83,7 +83,7 @@ canvas {
   align-items: center;
   gap: 24px;
   text-align: center;
-  background: url("./imgs/background/nature_4/origbig.png") center / cover;
+  background: url("../imgs/background/nature_4/origbig.png") center / cover;
   image-rendering: pixelated;
 }
 
