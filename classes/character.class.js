@@ -1,5 +1,5 @@
 const MAX_DUCKS = 10; // so viele Enten kann der Fuchs höchstens tragen
-const SLEEP_DELAY = 10000; // nach so vielen ms ohne Taste und ohne Treffer schläft der Fuchs ein (max. 15 s)
+const SLEEP_DELAY = 5000; // nach so vielen ms ohne Taste und ohne Treffer schläft der Fuchs ein (max. 15 s)
 
 /**
  * The fox that the player controls: walk, jump, throw ducks, collect berries.
@@ -45,7 +45,6 @@ class Character extends MovableObject {
     this.applyGravity();
   }
 
-
   /**
    * Returns the image to draw: in the air (jumping, falling, hurt or dying) the fox has no shadow,
    * because the shadow belongs on the ground.
@@ -57,7 +56,6 @@ class Character extends MovableObject {
     }
     return this.getShadowFreeImage(this.img);
   }
-
 
   /**
    * Returns a copy of the sprite sheet without shadow. The copy is made only once per sheet.
@@ -74,7 +72,6 @@ class Character extends MovableObject {
     }
     return this.shadowFreeImages[img.src];
   }
-
 
   /**
    * Paints the sheet onto a new canvas and erases the shadow.
@@ -97,7 +94,6 @@ class Character extends MovableObject {
     }
   }
 
-
   /**
    * Makes every half-transparent pixel fully transparent (each pixel has 4 values: red, green, blue, alpha).
    * @param {ImageData} imageData - The pixels of the sprite sheet.
@@ -113,14 +109,12 @@ class Character extends MovableObject {
     return imageData;
   }
 
-
   /**
    * Starts the movement interval of the fox (60 times per second).
    */
   move() {
     setStoppableInterval(() => this.handleKeys(), 1000 / 60);
   }
-
 
   /**
    * One input tick: snore sound, remembers activity, then walks, jumps and throws.
@@ -137,7 +131,6 @@ class Character extends MovableObject {
     this.throwByKey();
   }
 
-
   /**
    * Plays the snore loop while the fox sleeps and stops it when it wakes up or dies.
    */
@@ -149,7 +142,6 @@ class Character extends MovableObject {
     }
   }
 
-
   /**
    * Any pressed key counts as activity: the fox stays awake or wakes up.
    */
@@ -159,7 +151,6 @@ class Character extends MovableObject {
     }
   }
 
-
   /**
    * Checks if at least one game key is pressed right now.
    * @returns {boolean} True if any key in keyBoard is true.
@@ -167,7 +158,6 @@ class Character extends MovableObject {
   isAnyKeyPressed() {
     return Object.values(keyBoard).some((isPressed) => isPressed == true);
   }
-
 
   /**
    * Takes damage like every MovableObject and wakes the fox up.
@@ -186,7 +176,6 @@ class Character extends MovableObject {
     }
   }
 
-
   /**
    * Returns how long the fox has been sleeping already.
    * @returns {number} Milliseconds since falling asleep (negative while still awake).
@@ -195,7 +184,6 @@ class Character extends MovableObject {
     return Date.now() - this.lastActivity - SLEEP_DELAY;
   }
 
-
   /**
    * Checks if the fox did nothing for longer than SLEEP_DELAY and is still alive.
    * @returns {boolean} True while the fox sleeps.
@@ -203,7 +191,6 @@ class Character extends MovableObject {
   isSleeping() {
     return !this.isDead() && this.getSleepTime() > 0;
   }
-
 
   /**
    * Throws one duck when D was just pressed down. Holding D does not throw again,
@@ -217,7 +204,6 @@ class Character extends MovableObject {
     }
   }
 
-
   /**
    * Checks if the fox has a duck and the cooldown since the last throw is over.
    * @returns {boolean} True if the fox may throw a duck now.
@@ -226,7 +212,6 @@ class Character extends MovableObject {
     let cooldownOver = Date.now() - this.lastThrow >= this.throwCooldown;
     return this.ducks > 0 && cooldownOver;
   }
-
 
   /**
    * Uses one duck and lets it fly. The duck bar shows the new count in the next tick.
@@ -238,7 +223,6 @@ class Character extends MovableObject {
     this.world.thrownDucks.push(this.createThrownDuck());
   }
 
-
   /**
    * Creates a duck in front of the fox that flies in the direction the fox looks.
    * @returns {ThrowableDuck} The new thrown duck.
@@ -249,14 +233,12 @@ class Character extends MovableObject {
     return new ThrowableDuck(centerX, this.y + this.throwHeight, direction);
   }
 
-
   /**
    * Small jump after landing on an enemy (works in the air, unlike jump()).
    */
   bounce() {
     this.speedY = this.bounceSpeed;
   }
-
 
   /**
    * Checks if the fox can carry one more duck.
@@ -266,7 +248,6 @@ class Character extends MovableObject {
     return this.ducks < MAX_DUCKS;
   }
 
-
   /**
    * Adds one duck to the ammo, but never more than MAX_DUCKS. The duck quacks happily.
    */
@@ -275,7 +256,6 @@ class Character extends MovableObject {
     soundManager.play("quack");
   }
 
-
   /**
    * Adds one collected berry and plays a sparkle.
    */
@@ -283,7 +263,6 @@ class Character extends MovableObject {
     this.berries++;
     soundManager.play("berry");
   }
-
 
   /**
    * Lets the fox jump while Space is pressed, but only from the ground (then the jump sound plays).
@@ -294,7 +273,6 @@ class Character extends MovableObject {
       soundManager.play("jump");
     }
   }
-
 
   /**
    * Moves the fox left or right while the arrow keys are pressed.
@@ -308,7 +286,6 @@ class Character extends MovableObject {
     }
   }
 
-
   /**
    * Moves the fox to the left, but not past the start of the level (x = 0).
    */
@@ -316,7 +293,6 @@ class Character extends MovableObject {
     this.x = Math.max(0, this.x - this.walkSpeed);
     this.otherDirection = true;
   }
-
 
   /**
    * Moves the fox to the right, but not past the end of the level.
@@ -327,7 +303,6 @@ class Character extends MovableObject {
     this.otherDirection = false;
   }
 
-
   /**
    * Checks if an arrow key for walking is pressed.
    * @returns {boolean} True if the fox is moving left or right.
@@ -335,7 +310,6 @@ class Character extends MovableObject {
   isMoving() {
     return keyBoard.left == true || keyBoard.right == true;
   }
-
 
   /**
    * Returns the jump frame: stretched while rising, gathered while falling.
@@ -347,7 +321,6 @@ class Character extends MovableObject {
     }
     return this.animations.jumpDown;
   }
-
 
   /**
    * Chooses the animation: death, hurt, jump (in the air) or one of the ground animations.
@@ -365,7 +338,6 @@ class Character extends MovableObject {
     }
     return this.getGroundAnimation();
   }
-
 
   /**
    * Chooses the animation on the ground: sleep, walk (moving) or idle.
