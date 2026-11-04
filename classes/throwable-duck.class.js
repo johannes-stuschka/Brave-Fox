@@ -14,7 +14,6 @@ class ThrowableDuck extends MovableObject {
   speedY = 7;
   acceleration = 0.4;
   spinSpeed = 0.2;
-  rotation = 0;
   direction;
   offset = { top: 2, right: 2, bottom: 2, left: 2 };
 
@@ -41,17 +40,8 @@ class ThrowableDuck extends MovableObject {
    */
   move() {
     this.x += this.speedX * this.direction;
-    this.y -= this.speedY;
-    this.speedY -= this.acceleration;
+    this.updateGravity();
     this.rotation += this.spinSpeed;
   }
 
-
-  /**
-   * Checks if the duck has fallen down to the ground.
-   * @returns {boolean} True when the feet of the duck reached the ground.
-   */
-  hasLanded() {
-    return this.y >= this.groundY;
-  }
 }

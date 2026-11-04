@@ -12,6 +12,7 @@ class ShootingHunter extends Hunter {
   muzzleOffsetX = 130;
   muzzleY = 377;
   bulletSpeed = 7;
+  bulletDamage = 15;
   shotFrame = 1;
   isShooting = false;
   bulletFired = false;
@@ -122,7 +123,7 @@ class ShootingHunter extends Hunter {
    */
   createBullet() {
     let aim = this.getAimPoint();
-    return new Bullet(this.getMuzzleX(), this.muzzleY, aim.x, aim.y, this.bulletSpeed);
+    return new Bullet(this.getMuzzleX(), this.muzzleY, aim.x, aim.y, this.bulletSpeed, this.bulletDamage);
   }
 
 

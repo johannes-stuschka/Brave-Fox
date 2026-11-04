@@ -2,14 +2,15 @@ const MAX_DUCKS = 10;
 
 /**
  * The fox that the player controls: walk, jump, throw ducks, collect berries.
- * @extends MovableObject
+ * @extends Creature
  */
-class Character extends MovableObject {
+class Character extends Creature {
+  x = 160;
   y = 389;
   frameWidth = 32;
   frameHeight = 32;
   walkSpeed = 4;
-  world;
+  jumpSpeed = 12;
   ducks = 0;
   berries = 0;
   throwCooldown = 400;
@@ -234,6 +235,15 @@ class Character extends MovableObject {
     let direction = this.getDirection();
     let centerX = this.x + this.width / 2 + direction * this.throwDistance;
     return new ThrowableDuck(centerX, this.y + this.throwHeight, direction);
+  }
+
+  /**
+   * Lets the fox jump, but only when it stands on the ground.
+   */
+  jump() {
+    if (!this.isAboveGround()) {
+      this.speedY = this.jumpSpeed;
+    }
   }
 
   /**

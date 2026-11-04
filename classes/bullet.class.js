@@ -4,29 +4,31 @@
  * @extends MovableObject
  */
 class Bullet extends MovableObject {
-  width = 10;
-  height = 4;
+  scale = 2;
+  width = 10 * this.scale;
+  height = 4 * this.scale;
   speed;
-  groundY = 447;
-  damage = 15;
+  groundY = 447 - this.height;
+  damage;
   stepX = 0;
   stepY = 0;
-  rotation = 0;
 
   /**
-   * Creates a bullet at the gun muzzle, aimed at a target point.
+   * Creates a bullet centered on the gun muzzle, aimed at a target point.
    * Speeds are pixels per tick; the fox walks 4 pixels per tick.
-   * @param {number} x - Start position (left edge) in the level.
-   * @param {number} y - Start height (the muzzle of the gun).
+   * @param {number} x - x of the gun muzzle in the level.
+   * @param {number} y - y of the gun muzzle in the level.
    * @param {number} targetX - x of the point the bullet flies toward.
    * @param {number} targetY - y of the point the bullet flies toward.
    * @param {number} speed - Flight speed in pixels per tick.
+   * @param {number} damage - Energy the fox loses when this bullet hits it.
    */
-  constructor(x, y, targetX, targetY, speed) {
+  constructor(x, y, targetX, targetY, speed, damage) {
     super();
-    this.x = x;
-    this.y = y;
+    this.x = x - this.width / 2;
+    this.y = y - this.height / 2;
     this.speed = speed;
+    this.damage = damage;
     this.aimAt(targetX, targetY);
     this.img = ICONS.bullet;
   }
@@ -56,12 +58,4 @@ class Bullet extends MovableObject {
     this.y += this.stepY;
   }
 
-
-  /**
-   * Checks if the bullet has reached the ground line.
-   * @returns {boolean} True when the bullet hit the ground.
-   */
-  hasHitGround() {
-    return this.y + this.height >= this.groundY;
-  }
 }

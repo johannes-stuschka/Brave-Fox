@@ -105,7 +105,7 @@ class World {
    */
   isBulletNeeded(bullet) {
     let nearFox = Math.abs(bullet.x - this.character.x) < this.canvas.width;
-    return this.isInsideLevel(bullet) && nearFox && !bullet.hasHitGround();
+    return this.isInsideLevel(bullet) && nearFox && bullet.isAboveGround();
   }
 
 
@@ -114,13 +114,13 @@ class World {
    */
   updateThrownDucks() {
     this.thrownDucks.forEach((duck) => duck.move());
-    this.thrownDucks = this.thrownDucks.filter((duck) => this.isInsideLevel(duck) && !duck.hasLanded());
+    this.thrownDucks = this.thrownDucks.filter((duck) => this.isInsideLevel(duck) && duck.isAboveGround());
   }
 
 
   /**
    * Checks if a part of the object is still inside the level.
-   * @param {MovableObject} item - The object to check.
+   * @param {DrawableObject} item - The object to check.
    * @returns {boolean} True while the object has not left the level on the left or right.
    */
   isInsideLevel(item) {
@@ -156,7 +156,7 @@ class World {
    */
   draw() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.addToMap(this.level.sky);
+    this.level.sky.draw(this.ctx);
     this.updateCamera();
     this.ctx.translate(this.cameraX, 0);
     this.drawWorldObjects();
@@ -178,9 +178,7 @@ class World {
    * Draws the fixed bars of the fox. The boss bar only appears once the boss noticed the fox.
    */
   drawStatusBars() {
-    this.healthBar.draw(this.ctx);
-    this.duckBar.draw(this.ctx);
-    this.berryBar.draw(this.ctx);
+    this.addObjectsToMap([this.healthBar, this.duckBar, this.berryBar]);
     if (this.boss && this.boss.isAlerted()) {
       this.bossBar.draw(this.ctx);
     }
@@ -198,7 +196,7 @@ class World {
     this.addObjectsToMap(this.level.enemies);
     this.addObjectsToMap(this.bullets);
     this.addObjectsToMap(this.thrownDucks);
-    this.addToMap(this.character);
+    this.character.draw(this.ctx);
     this.drawSleepZzz();
     this.drawHitboxes();
   }
@@ -229,7 +227,7 @@ class World {
 
   /**
    * Draws the hitbox of one object as a thin red frame.
-   * @param {MovableObject} item - The object whose hitbox is shown.
+   * @param {DrawableObject} item - The object whose hitbox is shown.
    */
   drawHitbox(item) {
     let box = item.getHitbox();
@@ -264,61 +262,11 @@ class World {
 
 
   /**
-   * Draws every object of a list.
-   * @param {MovableObject[]} objects - The objects to draw.
+   * Lets every object of a list draw itself on the canvas.
+   * @param {DrawableObject[]} objects - The objects to draw.
    */
   addObjectsToMap(objects) {
-    objects.forEach((item) => this.addToMap(item));
+    objects.forEach((item) => item.draw(this.ctx));
   }
 
-
-  /**
-   * Draws one object, mirrored if it looks to the left and turned if it has a rotation.
-   * @param {MovableObject} item - The object to draw.
-   */
-  addToMap(item) {
-    this.ctx.save();
-    if (item.otherDirection) {
-      this.ctx.translate(item.x + item.width, item.y);
-      this.ctx.scale(-1, 1);
-    } else {
-      this.ctx.translate(item.x, item.y);
-    }
-    this.rotateAroundCenter(item);
-    this.drawImage(item);
-    this.ctx.restore();
-  }
-
-
-  /**
-   * Turns the canvas around the middle of the object (e.g. a spinning thrown duck).
-   * Objects without a rotation are not changed.
-   * @param {MovableObject} item - The object that is drawn next.
-   */
-  rotateAroundCenter(item) {
-    if (!item.rotation) {
-      return;
-    }
-    this.ctx.translate(item.width / 2, item.height / 2);
-    this.ctx.rotate(item.rotation);
-    this.ctx.translate(-item.width / 2, -item.height / 2);
-  }
-
-
-  /**
-   * Draws the image of an object: one frame of a sprite sheet or the whole image.
-   * The whole image can also be a canvas (e.g. the fox without shadow). Images that are not loaded yet are skipped.
-   * @param {MovableObject} item - The object to draw.
-   */
-  drawImage(item) {
-    if (!isImageReady(item.getImage())) {
-      return;
-    }
-    if (item.frameWidth) {
-      let { sourceX, sourceY, frameWidth, frameHeight } = item;
-      this.ctx.drawImage(item.getImage(), sourceX, sourceY, frameWidth, frameHeight, 0, 0, item.width, item.height);
-    } else {
-      this.ctx.drawImage(item.getImage(), 0, 0, item.width, item.height);
-    }
-  }
 }

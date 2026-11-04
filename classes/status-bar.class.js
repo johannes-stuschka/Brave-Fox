@@ -1,9 +1,8 @@
 /**
  * A bar fixed on the screen with an icon, e.g. health, ducks, berries or boss energy.
+ * @extends DrawableObject
  */
-class StatusBar {
-  x;
-  y;
+class StatusBar extends DrawableObject {
   color;
   icon;
   pixelSize;
@@ -27,6 +26,7 @@ class StatusBar {
    * @param {number} [pixelSize=3] - How big one icon pixel is drawn.
    */
   constructor(x, y, color, icon, maxValue, pixelSize = 3) {
+    super();
     this.x = x;
     this.y = y;
     this.color = color;

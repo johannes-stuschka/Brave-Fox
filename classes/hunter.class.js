@@ -2,9 +2,9 @@
  * Shared base class for all hunters (walking, shooting and the boss).
  * Holds what every hunter needs: size, position, hitbox, contact damage,
  * the sprite animations and the logic for being defeated and removed.
- * @extends MovableObject
+ * @extends Creature
  */
-class Hunter extends MovableObject {
+class Hunter extends Creature {
   static spriteFolder = "./imgs/Cowboy_1/";
 
   static animationCatalog = {
@@ -13,7 +13,7 @@ class Hunter extends MovableObject {
     run: { file: "Run.png", frames: 12, fps: 14 },
     alert: { file: "Сharging.png", frames: 9, fps: 9, loop: false },
     shot: { file: "Shot.png", frames: 4, fps: 8 },
-    hurt: { file: "Hurt.png", frames: 4, fps: 8 },
+    hurt: { file: "Hurt.png", frames: 4, fps: 10 },
     dead: { file: "Dead.png", frames: 5, fps: 8, loop: false },
   };
 
@@ -25,7 +25,6 @@ class Hunter extends MovableObject {
   height = 160;
   y = 287;
   otherDirection = true;
-  world;
   offset = { top: 70, right: 62, bottom: 0, left: 58 };
   contactDamage = 20;
   canBeStomped = true;

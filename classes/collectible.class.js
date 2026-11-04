@@ -1,9 +1,9 @@
 /**
  * An item lying on the ground that the fox collects by touching it.
  * What it looks like and how it moves comes from a kind preset like Collectible.duck or Collectible.berry.
- * @extends MovableObject
+ * @extends DrawableObject
  */
-class Collectible extends MovableObject {
+class Collectible extends DrawableObject {
   static duck = {
     images: [ICONS.duck],
     svgWidth: 17,

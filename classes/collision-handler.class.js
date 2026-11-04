@@ -126,10 +126,10 @@ class CollisionHandler {
   /**
    * Shared logic for bullets, ducks and berries: every item the fox touches is handled
    * by onTouch and removed, as long as canTouch() allows it. All other items stay.
-   * @param {MovableObject[]} items - The items in the level.
+   * @param {DrawableObject[]} items - The items in the level.
    * @param {Function} canTouch - Returns true if the fox may take one more item.
    * @param {Function} onTouch - Handles the touched item (gets the item as parameter).
-   * @returns {MovableObject[]} The items that stay in the level.
+   * @returns {DrawableObject[]} The items that stay in the level.
    */
   removeTouchedItems(items, canTouch, onTouch) {
     let fox = this.world.character;

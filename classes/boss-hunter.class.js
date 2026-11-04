@@ -2,9 +2,8 @@
  * The end boss: wakes up when the fox comes near, chases it and shoots.
  * It reuses the shooting of ShootingHunter (without a range limit) and the
  * inherited constructor; it can only be defeated with thrown ducks.
- * Its fast bullets fly straight ahead at the height of the fox's body, so the fox
- * has to jump over them. Touching the boss hurts and knocks the fox back,
- * and duck hits do not interrupt its shots.
+ * It shoots more often and its bullets hurt more than those of a normal hunter.
+ * Touching the boss hurts and knocks the fox back, and duck hits do not interrupt its shots.
  * @extends ShootingHunter
  */
 class BossHunter extends ShootingHunter {
@@ -18,7 +17,7 @@ class BossHunter extends ShootingHunter {
   knockbackSpeed = 10;
   canBeStomped = false;
   duckDamage = 20;
-  invulnerableTime = 1000;
+  invulnerableTime = 400;
   alertRange = 500;
   alertDuration = 1000;
   speed = 2.5;
@@ -27,10 +26,8 @@ class BossHunter extends ShootingHunter {
   minCooldown = 700;
   maxCooldown = 1100;
   muzzleOffsetX = 234;
-  muzzleY = 412;
-  bulletSpeed = 9;
-  bulletDamage = 35;
-  aimDistance = 1000;
+  muzzleY = 321;
+  bulletDamage = 30;
   state = "idle";
   alertStartTime = 0;
 
@@ -86,28 +83,6 @@ class BossHunter extends ShootingHunter {
     if (!this.isShooting && !this.isHurt()) {
       this.runTowardFox();
     }
-  }
-
-
-  /**
-   * Creates a normal bullet, but the boss bullets hurt more.
-   * @returns {Bullet} The new bullet.
-   */
-  createBullet() {
-    let bullet = super.createBullet();
-    bullet.damage = this.bulletDamage;
-    return bullet;
-  }
-
-
-  /**
-   * Aims straight ahead in the looking direction, at the height of the muzzle.
-   * The bullet flies horizontally through the fox's body height, so only a jump dodges it.
-   * @returns {{x: number, y: number}} The point the bullet flies toward.
-   */
-  getAimPoint() {
-    let direction = this.getDirection();
-    return { x: this.getMuzzleX() + direction * this.aimDistance, y: this.muzzleY };
   }
 
 
