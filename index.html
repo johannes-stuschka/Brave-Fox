@@ -59,6 +59,11 @@
           </div>
         </section>
 
+        <!-- X-Button: nur sichtbar, während das Spiel läuft (siehe style.css), führt zurück zum Startbildschirm -->
+        <button id="exitButton" class="exit-button" onclick="exitGame()" aria-label="Leave game" title="Leave game (Esc)">
+          <img src="./imgs/icons/close.svg" alt="" />
+        </button>
+
         <button id="fullscreenButton" class="fullscreen-button" onclick="toggleFullscreen()" aria-label="Fullscreen">
           <img id="fullscreenIcon" src="./imgs/icons/fullscreen-enter.svg" alt="" />
         </button>
@@ -119,6 +124,10 @@
           <tr>
             <td><kbd>M</kbd></td>
             <td>Sound on / off</td>
+          </tr>
+          <tr>
+            <td><kbd>Esc</kbd></td>
+            <td>Leave the game</td>
           </tr>
         </table>
         <p class="touch-hint">On phones and tablets use the buttons on the screen.</p>

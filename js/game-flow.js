@@ -128,3 +128,31 @@ function goToHome() {
   document.getElementById("startScreen").classList.remove("d-none");
   gameStarted = false; // damit der Start-Button wieder ein Spiel starten kann
 }
+
+
+/**
+ * X button (or key Esc): leaves the running game early. Stops intervals, the drawing loop
+ * and all sounds, then shows the start screen (no page reload).
+ */
+function exitGame() {
+  if (!gameStarted || gameEnded) {
+    return;
+  }
+  gameEnded = true;
+  stopGame();
+  goToHome();
+}
+
+
+/**
+ * Key Esc leaves the running game, like the X button.
+ * @param {KeyboardEvent} event - The pressed key.
+ */
+function exitGameByKey(event) {
+  if (event.key == "Escape") {
+    exitGame();
+  }
+}
+
+
+window.addEventListener("keydown", exitGameByKey);

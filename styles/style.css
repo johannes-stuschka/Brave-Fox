@@ -263,9 +263,10 @@ kbd {
   box-shadow: 0 2px 0 var(--wood-light);
 }
 
-/* Mute-Button oben rechts, unter der Lebensanzeige des Bosses, der Vollbild-Button links daneben */
+/* Mute-Button oben rechts, unter der Lebensanzeige des Bosses, Vollbild- und X-Button links daneben */
 .mute-button,
-.fullscreen-button {
+.fullscreen-button,
+.exit-button {
   position: absolute;
   top: 13%;
   right: 2.8%;
@@ -287,17 +288,35 @@ kbd {
   right: 11%;
 }
 
+/* X-Button links neben dem Vollbild-Button */
+.exit-button {
+  right: 19.2%;
+}
+
+/* Auf dem Start- und Endbildschirm kein X-Button, nur während das Spiel läuft */
+.game-container:has(#startScreen:not(.d-none)) .exit-button,
+.game-container:has(#endScreen:not(.d-none)) .exit-button {
+  display: none;
+}
+
 .fullscreen-button.d-none {
   display: none;
 }
 
 .mute-button:hover,
-.fullscreen-button:hover {
+.fullscreen-button:hover,
+.exit-button:hover {
   background-color: var(--leaf);
 }
 
 .mute-button img,
-.fullscreen-button img {
+.fullscreen-button img,
+.exit-button img {
   width: 75%;
   image-rendering: pixelated;
+}
+
+/* Das X ist ein volles Quadrat und wirkt sonst zu groß neben den anderen Icons */
+.exit-button img {
+  width: 55%;
 }
